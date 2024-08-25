@@ -1,6 +1,8 @@
 package com.twm.repository.chat.impl;
 
+import com.twm.dto.ButtonDto;
 import com.twm.repository.chat.ChatRepository;
+import com.twm.rowmapper.ButtonRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -12,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @Repository
 @Transactional
@@ -19,6 +22,13 @@ import java.util.Map;
 public class ChatRepositoryImpl implements ChatRepository {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
+
+    @Override
+    public List<ButtonDto> findAllButtons() {
+        String sql = "SELECT * FROM buttons";
+        return jdbcTemplate.query(sql, new ButtonRowMapper());
+    }
 
     @Override
     public List<String> getSessionHistory(String sessionId) {
