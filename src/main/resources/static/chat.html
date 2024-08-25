@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="./assets/commonElement/css/reset.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_colors.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_fonts.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/header.css" />
+    <link rel="stylesheet" href="./assets/css/chat.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="./assets/js/chat.js"></script>
+</head>
+
+<body>
+<div class="wrap">
+    <header>
+        <a class="logo" href="/">
+            <img src="./assets/commonElement/img/Logo_twm_White.svg" alt="台灣大哥大" />
+        </a>
+    </header>
+    <!-- 對話列表 -->
+    <main>
+        <ul class="chat">
+
+        </ul>
+    </main>
+
+    <div class="chatBar">
+        <!-- 浮動區塊（用於初次或尚未開始對話） -->
+        <div class="float">
+            <div>
+                <!-- content -->
+                <p>訊息內文訊息內文<a href="##">行內連結</a></p>
+
+                <!-- List -->
+                <ol>
+                    <li>列表文字<a href="##">行內連結</a></li>
+                    <li>列表文字<a href="##">行內連結</a></li>
+                </ol>
+
+                <!-- Button -->
+                <button class="btn">A. 按鈕文字</button>
+                <button class="btn">B. 按鈕文字</button>
+                <button class="btn">C. 按鈕文字</button>
+            </div>
+        </div>
+
+        <!-- Input Box -->
+        <form class="textareaBox">
+            <div>
+                <textarea placeholder="輸入訊息..."></textarea>
+                <button>送出</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+
+</html>

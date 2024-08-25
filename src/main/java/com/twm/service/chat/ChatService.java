@@ -8,9 +8,10 @@ import java.util.Map;
 
 public interface ChatService {
 
-    Map<String, Object> chat(String prompt);
     List<TypesDto> getAllTypeButtons();
     List<ButtonDto> getButtonsByType(Long typeId);
     String getAnswerByQuestion(Long buttonId);
+    Map<String, Object> chat(Long userId, String sessionId, String question);
+
 
 }
