@@ -3,6 +3,7 @@ package com.twm.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,7 @@ public class UserDto {
     private String password;
 
     @NotBlank(message = "Provider is required")
+    @Pattern(regexp = "native", message = "Provider must be 'native'")
     @JsonProperty("provider")
     private String provider;
 
