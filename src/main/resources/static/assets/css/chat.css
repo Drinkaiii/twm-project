@@ -90,6 +90,10 @@ main {
     line-height: 1.3rem;
     display: flex;
     flex-direction: column;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
 }
 
 .chat .msg .dialog time {
