@@ -1,6 +1,9 @@
 package com.twm.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,15 +16,17 @@ public class UserDto {
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("name")
-    private String name;
-
+    @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     @JsonProperty("email")
     private String email;
 
+    @NotBlank(message = "Password is required")
     @JsonProperty("password")
     private String password;
 
+    @NotBlank(message = "Provider is required")
+    @Pattern(regexp = "native", message = "Provider must be 'native'")
     @JsonProperty("provider")
     private String provider;
 

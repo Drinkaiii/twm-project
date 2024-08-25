@@ -52,4 +52,8 @@ public class JwtUtil {
             return false;
         }
     }
+
+    public int getExpiration() {
+        return duration;
+    }
 }
