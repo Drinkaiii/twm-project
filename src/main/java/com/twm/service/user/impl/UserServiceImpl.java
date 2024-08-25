@@ -29,6 +29,11 @@ public class UserServiceImpl implements UserService {
             return generateAuthResponse(userRepository.getUserById(userId));
     }
 
+    @Override
+    public Map<String, Object> signIn(UserDto userDto){
+
+    }
+
     private Map<String, Object> generateAuthResponse(UserDto userDto){
         Map<String, Object> response = new LinkedHashMap<>();
         Map<String, Object> userInfo = new LinkedHashMap<>();
