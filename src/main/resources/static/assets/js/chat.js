@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const messageInput = document.querySelector('.textareaBox textarea');
     const messageContainer = document.querySelector('.chat')
     const firstMessage = "您好，歡迎使用台灣大哥大智能客服，我是小麥，很高興為您服務!";
+    let sessionId = null;
     addMessage(firstMessage,"chatgpt");
     messageInput.addEventListener('input', () => {
         if (messageInput.value.trim().length > 0){
@@ -15,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     sendButton.addEventListener('click', function(event) {
         event.preventDefault();
         const userMessage = messageInput.value;
-        console.log(userMessage);
         if (userMessage === "" || userMessage === null) {
             return;
         }
@@ -23,21 +23,21 @@ document.addEventListener('DOMContentLoaded', () => {
         messageInput.value = "";
 
         // Send the message to the server
-        fetch('/chat',{
+        fetch('/api/1.0/chat/agents',{
             method : 'POST',
             headers : {
                 'Content-Type': 'application/json'
             },
             body : JSON.stringify({
-                userId : '1',
-                sessionId : '',
-                userMessage : userMessage
+                userId : '2',
+                sessionId : sessionId,
+                question : userMessage
             })
         })
             .then(response => { return response.json(); })
             .then(data => {
-                const response = data.response.result.output.content;
-                console.log(response);
+                const response = data.data;
+                sessionId = data.sessionId;
                 addMessage(response,"chatgpt");
             })
             .catch(error => {

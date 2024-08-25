@@ -33,14 +33,15 @@ public class ChatServiceImpl implements ChatService {
     public Map<String, Object> chat(Long userId, String sessionId, String question) {
 
         List<Message> messages = new ArrayList<>();
+        List<String> sessionHistory = new ArrayList<>();
 
         if(sessionId == null || sessionId.isEmpty()){
             sessionId = UUID.randomUUID().toString();
+        }else{
+            sessionHistory = chatRepository.getSessionHistory(sessionId);
         }
 
         log.info("sessionId : " + sessionId);
-
-        List<String> sessionHistory = chatRepository.getSessionHistory(sessionId);
 
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
@@ -64,7 +65,6 @@ public class ChatServiceImpl implements ChatService {
                 ));
 
         String responseContent = response.getResult().getOutput().getContent();
-
         chatRepository.saveSession(userId, sessionId, question, responseContent);
 
         Map<String, Object> result = new HashMap<>();
