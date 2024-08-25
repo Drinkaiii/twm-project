@@ -13,11 +13,12 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/1.0/chat")
 public class ChatController {
 
     private final ChatService chatService;
 
-    @RequestMapping(value = "/chat", method = RequestMethod.POST)
+    @PostMapping("/agents")
     public ResponseEntity<?> chat(@RequestParam("msg") String prompt) {
         Map<String, Object> response = chatService.chat(prompt);
         return ResponseEntity.ok(response);
@@ -26,7 +27,6 @@ public class ChatController {
     @GetMapping("/buttons")
     public ResponseEntity<List<ButtonDto>> getButtons() {
         List<ButtonDto> buttons = chatService.getAllButtons();
-        log.info("buttons size: {}", buttons.size());
         return ResponseEntity.ok(buttons);
     }
 }
