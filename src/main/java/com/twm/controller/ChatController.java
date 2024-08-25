@@ -1,28 +1,41 @@
 package com.twm.controller;
 
-import com.twm.dto.error.ChatRequest;
+import com.twm.dto.ButtonDto;
+import com.twm.dto.RecordDto;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
+@RequestMapping("api/1.0/chat")
 public class ChatController {
 
-    private static final Logger log = LoggerFactory.getLogger(ChatController.class);
     private final ChatService chatService;
 
-    @PostMapping("/chat")
-    public ResponseEntity<?> chat(@RequestBody ChatRequest chatRequest) {
-        log.info(chatRequest.toString());
-        Map<String, Object> response = chatService.chat(chatRequest.getUserMessage());
-        log.info(response.toString());
+    @PostMapping("/agents")
+    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
+
+        Long userId = 1L;
+//      Long userId = recordDto.getUserId();
+        String sessionId = recordDto.getSessionId();
+        log.info("sessionId : " + sessionId);
+        String question = recordDto.getQuestion();
+
+        Map<String, Object> response = chatService.chat(userId, sessionId, question);
+
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/buttons")
+    public ResponseEntity<List<ButtonDto>> getButtons() {
+        List<ButtonDto> buttons = chatService.getAllButtons();
+        return ResponseEntity.ok(buttons);
+    }
 }
