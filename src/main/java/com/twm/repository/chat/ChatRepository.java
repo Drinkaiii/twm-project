@@ -9,6 +9,8 @@ public interface ChatRepository {
 
     void saveSession(Long userId, String sessionId, String question, String responseContent);
 
+    List<String> getFAQ();
+
     List<ButtonDto> findAllButtons();
 
 }

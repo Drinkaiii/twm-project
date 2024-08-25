@@ -4,6 +4,7 @@ import com.twm.dto.ButtonDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -27,7 +28,12 @@ public class ChatRepositoryImpl implements ChatRepository {
     @Override
     public List<ButtonDto> findAllButtons() {
         String sql = "SELECT * FROM buttons";
-        return jdbcTemplate.query(sql, new ButtonRowMapper());
+        try {
+            return jdbcTemplate.query(sql, new ButtonRowMapper());
+        }
+        catch (DataAccessException e) {
+            return null;
+        }
     }
 
     @Override
@@ -38,8 +44,12 @@ public class ChatRepositoryImpl implements ChatRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("sessionId", sessionId);
 
-        return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
-                rs.getString("question") + ": " + rs.getString("response"));
+        try {
+            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
+                    rs.getString("question") + ": " + rs.getString("response"));
+        }catch (DataAccessException e){
+            return null;
+        }
 
     }
 
@@ -56,7 +66,28 @@ public class ChatRepositoryImpl implements ChatRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+        try {
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to save session", e);
+        }
 
     }
+
+    @Override
+    public List<String> getFAQ() {
+
+        String sql = "SELECT question,answer FROM buttons";
+
+        Map<String, Object> map = new HashMap<>();
+
+        try {
+            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
+                    rs.getString("question") + ": " + rs.getString("answer"));
+        }catch (DataAccessException e){
+            return null;
+        }
+
+    }
+
 }

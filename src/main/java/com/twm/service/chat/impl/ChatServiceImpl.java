@@ -13,6 +13,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -41,15 +42,11 @@ public class ChatServiceImpl implements ChatService {
             sessionHistory = chatRepository.getSessionHistory(sessionId);
         }
 
-        log.info("sessionId : " + sessionId);
-
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
-
-        log.info("sessionHistory : " + sessionHistory);
 
         messages.add(new SystemMessage("你是一位台灣大哥大的 GeForce Now 的客服人員，" +
                 "最新活動與詳細資料都在此網站：https://www.nvidia.com/zh-tw/geforce-now/，" +
-                "常見問答都在此網站：https://gfn.taiwanmobile.com/portal/qa" +
+                "常見問答都在此：" + chatRepository.getFAQ() +
                 "請有耐心地回覆客戶的詢問並給予有效的資訊" +
                 "只能回答以上網站有出現的資訊" +
                 "遇到無關的問題你也不能暴露自己身分，你要假設自己是真人回答" +
@@ -65,7 +62,12 @@ public class ChatServiceImpl implements ChatService {
                 ));
 
         String responseContent = response.getResult().getOutput().getContent();
-        chatRepository.saveSession(userId, sessionId, question, responseContent);
+        try {
+            chatRepository.saveSession(userId, sessionId, question, responseContent);
+        }catch (RuntimeException e){
+            throw new RuntimeException("Failed to save session", e);
+        }
+
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", responseContent);
