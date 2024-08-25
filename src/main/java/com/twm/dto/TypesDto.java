@@ -6,17 +6,11 @@ import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
-public class ButtonDto {
+public class TypesDto {
 
     @JsonProperty("id")
     private Long id;
 
-    @JsonProperty("type_id")
-    private Long typeId;
-
-    @JsonProperty("question")
-    private String question;
-
-    @JsonProperty("answer")
-    private String answer;
+    @JsonProperty("type_name")
+    private String typeName;
 }

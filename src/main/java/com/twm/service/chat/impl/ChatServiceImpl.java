@@ -1,6 +1,7 @@
 package com.twm.service.chat.impl;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.service.chat.ChatService;
 import jakarta.annotation.Resource;
@@ -55,8 +56,18 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ButtonDto> getAllButtons() {
-        return chatRepository.findAllButtons();
+    public List<TypesDto> getAllTypeButtons() {
+        return chatRepository.findAllTypeButtons();
+    }
+
+    @Override
+    public List<ButtonDto> getButtonsByType(Long typeId) {
+        return chatRepository.findButtonsByType(typeId);
+    }
+
+    @Override
+    public String getAnswerByQuestion(Long buttonId){
+        return chatRepository.findAnswerByQuestion(buttonId);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.twm.controller;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.TypesDto;
+import com.twm.generic.ApiResponse;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,9 +26,21 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
-    @GetMapping("/buttons")
-    public ResponseEntity<List<ButtonDto>> getButtons() {
-        List<ButtonDto> buttons = chatService.getAllButtons();
-        return ResponseEntity.ok(buttons);
+    @GetMapping("/routines")
+    public ResponseEntity<ApiResponse<?>> getButtonsByParam(
+            @RequestParam(value = "type", required = false) Long typeId,
+            @RequestParam(value = "question", required = false) Long buttonId) {
+
+        if (typeId != null) {
+            List<ButtonDto> buttons = chatService.getButtonsByType(typeId);
+            return ResponseEntity.ok(new ApiResponse<>(buttons));
+        } else if (buttonId != null) {
+            String answer = chatService.getAnswerByQuestion(buttonId);
+            return ResponseEntity.ok(new ApiResponse<>(answer));
+        } else {
+            List<TypesDto> types = chatService.getAllTypeButtons();
+            return ResponseEntity.ok(new ApiResponse<>(types));
+        }
     }
+
 }
