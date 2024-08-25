@@ -1,16 +1,22 @@
 package com.twm.service.user.impl;
 
 import com.twm.dto.UserDto;
+import com.twm.exception.custom.InvalidEmailFormatException;
+import com.twm.exception.custom.InvalidProviderException;
+import com.twm.exception.custom.LoginFailedException;
 import com.twm.repository.user.UserRepository;
 import com.twm.service.user.UserService;
 import com.twm.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +25,7 @@ public class UserServiceImpl implements UserService {
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     private final UserRepository userRepository;
     private final JwtUtil jwtUtil;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     public Map<String, Object> signUp(UserDto userDto){
@@ -30,8 +37,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> signIn(UserDto userDto){
-
+    public Map<String, Object> signIn(Map<String, Object> signInRequest){
+        String provider = (String) signInRequest.get("provider");
+        switch(provider.toLowerCase()){
+            case "native":
+                String email = (String) signInRequest.get("email");
+                if(!validateEmail(email)){
+                    throw new InvalidEmailFormatException("Invalid email format");
+                }
+                UserDto nativeUser = userRepository.getNativeUserByEmailAndProvider(email);
+                if (nativeUser == null || !passwordEncoder.matches((String)signInRequest.get("password"), nativeUser.getPassword())) {
+                    throw new LoginFailedException("Invalid email or password");
+                }
+                return generateAuthResponse(userRepository.getUserById(nativeUser.getId().intValue()));
+            case "twm":
+            default:
+                throw new InvalidProviderException("Invalid provider");
+        }
     }
 
     private Map<String, Object> generateAuthResponse(UserDto userDto){
@@ -46,5 +68,15 @@ public class UserServiceImpl implements UserService {
         response.put("accessExpired", expiresIn);
         response.put("user",userInfo);
         return response;
+    }
+
+    private Boolean validateEmail(String email){
+        String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
+        if (email == null) {
+            return false;
+        }
+        Pattern pattern = Pattern.compile(emailPattern);
+        Matcher matcher = pattern.matcher(email);
+        return matcher.matches();
     }
 }
