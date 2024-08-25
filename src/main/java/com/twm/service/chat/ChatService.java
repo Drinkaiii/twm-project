@@ -7,7 +7,8 @@ import java.util.Map;
 
 public interface ChatService {
 
-    Map<String, Object> chat(String prompt);
+    Map<String, Object> chat(Long userId, String sessionId, String question);
+
     List<ButtonDto> getAllButtons();
 
 }
