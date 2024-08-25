@@ -14,6 +14,9 @@ public class ButtonDto {
     @JsonProperty("type")
     private String type;
 
-    @JsonProperty("content")
-    private String content;
+    @JsonProperty("question")
+    private String question;
+
+    @JsonProperty("answer")
+    private String answer;
 }

@@ -1,15 +1,16 @@
 package com.twm.controller;
 
+import com.twm.dto.ButtonDto;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 public class ChatController {
@@ -22,4 +23,10 @@ public class ChatController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping("/buttons")
+    public ResponseEntity<List<ButtonDto>> getButtons() {
+        List<ButtonDto> buttons = chatService.getAllButtons();
+        log.info("buttons size: {}", buttons.size());
+        return ResponseEntity.ok(buttons);
+    }
 }
