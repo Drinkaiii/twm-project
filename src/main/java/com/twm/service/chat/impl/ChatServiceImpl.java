@@ -68,7 +68,7 @@ public class ChatServiceImpl implements ChatService {
         chatRepository.saveSession(userId, sessionId, question, responseContent);
 
         Map<String, Object> result = new HashMap<>();
-        result.put("response", responseContent);
+        result.put("data", responseContent);
         result.put("sessionId", sessionId);
 
         return result;
