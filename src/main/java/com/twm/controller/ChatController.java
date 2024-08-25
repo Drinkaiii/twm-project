@@ -23,7 +23,7 @@ public class ChatController {
     public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
 
         Long userId = 1L;
-//        Long userId = recordDto.getUserId();
+//      Long userId = recordDto.getUserId();
         String sessionId = recordDto.getSessionId();
         log.info("sessionId : " + sessionId);
         String question = recordDto.getQuestion();
