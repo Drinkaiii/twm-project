@@ -1,9 +1,12 @@
 package com.twm.repository.chat.impl;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
+import com.twm.rowmapper.TypeRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,9 +28,33 @@ public class ChatRepositoryImpl implements ChatRepository {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public List<ButtonDto> findAllButtons() {
-        String sql = "SELECT * FROM buttons";
-        return jdbcTemplate.query(sql, new ButtonRowMapper());
+    public List<TypesDto> findAllTypeButtons() {
+        String sql = "SELECT * FROM types";
+        try{
+            return jdbcTemplate.query(sql, new TypeRowMapper());
+        }catch (DataAccessException e){
+            return null;
+        }
+    }
+
+    @Override
+    public List<ButtonDto> findButtonsByType(Long typeId) {
+        String sql = "SELECT * FROM buttons WHERE type_id = ?";
+        try {
+            return jdbcTemplate.query(sql, new Object[]{typeId}, new ButtonRowMapper());
+        }catch (DataAccessException e){
+            return null;
+        }
+    }
+
+    @Override
+    public String findAnswerByQuestion(Long buttonId) {
+        String sql = "SELECT answer FROM buttons WHERE id = ?";
+        try{
+            return jdbcTemplate.queryForObject(sql, new Object[]{buttonId}, String.class);
+        }catch (DataAccessException e){
+            return null;
+        }
     }
 
     @Override
@@ -38,8 +65,12 @@ public class ChatRepositoryImpl implements ChatRepository {
         Map<String, Object> map = new HashMap<>();
         map.put("sessionId", sessionId);
 
-        return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
-                rs.getString("question") + ": " + rs.getString("response"));
+        try {
+            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
+                    rs.getString("question") + ": " + rs.getString("response"));
+        }catch (DataAccessException e){
+            return null;
+        }
 
     }
 
@@ -56,7 +87,28 @@ public class ChatRepositoryImpl implements ChatRepository {
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
-        namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+        try {
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to save session", e);
+        }
 
     }
+
+    @Override
+    public List<String> getFAQ() {
+
+        String sql = "SELECT question,answer FROM buttons";
+
+        Map<String, Object> map = new HashMap<>();
+
+        try {
+            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
+                    rs.getString("question") + ": " + rs.getString("answer"));
+        }catch (DataAccessException e){
+            return null;
+        }
+
+    }
+
 }
