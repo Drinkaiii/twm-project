@@ -7,7 +7,7 @@ public interface ChatRepository {
 
     List<String> getSessionHistory(String sessionId);
 
-    void saveSession(Integer userId, String sessionId, String message, String responseContent);
+    void saveSession(Long userId, String sessionId, String question, String responseContent);
 
     List<ButtonDto> findAllButtons();
 

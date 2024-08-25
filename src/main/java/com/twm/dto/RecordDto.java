@@ -17,4 +17,10 @@ public class RecordDto {
     @JsonProperty("response")
     private String response;
 
+    @JsonProperty("userId")
+    private Long userId;
+
+    @JsonProperty("sessionId")
+    private String sessionId;
+
 }

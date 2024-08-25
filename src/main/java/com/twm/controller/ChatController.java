@@ -1,6 +1,7 @@
 package com.twm.controller;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.RecordDto;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,8 +20,15 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/agents")
-    public ResponseEntity<?> chat(@RequestParam("msg") String message, @RequestParam String sessionId) {
-        Map<String, Object> response = chatService.chat(1, sessionId, message);
+    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
+
+        Long userId = 1L;
+//        Long userId = recordDto.getUserId();
+        String sessionId = recordDto.getSessionId();
+        log.info("sessionId : " + sessionId);
+        String question = recordDto.getQuestion();
+
+        Map<String, Object> response = chatService.chat(userId, sessionId, question);
 
         return ResponseEntity.ok(response);
     }

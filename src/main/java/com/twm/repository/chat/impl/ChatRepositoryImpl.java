@@ -44,12 +44,12 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
-    public void saveSession(Integer userId, String sessionId, String message, String responseContent) {
+    public void saveSession(Long userId, String sessionId, String question, String responseContent) {
 
-        String sql = "INSERT INTO records(question, response, user_id, session_id) VALUES (:message, :responseContent, :userId, :sessionId);";
+        String sql = "INSERT INTO records(question, response, user_id, session_id) VALUES (:question, :responseContent, :userId, :sessionId);";
 
         Map<String, Object> map = new HashMap<String, Object>();
-        map.put("message", message);
+        map.put("question", question);
         map.put("responseContent", responseContent);
         map.put("userId", userId);
         map.put("sessionId", sessionId);

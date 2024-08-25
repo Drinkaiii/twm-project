@@ -30,7 +30,7 @@ public class ChatServiceImpl implements ChatService {
     private OpenAiChatModel openAiChatModel;
 
     @Override
-    public Map<String, Object> chat(Integer userId, String sessionId, String message) {
+    public Map<String, Object> chat(Long userId, String sessionId, String question) {
 
         List<Message> messages = new ArrayList<>();
 
@@ -38,11 +38,13 @@ public class ChatServiceImpl implements ChatService {
             sessionId = UUID.randomUUID().toString();
         }
 
+        log.info("sessionId : " + sessionId);
+
         List<String> sessionHistory = chatRepository.getSessionHistory(sessionId);
 
-        messages.add(new SystemMessage("這些是你們的對話紀錄" + sessionHistory));
+        messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
-        log.info("sessionHistory" + sessionHistory);
+        log.info("sessionHistory : " + sessionHistory);
 
         messages.add(new SystemMessage("你是一位台灣大哥大的 GeForce Now 的客服人員，" +
                 "最新活動與詳細資料都在此網站：https://www.nvidia.com/zh-tw/geforce-now/，" +
@@ -51,7 +53,7 @@ public class ChatServiceImpl implements ChatService {
                 "只能回答以上網站有出現的資訊" +
                 "遇到無關的問題你也不能暴露自己身分，你要假設自己是真人回答" +
                 "如果找不到資料就請他去這裡(https://gfn.taiwanmobile.com/portal/qa)"));
-        messages.add(new UserMessage(message));
+        messages.add(new UserMessage(question));
 
         ChatResponse response = openAiChatModel
                 .call(new Prompt(
@@ -63,7 +65,7 @@ public class ChatServiceImpl implements ChatService {
 
         String responseContent = response.getResult().getOutput().getContent();
 
-        chatRepository.saveSession(userId, sessionId, message, response.getResult().getOutput().getContent());
+        chatRepository.saveSession(userId, sessionId, question, responseContent);
 
         Map<String, Object> result = new HashMap<>();
         result.put("response", responseContent);
