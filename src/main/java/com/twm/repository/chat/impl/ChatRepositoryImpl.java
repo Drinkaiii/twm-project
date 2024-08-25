@@ -27,17 +27,34 @@ public class ChatRepositoryImpl implements ChatRepository {
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final JdbcTemplate jdbcTemplate;
 
+    @Override
+    public List<TypesDto> findAllTypeButtons() {
+        String sql = "SELECT * FROM types";
+        try{
+            return jdbcTemplate.query(sql, new TypeRowMapper());
+        }catch (DataAccessException e){
+            return null;
+        }
+    }
 
     @Override
     public List<ButtonDto> findButtonsByType(Long typeId) {
         String sql = "SELECT * FROM buttons WHERE type_id = ?";
-        return jdbcTemplate.query(sql, new Object[]{typeId}, new ButtonRowMapper());
+        try {
+            return jdbcTemplate.query(sql, new Object[]{typeId}, new ButtonRowMapper());
+        }catch (DataAccessException e){
+            return null;
+        }
     }
 
     @Override
     public String findAnswerByQuestion(Long buttonId) {
         String sql = "SELECT answer FROM buttons WHERE id = ?";
-        return jdbcTemplate.queryForObject(sql, new Object[]{buttonId}, String.class);
+        try{
+            return jdbcTemplate.queryForObject(sql, new Object[]{buttonId}, String.class);
+        }catch (DataAccessException e){
+            return null;
+        }
     }
 
     @Override
