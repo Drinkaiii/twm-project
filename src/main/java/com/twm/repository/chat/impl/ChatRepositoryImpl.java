@@ -112,4 +112,18 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     }
 
+    @Override
+    public List<String> getPersonality() {
+
+        String sql = "SELECT description FROM personality";
+
+        Map<String, Object> map = new HashMap<>();
+
+        try {
+            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) -> rs.getString("description"));
+        }catch (DataAccessException e){
+            return null;
+        }
+
+    }
 }

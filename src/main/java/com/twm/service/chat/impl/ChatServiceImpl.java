@@ -44,15 +44,16 @@ public class ChatServiceImpl implements ChatService {
             sessionHistory = chatRepository.getSessionHistory(sessionId);
         }
 
+        log.info("sessionHistory : " + sessionHistory);
+
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
-        messages.add(new SystemMessage("你是一位台灣大哥大的 GeForce Now 的客服人員，" +
-                "最新活動與詳細資料都在此網站：https://www.nvidia.com/zh-tw/geforce-now/，" +
-                "常見問答都在此：" + chatRepository.getFAQ() +
-                "請有耐心地回覆客戶的詢問並給予有效的資訊" +
-                "只能回答以上網站有出現的資訊" +
-                "遇到無關的問題你也不能暴露自己身分，你要假設自己是真人回答" +
-                "如果找不到資料就請他去這裡(https://gfn.taiwanmobile.com/portal/qa)"));
+        log.info("chatRepository.getPersonality() : " + chatRepository.getPersonality());
+
+        messages.add(new SystemMessage("這是你的人設 : " + chatRepository.getPersonality()));
+
+        messages.add(new SystemMessage("常見問答都在此 : " + chatRepository.getFAQ()));
+
         messages.add(new UserMessage(question));
 
         ChatResponse response = openAiChatModel
