@@ -31,14 +31,4 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ErrorResponseDto.error("something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @Order(100)
-    @ExceptionHandler(value = IOException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<?> handleIOException(IOException e) {
-        log.warn(e);
-        e.printStackTrace();
-        return new ResponseEntity<>(ErrorResponseDto.error("An I/O error occurred while processing the request."), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-
 }
