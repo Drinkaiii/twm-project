@@ -1,6 +1,7 @@
 package com.twm.service.chat.impl;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.service.chat.ChatService;
@@ -84,7 +85,7 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public List<ButtonDto> getButtonsByType(Long typeId) {
+    public List<ReturnQuestionDto> getButtonsByType(Long typeId) {
         return chatRepository.findButtonsByType(typeId);
     }
 

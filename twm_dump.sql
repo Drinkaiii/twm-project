@@ -28,8 +28,8 @@ CREATE TABLE `buttons` (
   `question` text,
   `answer` text,
   PRIMARY KEY (`id`),
-  KEY `type_id` (`type_id`),
-  CONSTRAINT `buttons_ibfk_1` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`)
+  KEY `buttons_type_id_foreign` (`type_id`),
+  CONSTRAINT `buttons_type_id_foreign` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -44,6 +44,30 @@ INSERT INTO `buttons` VALUES (1,1,'若我已是台灣大5G用戶，要如何申�
 UNLOCK TABLES;
 
 --
+-- Table structure for table `personality`
+--
+
+DROP TABLE IF EXISTS `personality`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `personality` (
+  `id` bigint NOT NULL AUTO_INCREMENT,
+  `description` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `personality`
+--
+
+LOCK TABLES `personality` WRITE;
+/*!40000 ALTER TABLE `personality` DISABLE KEYS */;
+INSERT INTO `personality` VALUES (1,'你是一位台灣大哥大的 GeForce Now 的客服人員'),(2,'最新活動與詳細資料都在此網站：https://www.nvidia.com/zh-tw/geforce-now/'),(3,'請有耐心地回覆客戶的詢問並給予有效的資訊'),(4,'只能回答以上網站有出現的資訊'),(5,'遇到無關的問題你也不能暴露自己身分，你要假設自己是真人回答'),(6,'如果找不到資料就請他去這裡 : https://gfn.taiwanmobile.com/portal/qa');
+/*!40000 ALTER TABLE `personality` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `records`
 --
 
@@ -52,13 +76,13 @@ DROP TABLE IF EXISTS `records`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `records` (
   `id` bigint NOT NULL AUTO_INCREMENT,
+  `user_id` bigint DEFAULT NULL,
   `question` varchar(255) DEFAULT NULL,
   `response` varchar(255) DEFAULT NULL,
-  `user_id` bigint DEFAULT NULL,
   `session_id` char(36) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `user_id` (`user_id`),
-  CONSTRAINT `records_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+  KEY `records_user_id_foreign` (`user_id`),
+  CONSTRAINT `records_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -104,13 +128,12 @@ DROP TABLE IF EXISTS `users`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `users` (
   `id` bigint NOT NULL AUTO_INCREMENT,
-  `name` varchar(255) NOT NULL,
-  `email` varchar(255) NOT NULL,
-  `password` varchar(255) NOT NULL,
-  `provider` varchar(100) DEFAULT NULL,
-  `auth_time` timestamp NULL DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`)
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `password` varchar(255) DEFAULT NULL,
+  `provider` varchar(255) DEFAULT NULL,
+  `auth_time` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -132,4 +155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-25 12:04:07
+-- Dump completed on 2024-08-26 13:22:02

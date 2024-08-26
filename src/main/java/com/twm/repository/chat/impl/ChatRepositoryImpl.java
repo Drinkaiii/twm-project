@@ -1,6 +1,7 @@
 package com.twm.repository.chat.impl;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
@@ -38,7 +39,7 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
-    public List<ButtonDto> findButtonsByType(Long typeId) {
+    public List<ReturnQuestionDto> findButtonsByType(Long typeId) {
         String sql = "SELECT * FROM buttons WHERE type_id = ?";
         try {
             return jdbcTemplate.query(sql, new Object[]{typeId}, new ButtonRowMapper());
