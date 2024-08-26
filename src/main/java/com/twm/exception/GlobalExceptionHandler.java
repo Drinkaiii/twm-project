@@ -8,8 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.servlet.resource.*;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-
 @Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -30,5 +28,4 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return new ResponseEntity<>(ErrorResponseDto.error("something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-
 }
