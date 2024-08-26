@@ -26,7 +26,7 @@ public class UserDto {
     private String password;
 
     @NotBlank(message = "Provider is required")
-    @Pattern(regexp = "native", message = "Provider must be 'native'")
+    @Pattern(regexp = "native|twm", message = "Provider must be 'native' or 'twm'")
     @JsonProperty("provider")
     private String provider;
 
