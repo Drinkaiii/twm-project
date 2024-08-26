@@ -28,4 +28,5 @@ public class GlobalExceptionHandler {
         e.printStackTrace();
         return new ResponseEntity<>(ErrorResponseDto.error("something went wrong"), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+
 }
