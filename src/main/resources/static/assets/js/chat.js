@@ -54,39 +54,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     sendButton.addEventListener('click', function(event) {
         event.preventDefault();
-        const userMessage = messageInput.value;
-        if (userMessage === "" || userMessage === null) {
-            return;
+        sendRequest();
+    });
+
+    messageInput.addEventListener('keydown',function(event){
+        if(event.key === 'Enter'){
+            event.preventDefault();
+            sendRequest();
         }
-        addMessage(userMessage,"user");
-        messageInput.value = "";
-
-        // Send the message to the server
-        fetch('/api/1.0/chat/agents',{
-            method : 'POST',
-            headers : {
-                'Content-Type': 'application/json'
-            },
-            body : JSON.stringify({
-                userId : '2',
-                sessionId : sessionId,
-                question : userMessage
-            })
-        })
-            .then(response => { return response.json(); })
-            .then(data => {
-                const response = data.data;
-                sessionId = data.sessionId;
-                addMessage(response,"chatgpt");
-            })
-            .catch(error => {
-                sessionId = data.sessionId;
-                console.error('Error:', error);
-                addMessage("系統出現問題，請稍後再嘗試使用。","chatgpt");
-                //loadingMessage.textContent = '很抱歉，系統維護中，將為您轉接至真人客服。';
-            })
-
-
     });
 
     function addMessage(text,role){
@@ -164,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('Error:', error);
             })
     }
+
     function faqAnswer(id){
         fetch(`/api/1.0/chat/routines?question=${id}`)
             .then(response => { return response.json(); })
@@ -173,6 +149,40 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error:', error);
+            })
+    }
+
+    function sendRequest(){
+        const userMessage = messageInput.value;
+        if (userMessage === "" || userMessage === null) {
+            return;
+        }
+        addMessage(userMessage,"user");
+        messageInput.value = "";
+
+        // Send the message to the server
+        fetch('/api/1.0/chat/agents',{
+            method : 'POST',
+            headers : {
+                'Content-Type': 'application/json'
+            },
+            body : JSON.stringify({
+                userId : '2',
+                sessionId : sessionId,
+                question : userMessage
+            })
+        })
+            .then(response => { return response.json(); })
+            .then(data => {
+                const response = data.data;
+                sessionId = data.sessionId;
+                addMessage(response,"chatgpt");
+            })
+            .catch(error => {
+                sessionId = data.sessionId;
+                console.error('Error:', error);
+                addMessage("系統出現問題，請稍後再嘗試使用。","chatgpt");
+                //loadingMessage.textContent = '很抱歉，系統維護中，將為您轉接至真人客服。';
             })
     }
 
