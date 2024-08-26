@@ -157,6 +157,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (userMessage === "" || userMessage === null) {
             return;
         }
+        if (userMessage.length > 100){
+            alert("已達提問字數上限，請重新輸入!")
+            return;
+        }
         addMessage(userMessage,"user");
         messageInput.value = "";
 
