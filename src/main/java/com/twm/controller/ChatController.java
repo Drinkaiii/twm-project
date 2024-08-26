@@ -1,6 +1,7 @@
 package com.twm.controller;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.generic.ApiResponse;
 import com.twm.dto.RecordDto;
@@ -50,7 +51,7 @@ public class ChatController {
             @RequestParam(value = "question", required = false) Long buttonId) {
 
         if (typeId != null) {
-            List<ButtonDto> buttons = chatService.getButtonsByType(typeId);
+            List<ReturnQuestionDto> buttons = chatService.getButtonsByType(typeId);
             return ResponseEntity.ok(new ApiResponse<>(buttons));
         } else if (buttonId != null) {
             String answer = chatService.getAnswerByQuestion(buttonId);
