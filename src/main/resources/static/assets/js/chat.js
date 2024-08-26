@@ -1,4 +1,71 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let inactivityTime = function () {
+        let timeout;
+
+        function resetTimer() {
+            clearTimeout(timeout);
+            timeout = setTimeout(showPopup, 15 * 60 * 1000);
+        }
+
+
+        function showPopup() {
+            const overlay = document.createElement('div');
+            overlay.style.position = 'fixed';
+            overlay.style.top = '0';
+            overlay.style.left = '0';
+            overlay.style.width = '100%';
+            overlay.style.height = '100%';
+            overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+            overlay.style.display = 'flex';
+            overlay.style.justifyContent = 'center';
+            overlay.style.alignItems = 'center';
+            overlay.style.zIndex = '1000';
+
+            const modal = document.createElement('div');
+            modal.style.backgroundColor = 'white';
+            modal.style.padding = '20px';
+            modal.style.borderRadius = '5px';
+            modal.style.textAlign = 'center';
+            modal.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+
+            const message = document.createElement('p');
+            message.textContent = '服務已結束，由於您超過 15 分鐘未操作，請重新啟動對話。';
+            modal.appendChild(message);
+
+            const button = document.createElement('button');
+            button.textContent = '確 認';
+            button.style.marginTop = '20px';
+            button.style.fontWeight = "700";
+            button.style.padding = '7px 20px';
+            button.onclick = function() {
+                closePopup(overlay);
+            };
+            modal.appendChild(button);
+
+            overlay.appendChild(modal);
+
+            document.body.appendChild(overlay);
+
+        }
+
+        function closePopup(overlay) {
+            document.body.removeChild(overlay);
+            resetChatSystem();
+        }
+
+        function resetChatSystem() {
+            window.location.reload(); // 重載頁面以重新啟動對話
+        }
+
+        window.onload = resetTimer;
+        document.onmousemove = resetTimer;
+        document.onkeyup = resetTimer;
+        document.onkeydown = resetTimer;
+        document.onclick = resetTimer;
+        document.onscroll = resetTimer;
+    };
+
+    inactivityTime();
     const sendButton = document.querySelector('.textareaBox button');
     const messageInput = document.querySelector('.textareaBox textarea');
     const messageContainer = document.querySelector('.chat')
