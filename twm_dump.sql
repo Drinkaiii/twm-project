@@ -77,8 +77,8 @@ DROP TABLE IF EXISTS `records`;
 CREATE TABLE `records` (
   `id` bigint NOT NULL AUTO_INCREMENT,
   `user_id` bigint DEFAULT NULL,
-  `question` varchar(255) DEFAULT NULL,
-  `response` varchar(255) DEFAULT NULL,
+  `question` text,
+  `response` text,
   `session_id` char(36) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `records_user_id_foreign` (`user_id`),
@@ -155,4 +155,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-26 13:22:02
+-- Dump completed on 2024-08-26 14:26:19
