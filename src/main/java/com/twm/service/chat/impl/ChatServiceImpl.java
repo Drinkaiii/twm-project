@@ -1,9 +1,8 @@
 package com.twm.service.chat.impl;
 
-import com.twm.dto.ButtonDto;
+import com.twm.dto.CreateButtonDto;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
-import com.twm.dto.error.ErrorResponseDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.service.chat.ChatService;
 import com.twm.util.JwtUtil;
@@ -111,6 +110,19 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public String getAnswerByQuestion(Long buttonId){
         return chatRepository.findAnswerByQuestion(buttonId);
+    }
+
+    @Override
+    public Map<String, Object> saveButton(CreateButtonDto createButtonDto, String token){
+
+        if(!jwtUtil.isTokenValid(token)) {
+            throw new RuntimeException("Invalid access token");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", chatRepository.saveButton(createButtonDto));
+
+        return result;
     }
 
 }

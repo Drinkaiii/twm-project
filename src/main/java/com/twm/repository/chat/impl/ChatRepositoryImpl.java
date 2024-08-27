@@ -1,6 +1,7 @@
 package com.twm.repository.chat.impl;
 
 import com.twm.dto.ButtonDto;
+import com.twm.dto.CreateButtonDto;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
@@ -55,6 +56,28 @@ public class ChatRepositoryImpl implements ChatRepository {
             return jdbcTemplate.queryForObject(sql, new Object[]{buttonId}, String.class);
         }catch (DataAccessException e){
             return null;
+        }
+    }
+
+    @Override
+    public Integer saveButton(CreateButtonDto createButtonDto) {
+        String sql = "INSERT INTO buttons(type_id, question, answer) VALUES (:typeId, :question, :answer);";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("typeId", createButtonDto.getType());
+        map.put("question", createButtonDto.getQuestion());
+        map.put("answer", createButtonDto.getAnswer());
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        try {
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+            int buttonId = keyHolder.getKey().intValue();
+
+            return buttonId;
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to save button", e);
         }
     }
 
