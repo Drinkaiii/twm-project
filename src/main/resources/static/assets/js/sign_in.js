@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateButtonState();
     });
     document.querySelector('.btnBox a').addEventListener('click',() => {
-
+        //check button status
         if (loginButton.classList.contains('btnLdisable')) {
             return;
         }
-
+        //save user input format status
         let hasError = false;
 
         // check email format

@@ -1,99 +1,261 @@
 <!DOCTYPE html>
 <html lang="zh-hant">
-  <head>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>註冊帳號</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" />
-    <link rel="stylesheet" href="./assets/commonElement/css/reset.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/preset_colors.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/preset_fonts.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/preset_buttons.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/preset_form.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/pages.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/header.css" />
-    <link rel="stylesheet" href="./assets/commonElement/css/footer.css" />
-    <link rel="stylesheet" href="./assets/css/account.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com"/>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+    <link rel="stylesheet"
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/reset.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_colors.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_fonts.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_buttons.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_form.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/pages.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/header.css"/>
+    <link rel="stylesheet" href="./assets/commonElement/css/footer.css"/>
+    <link rel="stylesheet" href="./assets/css/account.css"/>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="./assets/commonElement/js/preset_form.js"></script>
     <script src="./assets/commonElement/js/header.js"></script>
-  </head>
+</head>
 
-  <body>
-    <header>
-      <a class="logo" href="/">
-        <img src="./assets/commonElement/img/Logo_twm_White.svg" alt="台灣大哥大" />
-      </a>
-    </header>
+<body>
+<header>
+    <a class="logo" href="/">
+        <img src="./assets/commonElement/img/Logo_twm_White.svg" alt="台灣大哥大"/>
+    </a>
+</header>
 
-    <main>
-      <div class="wrap">
+<main>
+    <div class="wrap">
         <div class="card narrow">
-          <h1>註冊帳號</h1>
-          <form action="">
-            <div class="loginForm">
-              <div class="input">
-                <label for="inputext">電子郵件地址</label>
-                <input type="email" name="inputEmail" placeholder="預設為您的主帳號" />
-                <div class="state warning">格式有誤，請重新輸入</div>
-                <div class="state warning">內容不可為空白，請輸入E-mail</div>
-              </div>
-              <div class="input password">
-                <label for="inputPassword">密碼</label>
-                <div class="passwordInside">
-                  <input type="password" name="inputPassword" placeholder="密碼" />
-                </div>
-                <div class="state warning">密碼錯誤</div>
-                <div class="state notice">超過8碼的英數大小寫混合字</div>
-              </div>
-              <div class="input password error">
-                <label for="inputPassword">確認密碼</label>
-                <div class="passwordInside">
-                  <input type="password" name="inputPassword" placeholder="密碼" />
-                </div>
-                <div class="state warning">密碼錯誤</div>
-                <div class="state notice">超過8碼的英數大小寫混合字</div>
-              </div>
-              <div class="veriCodeBox">
-                <div class="input error">
-                  <label for="inputext">驗證碼</label>
-                  <div class="inputHalf">
-                    <input type="text" name="inputext" placeholder="請輸入驗證碼" />
-                    <div class="veriImg">
-                      <img src="./assets/img/veri.jpg" alt="" />
+            <h1>註冊帳號</h1>
+            <form action="">
+                <div class="loginForm">
+                    <div class="input">
+                        <label for="inputext">電子郵件地址</label>
+                        <input type="email" name="email" placeholder="預設為您的主帳號"/>
+                        <div id="formatWarning" class="state warning">格式有誤，請重新輸入</div>
                     </div>
-                  </div>
-                  <div class="state warning">驗證碼錯誤</div>
+                    <div class="input password">
+                        <label for="inputPassword">密碼</label>
+                        <div class="passwordInside">
+                            <input type="password" name="password" placeholder="請輸入超過8碼的英數字混合密碼"/>
+                        </div>
+                        <div id="passwordFormatWarning" class="state warning">密碼格式錯誤</div>
+                        <div id="passwordLengthWarning" class="state warning">密碼長度低於8碼</div>
+                    </div>
+                    <div class="input password">
+                        <label for="inputPassword">確認密碼</label>
+                        <div class="passwordInside">
+                            <input type="password" name="checkPassword" placeholder="請再次輸入密碼"/>
+                        </div>
+                        <div id="passwordMatchWarning" class="state warning">密碼不一致</div>
+                    </div>
+                    <div class="veriCodeBox">
+                        <div class="input error">
+                            <label for="inputext">驗證碼</label>
+                            <div class="inputHalf">
+                                <input type="text" name="captcha" maxlength="6" placeholder="請輸入驗證碼"/>
+                                <div class="veriImg">
+                                    <img src="/captcha/image"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="btnBox">
+                        <a id="registerButton" class="btn btnLdisable">註冊</a>
+                    </div>
+                    <div class="btnBox">
+                        <p>已經有帳戶？<a href="./account_login.html">按此登入</a></p>
+                    </div>
                 </div>
-              </div>
-              <div class="btnBox">
-                <a class="btn btnLfill">註冊</a>
-              </div>
-              <div class="btnBox">
-                <p>已經有帳戶？<a href="./account_login.html">按此登入</a></p>
-              </div>
-            </div>
-          </form>
+            </form>
         </div>
-      </div>
-      <footer>
+    </div>
+    <footer>
         <div class="wrap">
-          <p><span>Copyright © 台灣大哥大股份有限公司. </span><span>All Rights Reserved.</span></p>
+            <p><span>Copyright © 台灣大哥大股份有限公司. </span><span>All Rights Reserved.</span></p>
         </div>
-      </footer>
-    </main>
-  </body>
-  <script>
-    $(document).ready(function () {
-      header();
+    </footer>
+</main>
+</body>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        header();
+        passwordEyes();
 
-      /** 顯示password */
-      passwordEyes();
-      // /assets/commonElement/css/preset_form.css
-      // /assets/commonElement/v.x/js/preset_form.js
+        const emailInput = document.querySelector('input[name="email"]');
+        const passwordInput = document.querySelector('input[name="password"]');
+        const checkPasswordInput = document.querySelector('input[name="checkPassword"]');
+        const captchaInput = document.querySelector('input[name="captcha"]');
+        const registerButton = document.querySelector(`#registerButton`);
+        const formatWarning = document.querySelector(`#formatWarning`);
+        const passwordFormatWarning = document.querySelector(`#passwordFormatWarning`);
+        const passwordLengthWarning = document.querySelector(`#passwordLengthWarning`);
+        const passwordMatchWarning = document.querySelector(`#passwordMatchWarning`);
+
+        emailInput.addEventListener('input', updateButtonState);
+        passwordInput.addEventListener('input', updateButtonState);
+        checkPasswordInput.addEventListener('input', updateButtonState);
+        captchaInput.addEventListener('input', updateButtonState);
+
+        document.querySelector('.btnBox a').addEventListener('click', () => {
+            //check button status
+            if (registerButton.classList.contains('btnLdisable')) {
+                return;
+            }
+            //save user input format status
+            let hasError = false;
+            // check email format
+            if (!isValidEmail(emailInput.value)) {
+                formatWarning.style.display = "block";
+                hasError = true;
+            } else {
+                formatWarning.style.display = "none";
+            }
+            // check password length
+            if (!isValidLengthPassword(passwordInput.value)) {
+                passwordLengthWarning.style.display = "block";
+                hasError = true;
+                return;
+            } else {
+                passwordLengthWarning.style.display = "none";
+            }
+            //check password format
+            if (!isValidFormatPassword(passwordInput.value)) {
+                passwordFormatWarning.style.display = "block";
+                hasError = true;
+            } else {
+                passwordFormatWarning.style.display = "none";
+            }
+            //Check if the passwords match
+            if (!isPasswordMatch(passwordInput.value, checkPasswordInput.value)) {
+                passwordMatchWarning.style.display = "block";
+                hasError = true;
+            } else {
+                passwordMatchWarning.style.display = "none";
+            }
+
+            if (hasError) {
+                return;
+            }
+
+            fetch('/api/1.0/user/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    email: emailInput.value,
+                    password: passwordInput.value,
+                    provider: "native",
+                    captcha: captchaInput.value
+                })
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href ="/account_result.html";
+                    } else if (response.status === 403) {
+                        showPopUp("帳號已存在，請重新輸入。",403);
+                    } else if (response.status === 400) {
+                        showPopUp("驗證碼錯誤，請重新輸入。",400);
+                    }
+                })
+                .catch(error => {
+                    showPopUp("系統維護中，請稍後再試。",500);
+                })
+        })
+
+
+        function updateButtonState() {
+            if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '' && checkPasswordInput.value.trim() !== '') {
+                registerButton.classList.remove("btnLdisable");
+                registerButton.classList.add("btnLfill");
+            } else {
+                registerButton.classList.remove("btnLfill");
+                registerButton.classList.add("btnLdisable");
+            }
+        }
+
+        function isPasswordMatch(password, checkPassword) {
+            return password === checkPassword;
+        }
+
+        function isValidEmail(email) {
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailPattern.test(email);
+        }
+
+        function isValidLengthPassword(password) {
+            return password.length >= 8;
+        }
+
+        function isValidFormatPassword(password) {
+            const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]+$/;
+            return passwordPattern.test(password);
+        }
+
+        function showPopUp(message,status){
+            const popupOverlay = document.createElement('div');
+            popupOverlay.id = 'popupOverlay';
+            popupOverlay.style.position = 'fixed';
+            popupOverlay.style.top = '0';
+            popupOverlay.style.left = '0';
+            popupOverlay.style.width = '100%';
+            popupOverlay.style.height = '100%';
+            popupOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+            popupOverlay.style.display = 'flex';
+            popupOverlay.style.justifyContent = 'center';
+            popupOverlay.style.alignItems = 'center';
+            popupOverlay.style.zIndex = '1000';
+
+            const popupContent = document.createElement('div');
+            popupContent.id = 'popupContent';
+            popupContent.style.backgroundColor = 'white';
+            popupContent.style.padding = '20px';
+            popupContent.style.borderRadius = '8px';
+            popupContent.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.25)';
+            popupContent.style.maxWidth = '600px';
+            popupContent.style.textAlign = 'center';
+
+            const popupText = document.createElement('p');
+            popupText.textContent = message;
+
+            const closeButton = document.createElement('button');
+            closeButton.id = 'closeButton';
+            closeButton.textContent = '確 認';
+            closeButton.style.marginTop = '20px';
+            closeButton.style.fontWeight = `700`;
+            closeButton.style.padding = '5px 15px';
+            closeButton.style.cursor = 'pointer';
+            closeButton.style.transition = 'background-color 0.5s ease';
+
+            closeButton.addEventListener('click', function() {
+                closePopUp(status);
+            });
+
+            popupContent.appendChild(popupText);
+            popupContent.appendChild(closeButton);
+
+            popupOverlay.appendChild(popupContent);
+
+            document.body.appendChild(popupOverlay);
+        }
+        function closePopUp(status){
+            const popupOverlay = document.getElementById('popupOverlay');
+            if (popupOverlay) {
+                document.body.removeChild(popupOverlay);
+            }
+            if(status !== 400){
+                location.reload();
+            }
+        }
+
     });
-  </script>
+</script>
 </html>
