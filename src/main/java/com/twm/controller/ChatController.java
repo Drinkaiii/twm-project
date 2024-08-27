@@ -40,9 +40,9 @@ public class ChatController {
 
             return ResponseEntity.ok(response);
         }catch (RuntimeException e){
-            return new ResponseEntity<>(ErrorResponseDto.error("Internal server error"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (Exception e){
-            return new ResponseEntity<>(ErrorResponseDto.error("The agent is broken."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ErrorResponseDto.error("Internal server error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
