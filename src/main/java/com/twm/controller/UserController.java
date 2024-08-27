@@ -3,15 +3,18 @@ package com.twm.controller;
 import com.twm.dto.UserDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.exception.custom.DuplicatedEmailExcetion;
 import com.twm.exception.custom.InvalidEmailFormatException;
 import com.twm.exception.custom.InvalidProviderException;
 import com.twm.exception.custom.LoginFailedException;
 import com.twm.service.user.UserService;
+
+import jakarta.servlet.http.HttpSession;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -22,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/1.0/user")
@@ -31,7 +35,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult bindingResult, HttpSession session) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()
@@ -40,22 +44,23 @@ public class UserController {
             ErrorResponseDto<List<String>> errorResponse = ErrorResponseDto.error(errors);
             return ResponseEntity.badRequest().body(errorResponse);
         }
-        try {
+        if (userService.validateCaptcha(userDto.getCaptcha(),session)){
             return ResponseEntity.ok(userService.signUp(userDto));
-        } catch (DataAccessException e) {
-            log.error(e.getMessage());
-            return ResponseEntity.badRequest().body(ErrorResponseDto.error("failed to signup"));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            throw e;
+        }else{
+            ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
     }
 
+
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest) {
-        return ResponseEntity.ok(userService.signIn(signInRequest));
+    public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
+        if (userService.validateCaptcha((String)signInRequest.get("captcha"),session)) {
+            return ResponseEntity.ok(userService.signIn(signInRequest));
+        } else {
+            ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @GetMapping("/email/reset-password")
@@ -90,5 +95,10 @@ public class UserController {
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
 
+    @ExceptionHandler(DuplicatedEmailExcetion.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(DuplicatedEmailExcetion ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
 
 }

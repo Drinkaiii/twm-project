@@ -5,23 +5,25 @@ import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.stereotype.Controller;
+
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
+
 @Controller
+@RequiredArgsConstructor
 @RequestMapping("/captcha")
 public class CaptchaController {
 
-    @Autowired
-    private Producer verifyCodeProducer;
+    private final Producer verifyCodeProducer;
 
     @GetMapping("/image")
     public void getCaptchaImage(HttpServletRequest request, HttpServletResponse response) {
@@ -43,6 +45,7 @@ public class CaptchaController {
         } finally {
             IOUtils.closeQuietly(out);
         }
-
     }
+
 }
+

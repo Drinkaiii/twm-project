@@ -20,6 +20,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="./assets/commonElement/js/preset_form.js"></script>
     <script src="./assets/commonElement/js/header.js"></script>
+    <script src="./assets/js/sign_in.js"></script>
   </head>
 
   <body>
@@ -33,13 +34,12 @@
       <div class="wrap">
         <div class="card narrow">
           <h1>登入</h1>
-          <form action="">
+          <form>
             <div class="loginForm">
               <div class="input">
                 <label for="inputext">主帳號</label>
-                <input type="email" name="inputEmail" placeholder="請輸入E-mail" />
-                <div class="state warning">格式有誤，請重新輸入</div>
-                <div class="state warning">內容不可為空白，請輸入E-mail</div>
+                <input type="email" name="email" placeholder="請輸入E-mail" />
+                <div id="formatWarning" class="state warning">格式有誤，請重新輸入</div>
               </div>
               <div class="input password">
                 <div class="titleBox">
@@ -47,21 +47,20 @@
                   <a href="./account_forget.html">忘記密碼？</a>
                 </div>
                 <div class="passwordInside">
-                  <input type="password" name="inputPassword" placeholder="密碼" />
+                  <input type="password" name="password" placeholder="請輸入超過8碼的英數字混合密碼" />
                 </div>
-                <div class="state warning">密碼錯誤</div>
-                <div class="state notice">超過8碼的英數大小寫混合字</div>
+                <div id="passwordFormatWarning" class="state warning">密碼格式錯誤</div>
+                <div id="passwordLengthWarning" class="state warning">密碼長度低於8碼</div>
               </div>
               <div class="veriCodeBox">
                 <div class="input error">
                   <label for="inputext">驗證碼</label>
                   <div class="inputHalf">
-                    <input type="text" name="inputext" placeholder="請輸入驗證碼" />
+                    <input type="text" name="captcha" maxlength="6" placeholder="請輸入驗證碼" />
                     <div class="veriImg">
-                      <img src="./assets/img/veri.jpg" alt="" />
+                      <img src="/captcha/image"/>
                     </div>
                   </div>
-                  <div class="state warning">驗證碼錯誤</div>
                 </div>
               </div>
               <div class="checkbox">
@@ -69,8 +68,7 @@
                 <label for="checkbox">記住帳號</label>
               </div>
               <div class="btnBox">
-                <a class="btn btnLfill">確認登入</a>
-                <a class="btn btnLdisable">確認登入</a>
+                <a class="btn btnLdisable" id="loginButton">確認登入</a>
               </div>
               <div class="btnBox">
                 <a class="btn btnLfill withIcon"><img src="./assets/commonElement/img/Logo_twm_ball.svg" />台灣大會員登入</a>
@@ -89,14 +87,4 @@
       </footer>
     </main>
   </body>
-  <script>
-    $(document).ready(function () {
-      header();
-
-      /** 顯示password */
-      passwordEyes();
-      // /assets/commonElement/css/preset_form.css
-      // /assets/commonElement/v.x/js/preset_form.js
-    });
-  </script>
 </html>

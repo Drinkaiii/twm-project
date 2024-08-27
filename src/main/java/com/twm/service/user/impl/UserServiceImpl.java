@@ -2,6 +2,7 @@ package com.twm.service.user.impl;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.exception.custom.DuplicatedEmailExcetion;
 import com.twm.exception.custom.InvalidEmailFormatException;
 import com.twm.exception.custom.InvalidProviderException;
 import com.twm.exception.custom.LoginFailedException;
@@ -14,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> signUp(UserDto userDto) {
         if (userRepository.getNativeUserByEmailAndProvider(userDto.getEmail()) != null) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicatedEmailExcetion("Email already exists");
         }
         int userId = userRepository.createNativeUser(userDto);
         return generateAuthResponse(userRepository.getUserById(userId));

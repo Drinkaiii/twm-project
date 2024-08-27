@@ -22,10 +22,10 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> {
                     authorize
-                            .requestMatchers("/chat.html").authenticated()
+//                            .requestMatchers("/chat.html").authenticated()
                             .anyRequest().permitAll();
                 })
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+//                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         ;
 
         return http.build();
