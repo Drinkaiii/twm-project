@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     header();
     passwordEyes();
+    window.onload = loadUserEmail;
     const emailInput = document.querySelector('input[name="email"]');
     const passwordInput = document.querySelector('input[name="password"]');
     const captchaInput = document.querySelector('input[name="captcha"]');
@@ -69,6 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 if (response.ok) {
+                    rememberEmail();
                     window.location.href = '/chat.html';
                 } else {
                     throw new Error('帳號、密碼或驗證碼錯誤');
@@ -78,6 +80,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 showPopUp();
             })
     })
+
+    function rememberEmail(){
+        const email = emailInput.value;
+        const rememberMe = document.getElementById('checkbox').checked;
+        if (rememberMe) {
+            localStorage.setItem('userEmail', email);
+        } else {
+            localStorage.removeItem('userEmail');
+        }
+    }
+
+    function loadUserEmail() {
+        const userEmail = localStorage.getItem('userEmail');
+        if (userEmail) {
+            emailInput.value = userEmail;
+            document.getElementById('checkbox').checked = true;
+        }
+    }
 
     function updateButtonState() {
         if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '') {
