@@ -69,7 +69,7 @@
                 </div>
               </div>
               <div class="btnBox">
-                <a class="btn btnLfill">更改密碼</a>
+                <a class="btn-btnLfill">更改密碼</a>
               </div>
             </div>
           </form>
@@ -85,9 +85,34 @@
   <script>
     $(document).ready(function () {
       header();
+      // 抓取按鈕並加上點擊事件監聽器
+      document.querySelector(".btn-btnLfill").addEventListener("click", function() {
+        const passwordValue = document.querySelector(".passwordInside input").value;
+        const urlParams = new URLSearchParams(window.location.search);
+        const token = urlParams.get("token");
+
+        fetch("/api/1.0/user/reset-password", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            newPassword: passwordValue,
+            resetPasswordToken: token
+          })
+        })
+                .then(response => response.text())
+                .then(data => {
+                  console.log(data);
+                })
+                .catch(error => {
+                  console.error('Error:', error);
+                });
+      });
 
       /** 顯示password */
-      passwordEyes();
+      //passwordEyes();
       // /assets/commonElement/css/preset_form.css
       // /assets/commonElement/v.x/js/preset_form.js
     });
