@@ -76,4 +76,19 @@ public class UserRepositoryImpl implements UserRepository {
             throw e;
         }
     }
+
+    @Override
+    public UserDto updatePasswordByEmail(UserDto userDto) {
+        String sql = "UPDATE users SET password = :password WHERE email = :email";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        parameters.addValue("email", userDto.getEmail());
+        parameters.addValue("password", userDto.getPassword());
+        int rowsAffected = namedParameterJdbcTemplate.update(sql, parameters);
+        if (rowsAffected > 0) {
+            return userDto;
+        } else {
+            throw new RuntimeException("Failed to update password for email: " + userDto.getEmail());
+        }
+    }
+
 }
