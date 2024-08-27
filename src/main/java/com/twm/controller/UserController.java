@@ -60,9 +60,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
-        String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
-        log.info(captchaSession);
-        if (captchaSession != null && captchaSession.equals(signInRequest.get("captcha"))) {
+        if (userService.validateCaptcha((String)signInRequest.get("captcha"),session)) {
             log.info("captcha is valid");
             return ResponseEntity.ok(userService.signIn(signInRequest));
         } else {
