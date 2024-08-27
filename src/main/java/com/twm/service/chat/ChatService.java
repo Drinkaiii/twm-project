@@ -12,7 +12,7 @@ public interface ChatService {
     List<TypesDto> getAllTypeButtons();
     List<ReturnQuestionDto> getButtonsByType(Long typeId);
     String getAnswerByQuestion(Long buttonId);
-    Map<String, Object> chat(Long userId, String sessionId, String question);
+    Map<String, Object> chat(Long userId, String sessionId, String question, String token);
 
 
 }

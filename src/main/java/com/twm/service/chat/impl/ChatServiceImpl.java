@@ -5,6 +5,7 @@ import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.service.chat.ChatService;
+import com.twm.util.JwtUtil;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -15,6 +16,7 @@ import org.springframework.ai.chat.model.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatModel;
 import org.springframework.ai.openai.OpenAiChatOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -32,8 +34,19 @@ public class ChatServiceImpl implements ChatService {
     @Resource
     private OpenAiChatModel openAiChatModel;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Override
-    public Map<String, Object> chat(Long userId, String sessionId, String question) {
+    public Map<String, Object> chat(Long userId, String sessionId, String question, String token) {
+
+        if(question.length() >= 100) {
+            throw new RuntimeException("Failed to save session");
+        }
+
+        if(!jwtUtil.isTokenValid(token)) {
+            throw new RuntimeException("Invalid access token");
+        }
 
         List<Message> messages = new ArrayList<>();
         List<String> sessionHistory = new ArrayList<>();
@@ -70,7 +83,6 @@ public class ChatServiceImpl implements ChatService {
         }catch (RuntimeException e){
             throw new RuntimeException("Failed to save session", e);
         }
-
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", responseContent);
