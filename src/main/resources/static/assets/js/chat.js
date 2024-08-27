@@ -1,4 +1,101 @@
 document.addEventListener('DOMContentLoaded', () => {
+
+    let isUserConnected = true;
+    let reconnectTimer = null;
+    let disconnectTime = null;
+    let currentOverlay = null;
+
+    function showConnectionPopup(message, isReconnect = false) {
+        if (currentOverlay) {
+            document.body.removeChild(currentOverlay);
+            currentOverlay = null;
+        }
+
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.7)';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '1000';
+
+        const modal = document.createElement('div');
+        modal.style.backgroundColor = 'white';
+        modal.style.padding = '20px';
+        modal.style.borderRadius = '5px';
+        modal.style.textAlign = 'center';
+        modal.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+
+        const messageParagraph = document.createElement('p');
+        messageParagraph.textContent = message;
+        modal.appendChild(messageParagraph);
+
+        const button = document.createElement('button');
+        button.textContent = '確 認';
+        button.style.marginTop = '20px';
+        button.style.fontWeight = "700";
+        button.style.padding = '7px 20px';
+        button.onclick = function() {
+            closeConnectionPopup(overlay);
+            if (isReconnect) {
+                resetChatSystem();
+            }
+        };
+        modal.appendChild(button);
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        currentOverlay = overlay;
+    }
+
+    function closeConnectionPopup(overlay) {
+        document.body.removeChild(overlay);
+        if (overlay === currentOverlay) {
+            currentOverlay = null;
+        }
+    }
+
+    function handleOnline() {
+        if (disconnectTime && (Date.now() - disconnectTime <= 15 * 60 * 1000)) {
+            showConnectionPopup("您已重新連線，請繼續對話。", false);
+            clearTimeout(reconnectTimer);
+            reconnectTimer = null;
+        } else {
+            showConnectionPopup("您已重新連線，因斷線時間過長，請重新開始對話。");
+        }
+        isUserConnected = true;
+        disconnectTime = null;
+    }
+
+    function handleOffline() {
+        if (isUserConnected) {
+            showConnectionPopup("目前網路連線不穩定，請稍後再嘗試。");
+            disconnectTime = Date.now();
+            isUserConnected = false;
+
+            reconnectTimer = setTimeout(function() {
+                showConnectionPopup("服務已結束，由於您超過 15 分鐘未連線，請重新啟動對話。", true);
+            }, 15 * 60 * 1000);
+        }
+    }
+
+    function resetChatSystem() {
+        window.location.reload();
+    }
+
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+
+    if (!navigator.onLine) {
+        handleOffline();
+    }
+
+
     let inactivityTime = function () {
         let timeout;
 
@@ -6,7 +103,6 @@ document.addEventListener('DOMContentLoaded', () => {
             clearTimeout(timeout);
             timeout = setTimeout(showPopup, 15 * 60 * 1000);
         }
-
 
         function showPopup() {
             const overlay = document.createElement('div');
@@ -50,11 +146,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function closePopup(overlay) {
             document.body.removeChild(overlay);
-            resetChatSystem();
+            resetSystem();
         }
 
-        function resetChatSystem() {
-            window.location.reload(); // 重載頁面以重新啟動對話
+        function resetSystem() {
+            window.location.reload();
         }
 
         window.onload = resetTimer;
@@ -64,8 +160,8 @@ document.addEventListener('DOMContentLoaded', () => {
         document.onclick = resetTimer;
         document.onscroll = resetTimer;
     };
-
     inactivityTime();
+
     const sendButton = document.querySelector('.textareaBox button');
     const messageInput = document.querySelector('.textareaBox textarea');
     const messageContainer = document.querySelector('.chat')
@@ -256,5 +352,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 //loadingMessage.textContent = '很抱歉，系統維護中，將為您轉接至真人客服。';
             })
     }
+
+
 
 });
