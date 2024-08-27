@@ -10,7 +10,8 @@ public interface ChatService {
     List<TypesDto> getAllTypeButtons();
     List<ReturnQuestionDto> getButtonsByType(Long typeId);
     String getAnswerByQuestion(Long buttonId);
-    Map<String, Object> chat(Long userId, String sessionId, String question);
     List<ReturnCategoryDto> getAllCategoryButtons();
     String getUrlByCategory(Long categoryId);
+    Map<String, Object> chat(Long userId, String sessionId, String question, String token);
+
 }

@@ -6,6 +6,7 @@ import com.twm.dto.error.ErrorResponseDto;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,22 +23,23 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/agents")
-    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
+    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto,
+                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
 
         Long userId = 1L;
-//      Long userId = recordDto.getUserId();
         String sessionId = recordDto.getSessionId();
-        log.info("sessionId : " + sessionId);
         String question = recordDto.getQuestion();
 
         try {
-            Map<String, Object> response = chatService.chat(userId, sessionId, question);
+            String token = authorization.split(" ")[1].trim();
+
+            Map<String, Object> response = chatService.chat(userId, sessionId, question, token);
 
             return ResponseEntity.ok(response);
         }catch (RuntimeException e){
-            return new ResponseEntity<>(ErrorResponseDto.error("Internal server error"), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }catch (Exception e){
-            return new ResponseEntity<>(ErrorResponseDto.error("The agent is broken."), HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(ErrorResponseDto.error("Internal server error"), HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }

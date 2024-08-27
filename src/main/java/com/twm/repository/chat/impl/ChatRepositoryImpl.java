@@ -69,7 +69,7 @@ public class ChatRepositoryImpl implements ChatRepository {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
                     rs.getString("question") + ": " + rs.getString("response"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load history", e);
         }
 
     }
@@ -106,7 +106,7 @@ public class ChatRepositoryImpl implements ChatRepository {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
                     rs.getString("question") + ": " + rs.getString("answer"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load FAQ", e);
         }
 
     }
@@ -121,7 +121,7 @@ public class ChatRepositoryImpl implements ChatRepository {
         try {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) -> rs.getString("description"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load personality", e);
         }
 
     }
