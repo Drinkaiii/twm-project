@@ -193,7 +193,7 @@ main {
 
 .float {
     width: calc(100% - 32px);
-    max-width: 480px;
+    max-width: 550px;
     border-radius: 10px 10px 0 0;
     background: var(--White);
     box-shadow: 0px 0px 10px 0px rgba(94, 94, 94, 0.2);
@@ -213,14 +213,20 @@ main {
     align-items: center;
     justify-content: center;
 }
+.prompt{
+    padding-top: 7px;
+    font-size: 20px;
+    color: var(--Orange);
+    font-weight: 800;
+}
 
 .float div .btn {
-    width: calc(100% - 32px);
-    max-width: 424px;
+    width:100%;
+    max-width: 520px;
     background: var(--Gray);
     color: var(--DarkGray);
     font: var(--body01);
-    text-align: center;
+    text-align: left;
     outline: 0;
     border: none;
     border-radius: 6px;
@@ -229,6 +235,7 @@ main {
     margin: 4px 0;
     transition: all 0.15s ease-out;
     cursor: pointer;
+    flex: 1 1 calc(25% - 10px);
 }
 
 .float div .btn:hover {
