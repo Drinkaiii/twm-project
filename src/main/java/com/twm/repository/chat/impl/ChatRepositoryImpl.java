@@ -1,10 +1,9 @@
 package com.twm.repository.chat.impl;
 
-import com.twm.dto.ButtonDto;
-import com.twm.dto.ReturnQuestionDto;
-import com.twm.dto.TypesDto;
+import com.twm.dto.*;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
+import com.twm.rowmapper.CategoryRowMapper;
 import com.twm.rowmapper.TypeRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -70,7 +69,7 @@ public class ChatRepositoryImpl implements ChatRepository {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
                     rs.getString("question") + ": " + rs.getString("response"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load history", e);
         }
 
     }
@@ -107,7 +106,7 @@ public class ChatRepositoryImpl implements ChatRepository {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) ->
                     rs.getString("question") + ": " + rs.getString("answer"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load FAQ", e);
         }
 
     }
@@ -122,8 +121,28 @@ public class ChatRepositoryImpl implements ChatRepository {
         try {
             return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) -> rs.getString("description"));
         }catch (DataAccessException e){
-            return null;
+            throw new RuntimeException("Failed to load personality", e);
         }
 
+    }
+
+    @Override
+    public List<ReturnCategoryDto> findAllCategoryButtons(){
+        String sql = "SELECT * FROM categories";
+        try{
+            return jdbcTemplate.query(sql, new CategoryRowMapper());
+        }catch (DataAccessException e){
+            return null;
+        }
+    };
+
+    @Override
+    public String findUrlByCategory(Long categoryId){
+        String sql = "SELECT url FROM categories WHERE id = ?";
+        try{
+            return jdbcTemplate.queryForObject(sql, new Object[]{categoryId}, String.class);
+        }catch (DataAccessException e){
+            return null;
+        }
     }
 }

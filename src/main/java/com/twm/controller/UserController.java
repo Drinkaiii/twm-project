@@ -2,25 +2,23 @@ package com.twm.controller;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.error.ErrorResponseDto;
+import com.twm.dto.ResetPasswordDto;
 import com.twm.exception.custom.InvalidEmailFormatException;
 import com.twm.exception.custom.InvalidProviderException;
 import com.twm.exception.custom.LoginFailedException;
 import com.twm.service.user.UserService;
-import com.twm.service.user.impl.UserServiceImpl;
+
 import jakarta.servlet.http.HttpSession;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
-import org.springframework.web.ErrorResponse;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -52,10 +50,9 @@ public class UserController {
         } catch (DataAccessException e) {
             log.error(e.getMessage());
             return ResponseEntity.badRequest().body(ErrorResponseDto.error("failed to signup"));
-        } catch (RuntimeException e){
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error",e.getMessage()));
-        }
-         catch (Exception e){
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
             log.error(e.getMessage());
             throw e;
         }
@@ -65,14 +62,28 @@ public class UserController {
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
         String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
         log.info(captchaSession);
-        if (captchaSession != null && captchaSession.equals(signInRequest.get("captcha"))){
+        if (captchaSession != null && captchaSession.equals(signInRequest.get("captcha"))) {
             log.info("captcha is valid");
             return ResponseEntity.ok(userService.signIn(signInRequest));
-        }else{
+        } else {
             log.info("captcha is invalid");
             ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
+    }
+
+    @GetMapping("/email/reset-password")
+    public ResponseEntity<?> sendResetPasswordEmail(String email) {
+        userService.sendResetPasswordEmail(email);
+        return ResponseEntity.ok("The email has been sent");
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        if (userService.resetPassword(resetPasswordDto))
+            return ResponseEntity.ok("The password has been updated");
+        else
+            return ResponseEntity.ok("Something went woring. The password has not been updated");
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)
@@ -92,6 +103,5 @@ public class UserController {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
     }
-
 
 }
