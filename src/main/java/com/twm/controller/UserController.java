@@ -7,6 +7,7 @@ import com.twm.exception.custom.InvalidProviderException;
 import com.twm.exception.custom.LoginFailedException;
 import com.twm.service.user.UserService;
 import com.twm.service.user.impl.UserServiceImpl;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
 @RestController
 @RequiredArgsConstructor
@@ -59,8 +62,17 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signin( @RequestBody Map<String, Object> signInRequest) {
+    public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
+        String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
+        log.info(captchaSession);
+        if (captchaSession != null && captchaSession.equals(signInRequest.get("captcha"))){
+            log.info("captcha is valid");
             return ResponseEntity.ok(userService.signIn(signInRequest));
+        }else{
+            log.info("captcha is invalid");
+            ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
+            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+        }
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)

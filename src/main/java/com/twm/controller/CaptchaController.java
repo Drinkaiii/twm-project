@@ -7,6 +7,8 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,8 +34,7 @@ public class CaptchaController {
         BufferedImage bi = verifyCodeProducer.createImage(capText) ; // produce random pic
 
         HttpSession session = request.getSession();
-        session.setAttribute(KAPTCHA_SESSION_KEY, capText); //save random text into session
-
+        session.setAttribute(KAPTCHA_SESSION_KEY, capText);//save random text into session
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();
