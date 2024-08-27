@@ -14,4 +14,5 @@ public interface ChatService {
     String getUrlByCategory(Long categoryId);
     Map<String, Object> chat(Long userId, String sessionId, String question, String token);
 
+
 }

@@ -1,7 +1,6 @@
 package com.twm.repository.chat;
 
 import com.twm.dto.*;
-
 import java.util.List;
 
 public interface ChatRepository {
