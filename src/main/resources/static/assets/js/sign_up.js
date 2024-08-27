@@ -1,112 +1,102 @@
 document.addEventListener('DOMContentLoaded', () => {
     header();
     passwordEyes();
-    window.onload = loadUserEmail;
+
     const emailInput = document.querySelector('input[name="email"]');
     const passwordInput = document.querySelector('input[name="password"]');
+    const checkPasswordInput = document.querySelector('input[name="checkPassword"]');
     const captchaInput = document.querySelector('input[name="captcha"]');
-    const loginButton = document.querySelector(`#loginButton`);
+    const registerButton = document.querySelector(`#registerButton`);
     const formatWarning = document.querySelector(`#formatWarning`);
     const passwordFormatWarning = document.querySelector(`#passwordFormatWarning`);
     const passwordLengthWarning = document.querySelector(`#passwordLengthWarning`);
+    const passwordMatchWarning = document.querySelector(`#passwordMatchWarning`);
 
-    emailInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    passwordInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    captchaInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    document.querySelector('.btnBox a').addEventListener('click',() => {
+    emailInput.addEventListener('input', updateButtonState);
+    passwordInput.addEventListener('input', updateButtonState);
+    checkPasswordInput.addEventListener('input', updateButtonState);
+    captchaInput.addEventListener('input', updateButtonState);
+
+    document.querySelector('.btnBox a').addEventListener('click', () => {
         //check button status
-        if (loginButton.classList.contains('btnLdisable')) {
+        if (registerButton.classList.contains('btnLdisable')) {
             return;
         }
         //save user input format status
         let hasError = false;
-
         // check email format
         if (!isValidEmail(emailInput.value)) {
             formatWarning.style.display = "block";
             hasError = true;
-        }else{
+        } else {
             formatWarning.style.display = "none";
         }
-
         // check password length
         if (!isValidLengthPassword(passwordInput.value)) {
             passwordLengthWarning.style.display = "block";
             hasError = true;
             return;
-        }else{
+        } else {
             passwordLengthWarning.style.display = "none";
         }
-
         //check password format
         if (!isValidFormatPassword(passwordInput.value)) {
             passwordFormatWarning.style.display = "block";
             hasError = true;
-        }else{
+        } else {
             passwordFormatWarning.style.display = "none";
+        }
+        //Check if the passwords match
+        if (!isPasswordMatch(passwordInput.value, checkPasswordInput.value)) {
+            passwordMatchWarning.style.display = "block";
+            hasError = true;
+        } else {
+            passwordMatchWarning.style.display = "none";
         }
 
         if (hasError) {
             return;
         }
 
-        fetch('/api/1.0/user/signin',{
-            method : 'POST',
-            headers : {
+        fetch('/api/1.0/user/signup', {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json'
             },
-            body : JSON.stringify({
-                email : emailInput.value,
-                password : passwordInput.value,
-                provider : "native",
-                captcha : captchaInput.value
+            body: JSON.stringify({
+                email: emailInput.value,
+                password: passwordInput.value,
+                provider: "native",
+                captcha: captchaInput.value
             })
         })
             .then(response => {
                 if (response.ok) {
-                    rememberEmail();
-                    window.location.href = '../chat.html';
-                } else {
-                    throw new Error('帳號、密碼或驗證碼錯誤');
+                    window.location.href ="/account_result.html";
+                } else if (response.status === 403) {
+                    showPopUp("帳號已存在，請重新輸入。",403);
+                } else if (response.status === 400) {
+                    showPopUp("驗證碼錯誤，請重新輸入。",400);
                 }
             })
-            .catch( error => {
-                showPopUp();
+            .catch(error => {
+                showPopUp("系統維護中，請稍後再試。",500);
             })
     })
 
-    function rememberEmail(){
-        const email = emailInput.value;
-        const rememberMe = document.getElementById('checkbox').checked;
-        if (rememberMe) {
-            localStorage.setItem('userEmail', email);
-        } else {
-            localStorage.removeItem('userEmail');
-        }
-    }
-
-    function loadUserEmail() {
-        const userEmail = localStorage.getItem('userEmail');
-        if (userEmail) {
-            emailInput.value = userEmail;
-            document.getElementById('checkbox').checked = true;
-        }
-    }
 
     function updateButtonState() {
-        if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '') {
-            loginButton.classList.remove("btnLdisable");
-            loginButton.classList.add("btnLfill");
+        if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '' && checkPasswordInput.value.trim() !== '') {
+            registerButton.classList.remove("btnLdisable");
+            registerButton.classList.add("btnLfill");
         } else {
-            loginButton.classList.remove("btnLfill");
-            loginButton.classList.add("btnLdisable");
+            registerButton.classList.remove("btnLfill");
+            registerButton.classList.add("btnLdisable");
         }
+    }
+
+    function isPasswordMatch(password, checkPassword) {
+        return password === checkPassword;
     }
 
     function isValidEmail(email) {
@@ -123,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return passwordPattern.test(password);
     }
 
-    function showPopUp(){
+    function showPopUp(message,status){
         const popupOverlay = document.createElement('div');
         popupOverlay.id = 'popupOverlay';
         popupOverlay.style.position = 'fixed';
@@ -147,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
         popupContent.style.textAlign = 'center';
 
         const popupText = document.createElement('p');
-        popupText.textContent = '帳號、密碼或驗證碼錯誤';
+        popupText.textContent = message;
 
         const closeButton = document.createElement('button');
         closeButton.id = 'closeButton';
@@ -158,7 +148,9 @@ document.addEventListener('DOMContentLoaded', () => {
         closeButton.style.cursor = 'pointer';
         closeButton.style.transition = 'background-color 0.5s ease';
 
-        closeButton.addEventListener('click', closePopUp);
+        closeButton.addEventListener('click', function() {
+            closePopUp(status);
+        });
 
         popupContent.appendChild(popupText);
         popupContent.appendChild(closeButton);
@@ -167,11 +159,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.appendChild(popupOverlay);
     }
-    function closePopUp(){
+    function closePopUp(status){
         const popupOverlay = document.getElementById('popupOverlay');
         if (popupOverlay) {
             document.body.removeChild(popupOverlay);
         }
-        window.location.href = '/account_login.html';
+        if(status !== 400){
+            location.reload();
+        }
     }
-})
+
+});
