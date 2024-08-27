@@ -177,7 +177,7 @@ document.addEventListener('DOMContentLoaded', () => {
     float_content.appendChild(button_container);
     let sessionId = null;
     addMessage(firstMessage,"chatgpt");
-    fetch('/api/1.0/chat/routines')
+    fetch('/api/1.0/chat/routines?category=4')
         .then(response => { return response.json(); })
         .then(data => {
             const response = data.data;
