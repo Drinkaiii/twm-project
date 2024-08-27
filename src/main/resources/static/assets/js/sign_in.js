@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function isValidLengthPassword(password) {
-        return password.length > 8;
+        return password.length >= 8;
     }
 
     function isValidFormatPassword(password) {
