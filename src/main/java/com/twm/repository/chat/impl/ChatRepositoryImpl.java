@@ -1,5 +1,6 @@
 package com.twm.repository.chat.impl;
 
+import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
 import com.twm.rowmapper.CreateButtonRowMapper;
@@ -62,7 +63,7 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
-    public Integer saveButton(CreateButtonDto createButtonDto) {
+    public void saveButton(CreateButtonDto createButtonDto) {
         String sql = "INSERT INTO buttons(type_id, question, answer) VALUES (:typeId, :question, :answer);";
 
         Map<String, Object> map = new HashMap<String, Object>();
@@ -70,14 +71,18 @@ public class ChatRepositoryImpl implements ChatRepository {
         map.put("question", createButtonDto.getQuestion());
         map.put("answer", createButtonDto.getAnswer());
 
+        if(createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
+            throw new MissFieldException("Failed to save button");
+        }
+
         KeyHolder keyHolder = new GeneratedKeyHolder();
 
         try {
             namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
-            int buttonId = keyHolder.getKey().intValue();
-
-            return buttonId;
+//            int buttonId = keyHolder.getKey().intValue();
+//
+//            return buttonId;
         }catch (DataAccessException e){
             throw new RuntimeException("Failed to save button", e);
         }
@@ -97,13 +102,11 @@ public class ChatRepositoryImpl implements ChatRepository {
         }
 
         try {
-            log.info("sql : " + sql);
             List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
-            log.info("buttonList" + buttonList);
             if(!buttonList.isEmpty()){
                 return buttonList;
             }else {
-                throw new RuntimeException("The answer of question don't exist");
+                throw new MissFieldException("The answer of question don't exist");
             }
         }catch (DataAccessException e){
             throw new RuntimeException("Failed to get button", e);

@@ -35,14 +35,10 @@ public class ChatServiceImpl implements ChatService {
     private JwtUtil jwtUtil;
 
     @Override
-    public Map<String, Object> chat(Long userId, String sessionId, String question, String token) {
+    public Map<String, Object> chat(Long userId, String sessionId, String question) {
 
         if(question.length() >= 100) {
             throw new RuntimeException("Failed to save session");
-        }
-
-        if(!jwtUtil.isTokenValid(token)) {
-            throw new RuntimeException("Invalid access token");
         }
 
         List<Message> messages = new ArrayList<>();
@@ -113,30 +109,21 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
-    public Map<String, Object> saveButton(CreateButtonDto createButtonDto, String token){
+    public void saveButton(CreateButtonDto createButtonDto){
 
-        if(!jwtUtil.isTokenValid(token)) {
-            throw new RuntimeException("Invalid access token");
-        }
+        chatRepository.saveButton(createButtonDto);
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("data", chatRepository.saveButton(createButtonDto));
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", chatRepository.saveButton(createButtonDto));
 
-        return result;
+//        return result;
     }
 
     @Override
-    public Map<String, Object> getButton(Integer id, String token){
-
-        if(!jwtUtil.isTokenValid(token)) {
-            throw new RuntimeException("Invalid access token");
-        }
+    public Map<String, Object> getButton(Integer id){
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", chatRepository.getButton(id));
-
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("data", chatRepository.getButton(id));
 
         return result;
 

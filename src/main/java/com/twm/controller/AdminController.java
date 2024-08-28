@@ -3,6 +3,7 @@ package com.twm.controller;
 import com.twm.dto.ButtonDto;
 import com.twm.dto.CreateButtonDto;
 import com.twm.dto.error.ErrorResponseDto;
+import com.twm.exception.custom.MissFieldException;
 import com.twm.service.chat.ChatService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,15 +24,15 @@ public class AdminController {
     private final ChatService chatService;
 
     @PostMapping("/create")
-    public ResponseEntity<?> chatCreate(@RequestBody CreateButtonDto createButtonDto,
-                                        @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<?> chatCreate(@RequestBody CreateButtonDto createButtonDto) {
 
         try {
-            String token = authorization.split(" ")[1].trim();
+            chatService.saveButton(createButtonDto);
+//            Map<String, Object> response = chatService.saveButton(createButtonDto);
 
-            Map<String, Object> response = chatService.saveButton(createButtonDto, token);
-
-            return ResponseEntity.ok(response);
+            return ResponseEntity.ok().build();
+        }catch (MissFieldException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
         }catch (Exception e){
@@ -41,17 +42,16 @@ public class AdminController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity<?> chatReview(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,
-                                        @RequestParam(value = "id", defaultValue = "0") Integer id) {
+    public ResponseEntity<?> chatReview(@RequestParam(value = "id", defaultValue = "0") Integer id) {
 
         try {
-            String token = authorization.split(" ")[1].trim();
-
             log.info("id : " + id);
 
-            Map<String, Object> response = chatService.getButton(id, token);
+            Map<String, Object> response = chatService.getButton(id);
 
             return ResponseEntity.ok(response);
+        }catch (MissFieldException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }catch (RuntimeException e){
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
         }catch (Exception e){
