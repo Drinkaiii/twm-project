@@ -52,7 +52,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
         log.info(signInRequest.get("email").toString());

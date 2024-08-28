@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const formatWarning = document.querySelector(`#formatWarning`);
     const passwordFormatWarning = document.querySelector(`#passwordFormatWarning`);
     const passwordLengthWarning = document.querySelector(`#passwordLengthWarning`);
+    const captchaWarning = document.querySelector(`#captchaWarning`);
 
     emailInput.addEventListener('input', () => {
         updateButtonState();
@@ -71,8 +72,12 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => {
                 if (response.ok) {
                     return response.json();
-                } else {
-                    throw new Error('帳號、密碼或驗證碼錯誤');
+                } else if (response.status === 403) {
+                    throw new Error('Forbidden');
+                } else if (response.status === 400){
+                    throw new Error('BadRequest');
+                } else{
+                    throw new Error('LoginFailed');
                 }
             })
             .then(data => {
@@ -84,7 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.location.href = '../chat.html';
             })
             .catch( error => {
-                showPopUp();
+                if (error.message === "BadRequest"){
+                    captchaWarning.style.display = "block";
+                }else{
+                    showPopUp();
+                }
             })
     })
 
@@ -154,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         popupContent.style.textAlign = 'center';
 
         const popupText = document.createElement('p');
-        popupText.textContent = '帳號、密碼或驗證碼錯誤';
+        popupText.textContent = '帳號或密碼有誤，請重新輸入';
 
         const closeButton = document.createElement('button');
         closeButton.id = 'closeButton';
