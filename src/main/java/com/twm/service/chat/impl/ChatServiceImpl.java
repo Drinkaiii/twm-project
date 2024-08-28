@@ -1,5 +1,6 @@
 package com.twm.service.chat.impl;
 
+import com.twm.dto.ButtonDto;
 import com.twm.dto.CreateButtonDto;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
@@ -121,6 +122,22 @@ public class ChatServiceImpl implements ChatService {
 
         Map<String, Object> result = new HashMap<>();
         result.put("data", chatRepository.saveButton(createButtonDto));
+
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getButton(Integer id, String token){
+
+        if(!jwtUtil.isTokenValid(token)) {
+            throw new RuntimeException("Invalid access token");
+        }
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", chatRepository.getButton(id));
+
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", chatRepository.getButton(id));
 
         return result;
     }

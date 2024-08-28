@@ -1,5 +1,6 @@
 package com.twm.service.chat;
 
+import com.twm.dto.ButtonDto;
 import com.twm.dto.CreateButtonDto;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
@@ -14,5 +15,6 @@ public interface ChatService {
     String getAnswerByQuestion(Long buttonId);
     Map<String, Object> chat(Long userId, String sessionId, String question, String token);
     Map<String, Object> saveButton(CreateButtonDto createButtonDto, String token);
+    Map<String, Object> getButton(Integer id, String token);
 
 }

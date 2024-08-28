@@ -8,6 +8,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreateButtonDto {
 
+    @JsonProperty("id")
+    private Long id;
+
     @JsonProperty("type")
     private Long type;
 

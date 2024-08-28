@@ -6,8 +6,11 @@ import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
+import com.twm.rowmapper.CreateButtonRowMapper;
 import com.twm.rowmapper.TypeRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -26,6 +29,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @RequiredArgsConstructor
 public class ChatRepositoryImpl implements ChatRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatRepositoryImpl.class);
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final JdbcTemplate jdbcTemplate;
 
@@ -78,6 +82,33 @@ public class ChatRepositoryImpl implements ChatRepository {
             return buttonId;
         }catch (DataAccessException e){
             throw new RuntimeException("Failed to save button", e);
+        }
+    }
+
+    @Override
+    public List<CreateButtonDto> getButton(Integer id) {
+
+        String sql = "";
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        if(id > 0) {
+            sql = "SELECT * FROM buttons WHERE id = :id;";
+            map.put("id", id);
+        }else{
+            sql = "SELECT * FROM buttons;";
+        }
+
+        try {
+            log.info("sql : " + sql);
+            List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
+            log.info("buttonList" + buttonList);
+            if(!buttonList.isEmpty()){
+                return buttonList;
+            }else {
+                throw new RuntimeException("The answer of question don't exist");
+            }
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to get button", e);
         }
     }
 
