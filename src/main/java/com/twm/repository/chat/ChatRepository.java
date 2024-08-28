@@ -9,6 +9,7 @@ public interface ChatRepository {
     String findAnswerByQuestion(Long buttonId);
     void saveButton(CreateButtonDto createButtonDto);
     List<CreateButtonDto> getButton(Integer id);
+    CreateButtonDto updateButton(CreateButtonDto createButtonDto);
     List<String> getSessionHistory(String sessionId);
     void saveSession(Long userId, String sessionId, String question, String responseContent);
     List<String> getFAQ();

@@ -129,6 +129,11 @@ public class ChatServiceImpl implements ChatService {
 
     }
 
+    @Override
+    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
+        return chatRepository.updateButton(createButtonDto);
+    }
+
     public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};
 
     @Override

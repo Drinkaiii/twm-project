@@ -60,4 +60,21 @@ public class AdminController {
 
     }
 
+    @PostMapping("/update")
+    public ResponseEntity<?> chatUpdate(@RequestBody CreateButtonDto createButtonDto) {
+
+        try {
+            CreateButtonDto response = chatService.updateButton(createButtonDto);
+
+            return ResponseEntity.ok(response);
+        }catch (MissFieldException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
 }
