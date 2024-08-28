@@ -23,17 +23,14 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping("/agents")
-    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto,
-                                  @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
+    public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
 
         Long userId = 1L;
         String sessionId = recordDto.getSessionId();
         String question = recordDto.getQuestion();
 
         try {
-            String token = authorization.split(" ")[1].trim();
-
-            Map<String, Object> response = chatService.chat(userId, sessionId, question, token);
+            Map<String, Object> response = chatService.chat(userId, sessionId, question);
 
             return ResponseEntity.ok(response);
         }catch (RuntimeException e){

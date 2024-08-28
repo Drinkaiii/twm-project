@@ -35,14 +35,10 @@ public class ChatServiceImpl implements ChatService {
     private JwtUtil jwtUtil;
 
     @Override
-    public Map<String, Object> chat(Long userId, String sessionId, String question, String token) {
+    public Map<String, Object> chat(Long userId, String sessionId, String question) {
 
         if(question.length() >= 100) {
             throw new RuntimeException("Failed to save session");
-        }
-
-        if(!jwtUtil.isTokenValid(token)) {
-            throw new RuntimeException("Invalid access token");
         }
 
         List<Message> messages = new ArrayList<>();
@@ -113,10 +109,30 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    public void saveButton(CreateButtonDto createButtonDto){
+
+        chatRepository.saveButton(createButtonDto);
+
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", chatRepository.saveButton(createButtonDto));
+
+//        return result;
+    }
+
+    @Override
+    public Map<String, Object> getButton(Integer id){
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", chatRepository.getButton(id));
+
+        return result;
+
+    }
+
     public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};
 
     @Override
-    public String getUrlByCategory(Long categoryId){
+    public String getUrlByCategory(Long categoryId) {
         return chatRepository.findUrlByCategory(categoryId);
     }
 

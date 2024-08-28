@@ -1,11 +1,15 @@
 package com.twm.repository.chat.impl;
 
-import com.twm.dto.*;
+import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.rowmapper.ButtonRowMapper;
+import com.twm.rowmapper.CreateButtonRowMapper;
+import com.twm.dto.*;
 import com.twm.rowmapper.CategoryRowMapper;
 import com.twm.rowmapper.TypeRowMapper;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -24,6 +28,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 @RequiredArgsConstructor
 public class ChatRepositoryImpl implements ChatRepository {
 
+    private static final Logger log = LoggerFactory.getLogger(ChatRepositoryImpl.class);
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
     private final JdbcTemplate jdbcTemplate;
 
@@ -54,6 +59,57 @@ public class ChatRepositoryImpl implements ChatRepository {
             return jdbcTemplate.queryForObject(sql, new Object[]{buttonId}, String.class);
         }catch (DataAccessException e){
             return null;
+        }
+    }
+
+    @Override
+    public void saveButton(CreateButtonDto createButtonDto) {
+        String sql = "INSERT INTO buttons(type_id, question, answer) VALUES (:typeId, :question, :answer);";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("typeId", createButtonDto.getType());
+        map.put("question", createButtonDto.getQuestion());
+        map.put("answer", createButtonDto.getAnswer());
+
+        if(createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
+            throw new MissFieldException("Failed to save button");
+        }
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        try {
+            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+//            int buttonId = keyHolder.getKey().intValue();
+//
+//            return buttonId;
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to save button", e);
+        }
+    }
+
+    @Override
+    public List<CreateButtonDto> getButton(Integer id) {
+
+        String sql = "";
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        if(id > 0) {
+            sql = "SELECT * FROM buttons WHERE id = :id;";
+            map.put("id", id);
+        }else{
+            sql = "SELECT * FROM buttons;";
+        }
+
+        try {
+            List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
+            if(!buttonList.isEmpty()){
+                return buttonList;
+            }else {
+                throw new MissFieldException("The answer of question don't exist");
+            }
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to get button", e);
         }
     }
 
