@@ -70,11 +70,19 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 if (response.ok) {
-                    rememberEmail();
-                    window.location.href = '../chat.html';
+                    return response.json();
                 } else {
                     throw new Error('帳號、密碼或驗證碼錯誤');
                 }
+            })
+            .then(data => {
+                rememberEmail();
+                const jwtToken = data.accessToken;
+                console.log("jwtToken");
+                localStorage.setItem('jwtToken', jwtToken);
+                const userId = data.user.id;
+                localStorage.setItem('userId', userId);
+                window.location.href = '../chat.html';
             })
             .catch( error => {
                 showPopUp();

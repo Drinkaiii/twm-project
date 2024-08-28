@@ -55,6 +55,10 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
+        log.info(signInRequest.get("email").toString());
+        log.info(signInRequest.get("password").toString());
+        log.info(signInRequest.get("captcha").toString());
+        log.info(signInRequest.get("provider").toString());
         if (userService.validateCaptcha((String)signInRequest.get("captcha"),session)) {
             return ResponseEntity.ok(userService.signIn(signInRequest));
         } else {

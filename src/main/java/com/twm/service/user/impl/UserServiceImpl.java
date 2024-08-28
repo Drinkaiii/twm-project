@@ -59,6 +59,8 @@ public class UserServiceImpl implements UserService {
                 if (nativeUser == null || !passwordEncoder.matches((String) signInRequest.get("password"), nativeUser.getPassword())) {
                     throw new LoginFailedException("Invalid email or password");
                 }
+                Integer id = nativeUser.getId().intValue();
+                log.info("id");
                 return generateAuthResponse(userRepository.getUserById(nativeUser.getId().intValue()));
             case "twm":
             default:
