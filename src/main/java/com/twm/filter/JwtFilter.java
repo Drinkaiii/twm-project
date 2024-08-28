@@ -36,23 +36,27 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+
         String requestURI = request.getRequestURI();
-        if ("/api/1.0/admin/chat/create".equals(requestURI)) {
+
+        if ("/api/1.0/admin/chat/create".equals(requestURI) || "/api/1.0/admin/chat/review".equals(requestURI)) {
+
+            final String authHeader = request.getHeader("Authorization");
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                log.error("Token validation error 1");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"Invalid token\"}");
+//                filterChain.doFilter(request, response);
+                return;
+            }
+
+            final String token = authHeader.substring(7);
+
+            log.info(token);
 
             try {
-
-                final String authHeader = request.getHeader("Authorization");
-
-                if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                    log.error("Token validation error 1");
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\":\"Invalid token\"}");
-//                filterChain.doFilter(request, response);
-                    return;
-                }
-
-                final String token = authHeader.substring(7);
 
                 if (token.isEmpty() || !jwtUtil.isTokenValid(token)) {
                     log.error("Token validation error 2");
@@ -65,7 +69,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
                 Map<String,Object> claims = jwtUtil.getClaims(token);
 
-                log.info("claims" + claims);
+                log.info("claims : " + claims);
 
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                         claims,
@@ -83,6 +87,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Invalid token\"}");
+                return;
             }
         }
         filterChain.doFilter(request, response);
