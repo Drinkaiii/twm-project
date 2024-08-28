@@ -44,9 +44,9 @@ public class UserController {
             ErrorResponseDto<List<String>> errorResponse = ErrorResponseDto.error(errors);
             return ResponseEntity.badRequest().body(errorResponse);
         }
-        if (userService.validateCaptcha(userDto.getCaptcha(),session)){
+        if (userService.validateCaptcha(userDto.getCaptcha(), session)) {
             return ResponseEntity.ok(userService.signUp(userDto));
-        }else{
+        } else {
             ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
             return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
         }
@@ -55,7 +55,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
-        if (userService.validateCaptcha((String)signInRequest.get("captcha"),session)) {
+        if (userService.validateCaptcha((String) signInRequest.get("captcha"), session)) {
             return ResponseEntity.ok(userService.signIn(signInRequest));
         } else {
             ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
@@ -64,17 +64,21 @@ public class UserController {
     }
 
     @GetMapping("/email/reset-password")
-    public ResponseEntity<?> sendResetPasswordEmail(String email) {
+    public ResponseEntity<?> sendResetPasswordEmail(String email, String captcha, HttpSession session) {
+        if (!userService.validateCaptcha(captcha, session))
+            return new ResponseEntity<>(ErrorResponseDto.error("captcha is wrong."), HttpStatus.BAD_REQUEST);
         userService.sendResetPasswordEmail(email);
-        return ResponseEntity.ok("The email has been sent");
+        return ResponseEntity.ok(Map.of("result", "The email has been sent."));
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto, HttpSession session) {
+        if (!userService.validateCaptcha(resetPasswordDto.getCaptcha(), session))
+            return new ResponseEntity<>(ErrorResponseDto.error("captcha is wrong."), HttpStatus.BAD_REQUEST);
         if (userService.resetPassword(resetPasswordDto))
-            return ResponseEntity.ok("The password has been updated");
+            return ResponseEntity.ok(Map.of("result", "The password has been updated."));
         else
-            return ResponseEntity.ok("Something went woring. The password has not been updated");
+            return new ResponseEntity(ErrorResponseDto.error("Something went woring. The password has not been updated."), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)
