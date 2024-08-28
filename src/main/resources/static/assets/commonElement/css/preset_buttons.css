@@ -84,5 +84,9 @@ button {
   display: flex;
 }
 
+#closeButton:hover{
+  background-color: #999EA2;
+}
+
 @media screen and (min-width: 1024px) {
 }

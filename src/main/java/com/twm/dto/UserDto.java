@@ -32,4 +32,6 @@ public class UserDto {
 
     @JsonProperty("auth_time")
     private LocalDateTime authTime;
+
+    private String captcha;
 }

@@ -1,7 +1,6 @@
 package com.twm.service.chat.impl;
 
-import com.twm.dto.ButtonDto;
-import com.twm.dto.CreateButtonDto;
+import com.twm.dto.*;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
 import com.twm.repository.chat.ChatRepository;
@@ -140,6 +139,14 @@ public class ChatServiceImpl implements ChatService {
 //        result.put("data", chatRepository.getButton(id));
 
         return result;
+
+    }
+
+    public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};
+
+    @Override
+    public String getUrlByCategory(Long categoryId) {
+        return chatRepository.findUrlByCategory(categoryId);
     }
 
 }

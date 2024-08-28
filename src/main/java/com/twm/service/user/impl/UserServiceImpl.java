@@ -2,6 +2,7 @@ package com.twm.service.user.impl;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.exception.custom.DuplicatedEmailExcetion;
 import com.twm.exception.custom.InvalidEmailFormatException;
 import com.twm.exception.custom.InvalidProviderException;
 import com.twm.exception.custom.LoginFailedException;
@@ -9,11 +10,11 @@ import com.twm.repository.user.UserRepository;
 import com.twm.service.user.UserService;
 import com.twm.util.EmailUtil;
 import com.twm.util.JwtUtil;
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> signUp(UserDto userDto) {
         if (userRepository.getNativeUserByEmailAndProvider(userDto.getEmail()) != null) {
-            throw new RuntimeException("Email already exists");
+            throw new DuplicatedEmailExcetion("Email already exists");
         }
         int userId = userRepository.createNativeUser(userDto);
         return generateAuthResponse(userRepository.getUserById(userId));
@@ -106,5 +109,10 @@ public class UserServiceImpl implements UserService {
         Pattern pattern = Pattern.compile(emailPattern);
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
+    }
+
+    public boolean validateCaptcha(String captchaInput, HttpSession session) {
+        String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
+        return captchaSession != null && captchaSession.equals(captchaInput);
     }
 }
