@@ -170,6 +170,24 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
+    public boolean deleteButton(Long id) {
+        String sql = "DELETE FROM buttons WHERE id = :id;";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", id);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+        if(result > 0) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    @Override
     public List<String> getSessionHistory(String sessionId) {
 
         String sql = "SELECT question,response FROM records WHERE session_id = :sessionId";

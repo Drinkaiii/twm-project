@@ -16,5 +16,6 @@ public interface ChatService {
     void saveButton(CreateButtonDto createButtonDto);
     Map<String, Object> getButton(Integer id);
     CreateButtonDto updateButton(CreateButtonDto createButtonDto);
+    boolean deleteButton(Long id);
 
 }
