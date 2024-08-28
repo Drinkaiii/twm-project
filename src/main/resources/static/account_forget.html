@@ -40,7 +40,6 @@
                         <label for="inputext">帳號</label>
                         <input type="email" name="inputEmail" placeholder="請輸入E-mail"/>
                         <div class="state warning">格式有誤，請重新輸入</div>
-                        <div class="state warning">內容不可為空白，請輸入E-mail</div>
                     </div>
                     <div class="veriCodeBox">
                         <div class="input error">
@@ -48,7 +47,7 @@
                             <div class="inputHalf">
                                 <input type="text" name="inputext" placeholder="請輸入驗證碼"/>
                                 <div class="veriImg">
-                                    <img src="./assets/img/veri.jpg" alt=""/>
+                                    <img src="/captcha/image" alt="vari_code"/>
                                 </div>
                             </div>
                             <div class="state warning">驗證碼錯誤</div>
@@ -72,18 +71,8 @@
 <script>
     $(document).ready(function () {
         header();
-        document.querySelector(".btnBox").addEventListener("click", function () {
-            const email = document.querySelector(".input input").value;
 
-            fetch(`/api/1.0/user/email/reset-password?email=${email}`, {method: "GET"})
-                .then(response => response.text())
-                .then(data => {
-                    console.log(data);
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
-        });
     });
 </script>
+<script src="./assets/js/forget.js"></script>
 </html>
