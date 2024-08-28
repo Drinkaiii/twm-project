@@ -114,6 +114,80 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
+    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
+
+        try {
+
+            String selectOriginSql = "SELECT * FROM buttons WHERE id = :id;";
+            Map<String, Object> selectOriginMap = new HashMap<String, Object>();
+            selectOriginMap.put("id", createButtonDto.getId());
+
+            CreateButtonDto origin = namedParameterJdbcTemplate.queryForObject(selectOriginSql, selectOriginMap, new CreateButtonRowMapper());
+
+            String updateSql = "UPDATE buttons " +
+                    "SET type_id = :typeId, question = :question, answer = :answer " +
+                    "WHERE id = :id;";
+
+            Map<String, Object> updateMap = new HashMap<String, Object>();
+
+            if(createButtonDto.getId() == null) {
+                updateMap.put("id", origin.getId());
+            }else {
+                updateMap.put("id", createButtonDto.getId());
+            }
+
+            if(createButtonDto.getType() == null) {
+                updateMap.put("typeId", origin.getType());
+            }else {
+                updateMap.put("typeId", createButtonDto.getType());
+            }
+
+            if(createButtonDto.getQuestion() == null) {
+                updateMap.put("question", origin.getQuestion());
+            }else {
+                updateMap.put("question", createButtonDto.getQuestion());
+            }
+
+            if(createButtonDto.getAnswer() == null) {
+                updateMap.put("answer", origin.getAnswer());
+            }else {
+                updateMap.put("answer", createButtonDto.getAnswer());
+            }
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            namedParameterJdbcTemplate.update(updateSql, new MapSqlParameterSource(updateMap), keyHolder);
+
+            String selectSql = "SELECT * FROM buttons WHERE id = :id;";
+            Map<String, Object> selectMap = new HashMap<String, Object>();
+            selectMap.put("id", createButtonDto.getId());
+
+            return namedParameterJdbcTemplate.queryForObject(selectSql, selectMap, new CreateButtonRowMapper());
+
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to update button", e);
+        }
+    }
+
+    @Override
+    public boolean deleteButton(Long id) {
+        String sql = "DELETE FROM buttons WHERE id = :id;";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", id);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+        if(result > 0) {
+            return true;
+        }else {
+            return false;
+        }
+    }
+
+    @Override
     public List<String> getSessionHistory(String sessionId) {
 
         String sql = "SELECT question,response FROM records WHERE session_id = :sessionId";
