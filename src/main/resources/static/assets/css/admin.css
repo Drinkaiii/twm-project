@@ -1,0 +1,116 @@
+/* admin.css */
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f9f9f9;
+    color: #333;
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-size: 24px;
+    color: var(--Orange);
+    margin: 20px 20px 10px 20px;
+}
+
+label {
+    font-size: 16px;
+    margin: 15px 20px;
+    display: block;
+    color: #333;
+}
+
+select, input[type="text"], button {
+    font-size: 16px;
+    padding: 8px;
+    margin: 10px 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    width: calc(100% - 50px);
+    box-sizing: border-box;
+}
+
+select {
+    background-color: #fff;
+}
+
+button {
+    background-color: var(--Orange);
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    width: auto;
+}
+
+button:hover {
+    background-color: var(--Orange);
+}
+
+button:focus, select:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: var(--Orange);
+}
+
+h2 {
+    font-size: 20px;
+    color: black;
+    margin: 20px 20px 10px 20px;
+}
+
+.hidden {
+    display: none;
+}
+
+#faq-action-buttons {
+    margin: 20px 0;
+}
+
+.question-answer-group {
+    margin-bottom: 20px;
+}
+
+.question-answer-group label {
+    margin-top: 10px;
+}
+
+#questions-answers-section button {
+    display: block;
+    margin-top: 20px;
+    padding: 10px;
+    width: auto;
+}
+
+input[type="text"] {
+    background-color: #f0f0f0;
+    padding: 10px;
+}
+
+#submit-section {
+    text-align: center;
+    margin-top: 30px;
+}
+
+#submit-section button {
+    background-color: var(--Orange);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#submit-section button:hover {
+    background-color: var(--Orange);
+}
+
+#submit-section button:active {
+    background-color: black;
+    transform: scale(0.98);
+}
+
+
+
