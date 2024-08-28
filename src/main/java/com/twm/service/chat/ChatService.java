@@ -12,7 +12,8 @@ public interface ChatService {
     String getAnswerByQuestion(Long buttonId);
     List<ReturnCategoryDto> getAllCategoryButtons();
     String getUrlByCategory(Long categoryId);
-    Map<String, Object> chat(Long userId, String sessionId, String question, String token);
-
+    Map<String, Object> chat(Long userId, String sessionId, String question);
+    void saveButton(CreateButtonDto createButtonDto);
+    Map<String, Object> getButton(Integer id);
 
 }
