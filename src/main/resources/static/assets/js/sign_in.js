@@ -78,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(data => {
                 rememberEmail();
                 const jwtToken = data.accessToken;
-                console.log("jwtToken");
                 localStorage.setItem('jwtToken', jwtToken);
                 const userId = data.user.id;
                 localStorage.setItem('userId', userId);

@@ -2,7 +2,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
     //Verify whether the token is empty
     if(token){
-        fetch("api/1.0/chat/routines")
+        fetch("api/1.0/chat/routines",{
+            method: 'GET',
+                headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response =>{
                 if (response.ok){
                     //The screen will be displayed after confirming that the token is valid.
@@ -31,7 +36,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     }else{
                         firstGroupButton.addEventListener('click',function() {
                             const id = firstGroupButton.getAttribute('dataId');
-                            fetch(`/api/1.0/chat/routines?category=${id}`)
+                            fetch(`/api/1.0/chat/routines?category=${id}`,{
+                                method: 'GET',
+                                headers: {
+                                    'Authorization': `Bearer ${token}`
+                                }
+                            })
                                 .then(response => {
                                     if (response.ok){
                                         return response.json();
@@ -44,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
                                     showPopUp(url);
                                 })
                                 .catch(error => {
-                                    //錯誤處理
+                                    showErrorPopUp('很抱歉，該功能維護中，請稍後再試。');
                                 })
                         })
                     }
@@ -59,10 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = '../account_login.html';
     }
 
-    function redirectPage(url){
-        //先跳確認視窗
-        //假設確認再轉導
-    }
     const sendButton = document.querySelector('.textareaBox button');
     const messageInput = document.querySelector('.textareaBox textarea');
     const messageContainer = document.querySelector('.chat')
@@ -243,7 +249,12 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayOtherQuestions(){}
 
     function displayNormalQuestions(){
-        fetch('/api/1.0/chat/routines?category=4')
+        fetch('/api/1.0/chat/routines?category=4',{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => { return response.json(); })
             .then(data => {
                 const response = data.data;
@@ -357,26 +368,36 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function faqInfo(id){
-        fetch(`/api/1.0/chat/routines?type=${id}`)
+        fetch(`/api/1.0/chat/routines?type=${id}`,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => { return response.json(); })
             .then(data => {
                 const response = data.data;
                 addMessage(response,"robot");
             })
             .catch(error => {
-                console.error('Error:', error);
+                addMessage("系統異常，請稍後再試。","chatgpt");
             })
     }
 
     function faqAnswer(id){
-        fetch(`/api/1.0/chat/routines?question=${id}`)
+        fetch(`/api/1.0/chat/routines?question=${id}`,{
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
             .then(response => { return response.json(); })
             .then(data => {
                 const response = data.data;
                 addMessage(response,"chatgpt");
             })
             .catch(error => {
-                console.error('Error:', error);
+                addMessage("系統異常，請稍後再試。","chatgpt");
             })
     }
 
@@ -396,7 +417,8 @@ document.addEventListener('DOMContentLoaded', () => {
         fetch('/api/1.0/chat/agents',{
             method : 'POST',
             headers : {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body : JSON.stringify({
                 userId : token,
@@ -404,17 +426,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 question : userMessage
             })
         })
-            .then(response => { return response.json(); })
+            .then(response => {
+                if(response.ok){
+                    return response.json();
+                }else{
+                 throw new error("server error");
+                }
+            })
             .then(data => {
                 const response = data.data;
                 sessionId = data.sessionId;
                 addMessage(response,"chatgpt");
             })
             .catch(error => {
-                sessionId = data.sessionId;
                 console.error('Error:', error);
-                addMessage("系統出現問題，請稍後再嘗試使用。","chatgpt");
-                //loadingMessage.textContent = '很抱歉，系統維護中，將為您轉接至真人客服。';
+                addMessage("系統異常，請稍後再試。","chatgpt");
             })
     }
 
@@ -490,6 +516,59 @@ document.addEventListener('DOMContentLoaded', () => {
             window.location.href = url;
         }
     }
+
+    function showErrorPopUp(errorMessage){
+        const popupOverlay = document.createElement('div');
+        popupOverlay.id = 'popupOverlay';
+        popupOverlay.style.position = 'fixed';
+        popupOverlay.style.top = '0';
+        popupOverlay.style.left = '0';
+        popupOverlay.style.width = '100%';
+        popupOverlay.style.height = '100%';
+        popupOverlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+        popupOverlay.style.display = 'flex';
+        popupOverlay.style.justifyContent = 'center';
+        popupOverlay.style.alignItems = 'center';
+        popupOverlay.style.zIndex = '1000';
+
+        const popupContent = document.createElement('div');
+        popupContent.id = 'popupContent';
+        popupContent.style.backgroundColor = 'white';
+        popupContent.style.padding = '20px';
+        popupContent.style.borderRadius = '8px';
+        popupContent.style.boxShadow = '0 0 10px rgba(0, 0, 0, 0.25)';
+        popupContent.style.maxWidth = '600px';
+        popupContent.style.textAlign = 'center';
+
+        const popupText = document.createElement('p');
+        popupText.textContent = errorMessage;
+        const trueButton = document.createElement('button');
+        trueButton.id = 'closeButton';
+        trueButton.textContent = '確 認';
+        trueButton.style.marginTop = '20px';
+        trueButton.style.marginRight = '20px';
+        trueButton.style.fontWeight = `700`;
+        trueButton.style.padding = '5px 15px';
+        trueButton.style.cursor = 'pointer';
+        trueButton.style.transition = 'background-color 0.5s ease';
+
+        trueButton.addEventListener('click', function(){
+            closeErrorPopUp();
+        });
+
+        popupContent.appendChild(popupText);
+        popupContent.appendChild(trueButton);
+        popupOverlay.appendChild(popupContent);
+        document.body.appendChild(popupOverlay);
+    }
+
+    function closeErrorPopUp(){
+        const popupOverlay = document.getElementById('popupOverlay');
+        if (popupOverlay) {
+            document.body.removeChild(popupOverlay);
+        }
+    }
+
 
 
 
