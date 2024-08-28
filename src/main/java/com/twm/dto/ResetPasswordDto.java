@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class ResetPasswordDto {
     private String resetPasswordToken;
     private String newPassword;
+    private String captcha;
 }
