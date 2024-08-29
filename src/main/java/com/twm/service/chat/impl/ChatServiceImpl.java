@@ -62,7 +62,8 @@ public class ChatServiceImpl implements ChatService {
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
         try {
-            messages.add(new SystemMessage("這是你的人設 : " + chatRepository.getPersonality()));
+            log.info("人設: " + chatRepository.getPersonality(0));
+            messages.add(new SystemMessage("這是你的人設 : " + chatRepository.getPersonality(0)));
             messages.add(new SystemMessage("常見問答都在此 : " + chatRepository.getFAQ()));
         }catch (RuntimeException e) {
             throw new RuntimeException("Failed to load agent", e);
@@ -137,6 +138,22 @@ public class ChatServiceImpl implements ChatService {
     @Override
     public boolean deleteButton(Long id) {
         return chatRepository.deleteButton(id);
+    }
+
+    @Override
+    public Map<String, Object> savePersonality(PersonalityDto personalityDto) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("result", chatRepository.savePersonality(personalityDto));
+
+        return result;
+    }
+
+    @Override
+    public Map<String, Object> getPersonality(Integer id) {
+        Map<String, Object> result = new HashMap<>();
+        result.put("data", chatRepository.getPersonality(id));
+
+        return result;
     }
 
     public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};

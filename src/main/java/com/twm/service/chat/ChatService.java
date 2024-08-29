@@ -17,5 +17,6 @@ public interface ChatService {
     Map<String, Object> getButton(Integer id);
     CreateButtonDto updateButton(CreateButtonDto createButtonDto);
     boolean deleteButton(Long id);
-
+    Map<String, Object> savePersonality(PersonalityDto personalityDto);
+    Map<String, Object> getPersonality(Integer id);
 }

@@ -14,7 +14,8 @@ public interface ChatRepository {
     List<String> getSessionHistory(String sessionId);
     void saveSession(Long userId, String sessionId, String question, String responseContent);
     List<String> getFAQ();
-    List<String> getPersonality();
+    boolean savePersonality(PersonalityDto personalityDto);
+    List<PersonalityDto> getPersonality(Integer id);
     List<TypesDto> findAllTypeButtons();
     List<ReturnCategoryDto> findAllCategoryButtons();
     String findUrlByCategory(Long categoryId);

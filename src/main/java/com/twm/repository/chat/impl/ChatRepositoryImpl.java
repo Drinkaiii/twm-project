@@ -2,11 +2,8 @@ package com.twm.repository.chat.impl;
 
 import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.chat.ChatRepository;
-import com.twm.rowmapper.ButtonRowMapper;
-import com.twm.rowmapper.CreateButtonRowMapper;
+import com.twm.rowmapper.*;
 import com.twm.dto.*;
-import com.twm.rowmapper.CategoryRowMapper;
-import com.twm.rowmapper.TypeRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,14 +239,52 @@ public class ChatRepositoryImpl implements ChatRepository {
     }
 
     @Override
-    public List<String> getPersonality() {
+    public boolean savePersonality(PersonalityDto personalityDto) {
+        String sql = "INSERT INTO personality(description) VALUES (:description);";
 
-        String sql = "SELECT description FROM personality";
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("description", personalityDto.getDescription());
+
+        if(personalityDto.getDescription().isEmpty()) {
+            throw new MissFieldException("Failed to save personality");
+        }
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        try {
+            Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+            if(result > 0) {
+                return true;
+            }else {
+                return false;
+            }
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to save personality", e);
+        }
+    }
+
+    @Override
+    public List<PersonalityDto> getPersonality(Integer id) {
+
+        String sql = "";
 
         Map<String, Object> map = new HashMap<>();
 
+        if(id > 0) {
+            sql = "SELECT * FROM personality WHERE id = :id;";
+            map.put("id", id);
+        }else{
+            sql = "SELECT * FROM personality";
+        }
+
         try {
-            return namedParameterJdbcTemplate.query(sql, map, (rs, rowNum) -> rs.getString("description"));
+            List<PersonalityDto> personalityList = namedParameterJdbcTemplate.query(sql, map, new PersonalityRowMapper());
+            if(!personalityList.isEmpty()){
+                return personalityList;
+            }else {
+                throw new MissFieldException("The answer of question don't exist");
+            }
         }catch (DataAccessException e){
             throw new RuntimeException("Failed to load personality", e);
         }
