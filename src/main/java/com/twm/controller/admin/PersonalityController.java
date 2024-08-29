@@ -1,9 +1,9 @@
-package com.twm.controller;
+package com.twm.controller.admin;
 
 import com.twm.dto.PersonalityDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.exception.custom.MissFieldException;
-import com.twm.service.chat.ChatService;
+import com.twm.service.admin.PersonalityService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -18,13 +18,13 @@ import java.util.Map;
 @Slf4j
 public class PersonalityController {
 
-    private final ChatService chatService;
+    private final PersonalityService personalityService;
 
     @PostMapping("/create")
     public ResponseEntity<?> personalityCreate(@RequestBody PersonalityDto personalityDto) {
 
         try {
-            Map<String, Object> response = chatService.savePersonality(personalityDto);
+            Map<String, Object> response = personalityService.savePersonality(personalityDto);
 
             return ResponseEntity.ok(response);
         }catch (MissFieldException e){
@@ -41,7 +41,7 @@ public class PersonalityController {
     public ResponseEntity<?> personalityReview(@RequestParam(value = "id", defaultValue = "0") Integer id) {
 
         try {
-            Map<String, Object> response = chatService.getPersonality(id);
+            Map<String, Object> response = personalityService.getPersonality(id);
 
             return ResponseEntity.ok(response);
         }catch (MissFieldException e){

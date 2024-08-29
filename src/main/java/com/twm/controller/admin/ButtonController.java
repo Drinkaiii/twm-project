@@ -1,34 +1,31 @@
-package com.twm.controller;
+package com.twm.controller.admin;
 
-import com.twm.dto.ButtonDto;
 import com.twm.dto.CreateButtonDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.exception.custom.MissFieldException;
-import com.twm.service.chat.ChatService;
+import com.twm.service.admin.ButtonService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/1.0/admin/chat")
 @Slf4j
-public class AdminController {
+public class ButtonController {
 
-    private final ChatService chatService;
+    private final ButtonService buttonService;
 
     @PostMapping("/create")
     public ResponseEntity<?> chatCreate(@RequestBody CreateButtonDto createButtonDto) {
 
         try {
-            chatService.saveButton(createButtonDto);
+            buttonService.saveButton(createButtonDto);
 //            Map<String, Object> response = chatService.saveButton(createButtonDto);
 
             return ResponseEntity.ok().build();
@@ -48,7 +45,7 @@ public class AdminController {
         try {
             log.info("id : " + id);
 
-            Map<String, Object> response = chatService.getButton(id);
+            Map<String, Object> response = buttonService.getButton(id);
 
             return ResponseEntity.ok(response);
         }catch (MissFieldException e){
@@ -65,7 +62,7 @@ public class AdminController {
     public ResponseEntity<?> chatUpdate(@RequestBody CreateButtonDto createButtonDto) {
 
         try {
-            CreateButtonDto response = chatService.updateButton(createButtonDto);
+            CreateButtonDto response = buttonService.updateButton(createButtonDto);
 
             return ResponseEntity.ok(response);
         }catch (MissFieldException e){
@@ -82,7 +79,7 @@ public class AdminController {
     public ResponseEntity<?> chatDelete(@RequestBody CreateButtonDto createButtonDto) {
 
         try {
-            boolean result = chatService.deleteButton(createButtonDto.getId());
+            boolean result = buttonService.deleteButton(createButtonDto.getId());
 
             Map<String, Object> response = new HashMap<>();
             response.put("result", result);

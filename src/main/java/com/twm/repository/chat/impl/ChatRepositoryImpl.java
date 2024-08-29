@@ -59,130 +59,130 @@ public class ChatRepositoryImpl implements ChatRepository {
         }
     }
 
-    @Override
-    public void saveButton(CreateButtonDto createButtonDto) {
-        String sql = "INSERT INTO buttons(type_id, question, answer) VALUES (:typeId, :question, :answer);";
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("typeId", createButtonDto.getType());
-        map.put("question", createButtonDto.getQuestion());
-        map.put("answer", createButtonDto.getAnswer());
-
-        if(createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
-            throw new MissFieldException("Failed to save button");
-        }
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        try {
-            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-//            int buttonId = keyHolder.getKey().intValue();
+//    @Override
+//    public void saveButton(CreateButtonDto createButtonDto) {
+//        String sql = "INSERT INTO buttons(type_id, question, answer) VALUES (:typeId, :question, :answer);";
 //
-//            return buttonId;
-        }catch (DataAccessException e){
-            throw new RuntimeException("Failed to save button", e);
-        }
-    }
-
-    @Override
-    public List<CreateButtonDto> getButton(Integer id) {
-
-        String sql = "";
-        Map<String, Object> map = new HashMap<String, Object>();
-
-        if(id > 0) {
-            sql = "SELECT * FROM buttons WHERE id = :id;";
-            map.put("id", id);
-        }else{
-            sql = "SELECT * FROM buttons;";
-        }
-
-        try {
-            List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
-            if(!buttonList.isEmpty()){
-                return buttonList;
-            }else {
-                throw new MissFieldException("The answer of question don't exist");
-            }
-        }catch (DataAccessException e){
-            throw new RuntimeException("Failed to get button", e);
-        }
-    }
-
-    @Override
-    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
-
-        try {
-
-            String selectOriginSql = "SELECT * FROM buttons WHERE id = :id;";
-            Map<String, Object> selectOriginMap = new HashMap<String, Object>();
-            selectOriginMap.put("id", createButtonDto.getId());
-
-            CreateButtonDto origin = namedParameterJdbcTemplate.queryForObject(selectOriginSql, selectOriginMap, new CreateButtonRowMapper());
-
-            String updateSql = "UPDATE buttons " +
-                    "SET type_id = :typeId, question = :question, answer = :answer " +
-                    "WHERE id = :id;";
-
-            Map<String, Object> updateMap = new HashMap<String, Object>();
-
-            if(createButtonDto.getId() == null) {
-                updateMap.put("id", origin.getId());
-            }else {
-                updateMap.put("id", createButtonDto.getId());
-            }
-
-            if(createButtonDto.getType() == null) {
-                updateMap.put("typeId", origin.getType());
-            }else {
-                updateMap.put("typeId", createButtonDto.getType());
-            }
-
-            if(createButtonDto.getQuestion() == null) {
-                updateMap.put("question", origin.getQuestion());
-            }else {
-                updateMap.put("question", createButtonDto.getQuestion());
-            }
-
-            if(createButtonDto.getAnswer() == null) {
-                updateMap.put("answer", origin.getAnswer());
-            }else {
-                updateMap.put("answer", createButtonDto.getAnswer());
-            }
-
-            KeyHolder keyHolder = new GeneratedKeyHolder();
-
-            namedParameterJdbcTemplate.update(updateSql, new MapSqlParameterSource(updateMap), keyHolder);
-
-            String selectSql = "SELECT * FROM buttons WHERE id = :id;";
-            Map<String, Object> selectMap = new HashMap<String, Object>();
-            selectMap.put("id", createButtonDto.getId());
-
-            return namedParameterJdbcTemplate.queryForObject(selectSql, selectMap, new CreateButtonRowMapper());
-
-        }catch (DataAccessException e){
-            throw new RuntimeException("Failed to update button", e);
-        }
-    }
-
-    @Override
-    public boolean deleteButton(Long id) {
-        String sql = "DELETE FROM buttons WHERE id = :id;";
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("id", id);
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-        if(result > 0) {
-            return true;
-        }else {
-            return false;
-        }
-    }
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("typeId", createButtonDto.getType());
+//        map.put("question", createButtonDto.getQuestion());
+//        map.put("answer", createButtonDto.getAnswer());
+//
+//        if(createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
+//            throw new MissFieldException("Failed to save button");
+//        }
+//
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        try {
+//            namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+//
+////            int buttonId = keyHolder.getKey().intValue();
+////
+////            return buttonId;
+//        }catch (DataAccessException e){
+//            throw new RuntimeException("Failed to save button", e);
+//        }
+//    }
+//
+//    @Override
+//    public List<CreateButtonDto> getButton(Integer id) {
+//
+//        String sql = "";
+//        Map<String, Object> map = new HashMap<String, Object>();
+//
+//        if(id > 0) {
+//            sql = "SELECT * FROM buttons WHERE id = :id;";
+//            map.put("id", id);
+//        }else{
+//            sql = "SELECT * FROM buttons;";
+//        }
+//
+//        try {
+//            List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
+//            if(!buttonList.isEmpty()){
+//                return buttonList;
+//            }else {
+//                throw new MissFieldException("The answer of question don't exist");
+//            }
+//        }catch (DataAccessException e){
+//            throw new RuntimeException("Failed to get button", e);
+//        }
+//    }
+//
+//    @Override
+//    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
+//
+//        try {
+//
+//            String selectOriginSql = "SELECT * FROM buttons WHERE id = :id;";
+//            Map<String, Object> selectOriginMap = new HashMap<String, Object>();
+//            selectOriginMap.put("id", createButtonDto.getId());
+//
+//            CreateButtonDto origin = namedParameterJdbcTemplate.queryForObject(selectOriginSql, selectOriginMap, new CreateButtonRowMapper());
+//
+//            String updateSql = "UPDATE buttons " +
+//                    "SET type_id = :typeId, question = :question, answer = :answer " +
+//                    "WHERE id = :id;";
+//
+//            Map<String, Object> updateMap = new HashMap<String, Object>();
+//
+//            if(createButtonDto.getId() == null) {
+//                updateMap.put("id", origin.getId());
+//            }else {
+//                updateMap.put("id", createButtonDto.getId());
+//            }
+//
+//            if(createButtonDto.getType() == null) {
+//                updateMap.put("typeId", origin.getType());
+//            }else {
+//                updateMap.put("typeId", createButtonDto.getType());
+//            }
+//
+//            if(createButtonDto.getQuestion() == null) {
+//                updateMap.put("question", origin.getQuestion());
+//            }else {
+//                updateMap.put("question", createButtonDto.getQuestion());
+//            }
+//
+//            if(createButtonDto.getAnswer() == null) {
+//                updateMap.put("answer", origin.getAnswer());
+//            }else {
+//                updateMap.put("answer", createButtonDto.getAnswer());
+//            }
+//
+//            KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//            namedParameterJdbcTemplate.update(updateSql, new MapSqlParameterSource(updateMap), keyHolder);
+//
+//            String selectSql = "SELECT * FROM buttons WHERE id = :id;";
+//            Map<String, Object> selectMap = new HashMap<String, Object>();
+//            selectMap.put("id", createButtonDto.getId());
+//
+//            return namedParameterJdbcTemplate.queryForObject(selectSql, selectMap, new CreateButtonRowMapper());
+//
+//        }catch (DataAccessException e){
+//            throw new RuntimeException("Failed to update button", e);
+//        }
+//    }
+//
+//    @Override
+//    public boolean deleteButton(Long id) {
+//        String sql = "DELETE FROM buttons WHERE id = :id;";
+//
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("id", id);
+//
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+//
+//        if(result > 0) {
+//            return true;
+//        }else {
+//            return false;
+//        }
+//    }
 
     @Override
     public List<String> getSessionHistory(String sessionId) {
@@ -238,58 +238,58 @@ public class ChatRepositoryImpl implements ChatRepository {
 
     }
 
-    @Override
-    public boolean savePersonality(PersonalityDto personalityDto) {
-        String sql = "INSERT INTO personality(description) VALUES (:description);";
-
-        Map<String, Object> map = new HashMap<String, Object>();
-        map.put("description", personalityDto.getDescription());
-
-        if(personalityDto.getDescription().isEmpty()) {
-            throw new MissFieldException("Failed to save personality");
-        }
-
-        KeyHolder keyHolder = new GeneratedKeyHolder();
-
-        try {
-            Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
-
-            if(result > 0) {
-                return true;
-            }else {
-                return false;
-            }
-        }catch (DataAccessException e){
-            throw new RuntimeException("Failed to save personality", e);
-        }
-    }
-
-    @Override
-    public List<PersonalityDto> getPersonality(Integer id) {
-
-        String sql = "";
-
-        Map<String, Object> map = new HashMap<>();
-
-        if(id > 0) {
-            sql = "SELECT * FROM personality WHERE id = :id;";
-            map.put("id", id);
-        }else{
-            sql = "SELECT * FROM personality";
-        }
-
-        try {
-            List<PersonalityDto> personalityList = namedParameterJdbcTemplate.query(sql, map, new PersonalityRowMapper());
-            if(!personalityList.isEmpty()){
-                return personalityList;
-            }else {
-                throw new MissFieldException("The answer of question don't exist");
-            }
-        }catch (DataAccessException e){
-            throw new RuntimeException("Failed to load personality", e);
-        }
-
-    }
+//    @Override
+//    public boolean savePersonality(PersonalityDto personalityDto) {
+//        String sql = "INSERT INTO personality(description) VALUES (:description);";
+//
+//        Map<String, Object> map = new HashMap<String, Object>();
+//        map.put("description", personalityDto.getDescription());
+//
+//        if(personalityDto.getDescription().isEmpty()) {
+//            throw new MissFieldException("Failed to save personality");
+//        }
+//
+//        KeyHolder keyHolder = new GeneratedKeyHolder();
+//
+//        try {
+//            Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+//
+//            if(result > 0) {
+//                return true;
+//            }else {
+//                return false;
+//            }
+//        }catch (DataAccessException e){
+//            throw new RuntimeException("Failed to save personality", e);
+//        }
+//    }
+//
+//    @Override
+//    public List<PersonalityDto> getPersonality(Integer id) {
+//
+//        String sql = "";
+//
+//        Map<String, Object> map = new HashMap<>();
+//
+//        if(id > 0) {
+//            sql = "SELECT * FROM personality WHERE id = :id;";
+//            map.put("id", id);
+//        }else{
+//            sql = "SELECT * FROM personality";
+//        }
+//
+//        try {
+//            List<PersonalityDto> personalityList = namedParameterJdbcTemplate.query(sql, map, new PersonalityRowMapper());
+//            if(!personalityList.isEmpty()){
+//                return personalityList;
+//            }else {
+//                throw new MissFieldException("The answer of question don't exist");
+//            }
+//        }catch (DataAccessException e){
+//            throw new RuntimeException("Failed to load personality", e);
+//        }
+//
+//    }
 
     @Override
     public List<ReturnCategoryDto> findAllCategoryButtons(){
