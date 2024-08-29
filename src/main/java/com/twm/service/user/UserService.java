@@ -13,5 +13,6 @@ public interface UserService {
     void sendResetPasswordEmail(String email);
     Boolean resetPassword(ResetPasswordDto resetPasswordDto);
     boolean validateCaptcha(String captchaInput, HttpSession session);
+    Boolean updateAuthTime(String userId);
     public Map solveJwt(String token);
 }
