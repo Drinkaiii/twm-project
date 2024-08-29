@@ -193,6 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (popupOverlay) {
             document.body.removeChild(popupOverlay);
         }
-        window.location.href = '/account_login.html';
+        window.location.href = '../account_login.html';
     }
 })
