@@ -421,7 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Authorization': `Bearer ${token}`
             },
             body : JSON.stringify({
-                userId : token,
+                userId : localStorage.getItem("userId"),
                 sessionId : sessionId,
                 question : userMessage
             })

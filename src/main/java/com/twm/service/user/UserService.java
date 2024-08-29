@@ -9,7 +9,7 @@ import java.util.Map;
 
 public interface UserService {
     Map<String, Object> signUp(UserDto userDto);
-    Map<String, Object> signIn(Map<String, Object> signInRequest);
+    Map<String, Object> signIn(Map<String, Object> signInRequest,HttpSession session);
     void sendResetPasswordEmail(String email);
     Boolean resetPassword(ResetPasswordDto resetPasswordDto);
     boolean validateCaptcha(String captchaInput, HttpSession session);

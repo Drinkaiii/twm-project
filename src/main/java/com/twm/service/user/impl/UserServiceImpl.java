@@ -2,30 +2,37 @@ package com.twm.service.user.impl;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
-import com.twm.exception.custom.DuplicatedEmailExcetion;
-import com.twm.exception.custom.InvalidEmailFormatException;
-import com.twm.exception.custom.InvalidProviderException;
-import com.twm.exception.custom.LoginFailedException;
+import com.twm.exception.custom.*;
 import com.twm.repository.user.UserRepository;
 import com.twm.service.user.UserService;
 import com.twm.util.EmailUtil;
 import com.twm.util.JwtUtil;
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.servlet.http.HttpSession;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.*;
+import org.springframework.http.client.MultipartBodyBuilder;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.util.UriComponentsBuilder;
+import reactor.core.publisher.Mono;
 
-<<<<<<< HEAD
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
-=======
+
 import java.util.HashMap;
->>>>>>> develop
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -44,6 +51,12 @@ public class UserServiceImpl implements UserService {
     private final EmailUtil emailUtil;
     @Value("${domain}")
     private String domain;
+    @Value("${redirectUrl}")
+    private String redirectUrl;
+    @Value("${twmToken}")
+    private String twmToken;
+    @Value("${twmBaseUrl}")
+    private String twmBaseUrl;
 
     @Override
     public Map<String, Object> signUp(UserDto userDto) {
@@ -55,10 +68,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> signIn(Map<String, Object> signInRequest) {
+    public Map<String, Object> signIn(Map<String, Object> signInRequest, HttpSession session) {
         String provider = (String) signInRequest.get("provider");
         switch (provider.toLowerCase()) {
             case "native":
+                if (!validateCaptcha((String) signInRequest.get("captcha"), session)) {
+                    throw new VerificationFailedException("Authentication failed");
+                }
                 String email = (String) signInRequest.get("email");
                 if (!validateEmail(email)) {
                     throw new InvalidEmailFormatException("Invalid email format");
@@ -67,9 +83,17 @@ public class UserServiceImpl implements UserService {
                 if (nativeUser == null || !passwordEncoder.matches((String) signInRequest.get("password"), nativeUser.getPassword())) {
                     throw new LoginFailedException("Invalid email or password");
                 }
-                Integer id = nativeUser.getId().intValue();
                 return generateAuthResponse(userRepository.getUserById(nativeUser.getId().intValue()));
             case "twm":
+                String accessToken = getAccessToken(signInRequest.get("accessToken").toString());
+                Map<String, Object> userProfileMap = getTwmUserProfile(accessToken);
+                UserDto twmUser = userRepository.getTwmUserByEmailAndProvider(userProfileMap.get("email").toString());
+                if (twmUser == null) {
+                    int userId = userRepository.createTwmUser(userProfileMap.get("email").toString());
+                    return generateAuthResponse(userRepository.getUserById(userId));
+                }else{
+                    return generateAuthResponse(userRepository.getUserById(twmUser.getId().intValue()));
+                }
             default:
                 throw new InvalidProviderException("Invalid provider");
         }
@@ -142,4 +166,50 @@ public class UserServiceImpl implements UserService {
     public Map solveJwt(String token) {
         return jwtUtil.isTokenValid(token) ? jwtUtil.getClaims(token) : null;
     }
+
+    private String getAccessToken(String code) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // set header
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+        headers.set("Authorization", "Basic " + twmToken);
+
+        // set request parameters
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
+        map.add("grant_type", "authorization_code");
+        map.add("code", code);
+        map.add("redirect_uri", redirectUrl);
+
+        // create request entity
+        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, headers);
+
+        // send a request and receive a response
+        ResponseEntity<Map> response = restTemplate.postForEntity(twmBaseUrl, request, Map.class);
+        return response.getBody().get("access_token").toString();
+    }
+
+
+    private Map<String, Object> getTwmUserProfile(String accessToken) {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        // set header
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); // 保持 Content-Type 为 application/x-www-form-urlencoded
+        headers.set("Authorization", "Bearer " + accessToken);
+
+        // create an empty request entity with headers only
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        // send a POST request and receive a response
+        ResponseEntity<Map> response = restTemplate.postForEntity("https://stage.oauth.taiwanmobile.com/MemberOAuth/getUserProfile", request, Map.class);
+
+        return response.getBody();
+    }
+
 }
+
+
+
