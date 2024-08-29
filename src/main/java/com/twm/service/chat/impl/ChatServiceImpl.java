@@ -3,6 +3,7 @@ package com.twm.service.chat.impl;
 import com.twm.dto.*;
 import com.twm.dto.ReturnQuestionDto;
 import com.twm.dto.TypesDto;
+import com.twm.repository.admin.PersonalityRepository;
 import com.twm.repository.chat.ChatRepository;
 import com.twm.service.chat.ChatService;
 import com.twm.util.JwtUtil;
@@ -28,6 +29,8 @@ public class ChatServiceImpl implements ChatService {
 
     private final ChatRepository chatRepository;
 
+    private final PersonalityRepository personalityRepository;
+
     @Resource
     private OpenAiChatModel openAiChatModel;
 
@@ -35,14 +38,10 @@ public class ChatServiceImpl implements ChatService {
     private JwtUtil jwtUtil;
 
     @Override
-    public Map<String, Object> chat(Long userId, String sessionId, String question, String token) {
+    public Map<String, Object> chat(Long userId, String sessionId, String question) {
 
         if(question.length() >= 100) {
             throw new RuntimeException("Failed to save session");
-        }
-
-        if(!jwtUtil.isTokenValid(token)) {
-            throw new RuntimeException("Invalid access token");
         }
 
         List<Message> messages = new ArrayList<>();
@@ -66,7 +65,8 @@ public class ChatServiceImpl implements ChatService {
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
         try {
-            messages.add(new SystemMessage("這是你的人設 : " + chatRepository.getPersonality()));
+            log.info("人設: " + personalityRepository.getPersonality(0));
+            messages.add(new SystemMessage("這是你的人設 : " + personalityRepository.getPersonality(0)));
             messages.add(new SystemMessage("常見問答都在此 : " + chatRepository.getFAQ()));
         }catch (RuntimeException e) {
             throw new RuntimeException("Failed to load agent", e);
@@ -112,11 +112,57 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.findAnswerByQuestion(buttonId);
     }
 
-    @Override
+//    @Override
+//    public void saveButton(CreateButtonDto createButtonDto){
+//
+//        chatRepository.saveButton(createButtonDto);
+//
+////        Map<String, Object> result = new HashMap<>();
+////        result.put("data", chatRepository.saveButton(createButtonDto));
+//
+////        return result;
+//    }
+//
+//    @Override
+//    public Map<String, Object> getButton(Integer id){
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", chatRepository.getButton(id));
+//
+//        return result;
+//
+//    }
+//
+//    @Override
+//    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
+//        return chatRepository.updateButton(createButtonDto);
+//    }
+//
+//    @Override
+//    public boolean deleteButton(Long id) {
+//        return chatRepository.deleteButton(id);
+//    }
+
+//    @Override
+//    public Map<String, Object> savePersonality(PersonalityDto personalityDto) {
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("result", chatRepository.savePersonality(personalityDto));
+//
+//        return result;
+//    }
+//
+//    @Override
+//    public Map<String, Object> getPersonality(Integer id) {
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("data", chatRepository.getPersonality(id));
+//
+//        return result;
+//    }
+
     public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};
 
     @Override
-    public String getUrlByCategory(Long categoryId){
+    public String getUrlByCategory(Long categoryId) {
         return chatRepository.findUrlByCategory(categoryId);
     }
 
