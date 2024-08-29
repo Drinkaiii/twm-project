@@ -15,9 +15,11 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -114,5 +116,11 @@ public class UserServiceImpl implements UserService {
     public boolean validateCaptcha(String captchaInput, HttpSession session) {
         String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
         return captchaSession != null && captchaSession.equals(captchaInput);
+    }
+
+    @Nullable
+    @Override
+    public Map solveJwt(String token) {
+        return jwtUtil.isTokenValid(token) ? jwtUtil.getClaims(token) : null;
     }
 }
