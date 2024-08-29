@@ -5,6 +5,7 @@ const button = document.querySelector(".btnBox");
 const input_password = document.querySelector(".origin input");
 const input_password_check = document.querySelector(".check input");
 const input_verify = document.querySelector(".veriCodeBox input");
+const text_account = document.querySelector(".account div");
 
 // get para
 const urlParams = new URLSearchParams(window.location.search);
@@ -12,15 +13,23 @@ const token = urlParams.get("token");
 
 // attach the functions
 button.addEventListener("click", submit);
-input_password.addEventListener('input', checkButtonState);
-input_password_check.addEventListener('input', checkButtonState);
-input_verify.addEventListener('input', checkButtonState);
+input_password.addEventListener("input", checkButtonState);
+input_password_check.addEventListener("input", checkButtonState);
+input_verify.addEventListener("input", checkButtonState);
 
-//default setting
+//initial setting
 switchButton(false);// button
 document.querySelector(".check .warning").style.display = "none";//password formation wrong message
 document.querySelector(".input .notice").style.display = "none";//password check formation wrong message
 document.querySelector(".captcha .warning").style.display = "none";//captcha formation wrong message
+fetch(`/api/1.0/user/solve-jwt?token=${token}`, {method: "GET"})
+    .then(response => response.json())
+    .then(data => {
+        let [name, domain] = data.email.split("@");
+        let maskedName = name.slice(0, 3) + "*****";
+        let maskedDomain = domain.slice(-4);
+        text_account.textContent = `${maskedName}@*****${maskedDomain}`;
+    });
 
 //===========================================function===========================================
 // submit the data to back-end
