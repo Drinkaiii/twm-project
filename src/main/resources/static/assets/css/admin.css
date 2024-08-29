@@ -87,12 +87,12 @@ input[type="text"] {
     padding: 10px;
 }
 
-#submit-section {
+.submit-section {
     text-align: center;
     margin-top: 30px;
 }
 
-#submit-section button {
+.submit-section button {
     background-color: var(--Orange);
     color: white;
     border: none;
@@ -103,13 +103,77 @@ input[type="text"] {
     transition: background-color 0.3s ease;
 }
 
-#submit-section button:hover {
+.submit-section button:hover {
     background-color: var(--Orange);
 }
 
-#submit-section button:active {
+.submit-section button:active {
     background-color: black;
     transform: scale(0.98);
+}
+
+.styled-table {
+    width: 95%;
+    border-collapse: collapse;
+    margin: 25px auto;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 15px;
+    overflow: hidden;
+}
+
+.styled-table thead tr {
+    background-color: var(--Orange);
+    color: #ffffff;
+    text-align: center;
+}
+
+.styled-table th,
+.styled-table td {
+    padding: 12px 20px;
+    text-align: center;
+}
+
+.styled-table tbody tr {
+    border-bottom: 1px solid #dddddd;
+}
+
+.styled-table tbody tr:nth-of-type(even) {
+    background-color: #f3f3f3;
+}
+
+.styled-table tbody tr.active-row {
+    font-weight: bold;
+    color: var(--Orange);
+}
+
+.update-button, .delete-button {
+    padding: 5px 10px;
+    margin-right: 5px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.update-button {
+    background-color: #4CAF50; /* 绿色 */
+    color: white;
+}
+
+.update-button:hover {
+    background-color: #45a049;
+}
+
+.delete-button {
+    background-color: #f44336; /* 红色 */
+    color: white;
+}
+
+.delete-button:hover {
+    background-color: #da190b;
 }
 
 

@@ -3,22 +3,76 @@ function toggleCategoryFields() {
     document.getElementById('general-category-fields').classList.add('hidden');
     document.getElementById('faq-category-fields').classList.add('hidden');
     document.getElementById('questions-answers-section').classList.add('hidden');
-    document.getElementById('submit-section').classList.add('hidden');
+    document.getElementById('submit-section-general').classList.add('hidden');
+    document.getElementById('submit-section-faq-qa').classList.add('hidden');
+    document.getElementById('submit-section-faq-type').classList.add('hidden');
+    document.getElementById('add-name-and-url').classList.add('hidden');
+    document.getElementById('general-category-fields').classList.add('hidden');
+    document.getElementById('category-warning').classList.add('hidden');
+
+    document.getElementById('category-table').innerHTML = '';
 
     if (categoryType === 'general') {
-        document.getElementById('general-category-fields').classList.remove('hidden');
-        document.getElementById('submit-section').classList.remove('hidden');
+        fetchCategoriesAndDisplayTable();
+        document.getElementById('add-name-and-url').classList.remove('hidden');
     } else if (categoryType === 'faq') {
         document.getElementById('faq-category-fields').classList.remove('hidden');
-        document.getElementById('submit-section').classList.remove('hidden');
+        document.getElementById('submit-section-faq-qa').classList.remove('hidden');
         document.getElementById('questions-answers-section').classList.remove('hidden');
+        document.getElementById('category-warning').classList.remove('hidden');
     }
+}
+
+
+function fetchCategoriesAndDisplayTable() {
+    fetch('api/1.0/chat/routines')
+        .then(response => response.json())
+        .then(data => {
+            const categories = data.data;
+            console.log(categories);
+            let tableHtml = `
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>類別名稱</th>
+                            <th>連結</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            categories.forEach(category => {
+                tableHtml += `
+                    <tr>
+                        <td>${category.id}</td>                    
+                        <td>${category.category}</td>
+                        <td>${category.url}</td>
+                        <td>
+                            <button type="button" class="update-button" onclick="updateCategory(${category.id})">更新</button>
+                            <button type="button" class="delete-button" onclick="deleteCategory(${category.id})">删除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('category-table').innerHTML = tableHtml;
+        })
+        .catch(error => console.error('Error fetching categories:', error));
 }
 
 function showFaqSelect() {
     document.getElementById('faq-category-name').value = '';
     document.getElementById('faq-select-existing').classList.remove('hidden');
     document.getElementById('faq-add-new').classList.add('hidden');
+    document.getElementById('submit-section-faq-qa').classList.remove('hidden');
+    document.getElementById('submit-section-faq-type').classList.add('hidden');
 
     checkCategorySelection();
 }
@@ -27,6 +81,8 @@ function showFaqAdd() {
     document.getElementById('faq-category-select').value = '';
     document.getElementById('faq-select-existing').classList.add('hidden');
     document.getElementById('faq-add-new').classList.remove('hidden');
+    document.getElementById('submit-section-faq-qa').classList.add('hidden');
+    document.getElementById('submit-section-faq-type').classList.remove('hidden');
 
     checkCategorySelection();
 }
@@ -87,7 +143,7 @@ function populateCategorySelect(categories) {
     });
 }
 
-function submitForm() {
+function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
     const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
 
@@ -106,7 +162,6 @@ function submitForm() {
             alert("請確保每一組問題和答案都已填寫");
             return;
         }
-
 
         const payload = {
             type: selectedCategory,
@@ -136,4 +191,9 @@ function submitForm() {
         })
         .catch(error => console.error('Error:', error));
     }
+}
+
+function addNameAndUrl() {
+    document.getElementById('general-category-fields').classList.remove('hidden');
+    document.getElementById('submit-section-general').classList.remove('hidden');
 }
