@@ -1,8 +1,10 @@
 package com.twm.repository.admin.impl;
 
+import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.admin.PersonalityRepository;
+import com.twm.rowmapper.CreateButtonRowMapper;
 import com.twm.rowmapper.PersonalityRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -75,6 +77,52 @@ public class PersonalityRepositoryImpl implements PersonalityRepository {
             throw new RuntimeException("Failed to load personality", e);
         }
 
+    }
+
+    @Override
+    public PersonalityDto updatePersonality(PersonalityDto personalityDto) {
+
+        try {
+
+            String updateSql = "UPDATE personality " +
+                    "SET description = :description " +
+                    "WHERE id = :id;";
+
+            Map<String, Object> updateMap = new HashMap<String, Object>();
+            updateMap.put("id", personalityDto.getId());
+            updateMap.put("description", personalityDto.getDescription());
+
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+
+            namedParameterJdbcTemplate.update(updateSql, new MapSqlParameterSource(updateMap), keyHolder);
+
+            String selectSql = "SELECT * FROM personality WHERE id = :id;";
+            Map<String, Object> selectMap = new HashMap<String, Object>();
+            selectMap.put("id", personalityDto.getId());
+
+            return namedParameterJdbcTemplate.queryForObject(selectSql, selectMap, new PersonalityRowMapper());
+
+        }catch (DataAccessException e){
+            throw new RuntimeException("Failed to update personality", e);
+        }
+    }
+
+    @Override
+    public boolean deletePersonality(Long id) {
+        String sql = "DELETE FROM personality WHERE id = :id;";
+
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", id);
+
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+
+        Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
+
+        if(result > 0) {
+            return true;
+        }else {
+            return false;
+        }
     }
 
 }

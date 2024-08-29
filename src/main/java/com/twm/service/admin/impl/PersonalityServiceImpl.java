@@ -1,5 +1,6 @@
 package com.twm.service.admin.impl;
 
+import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.repository.admin.PersonalityRepository;
 import com.twm.service.admin.PersonalityService;
@@ -31,6 +32,16 @@ public class PersonalityServiceImpl implements PersonalityService {
         result.put("data", personalityRepository.getPersonality(id));
 
         return result;
+    }
+
+    @Override
+    public PersonalityDto updatePersonality(PersonalityDto personalityDto) {
+        return personalityRepository.updatePersonality(personalityDto);
+    }
+
+    @Override
+    public boolean deletePersonality(Long id) {
+        return personalityRepository.deletePersonality(id);
     }
 
 }

@@ -1,5 +1,6 @@
 package com.twm.controller.admin;
 
+import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.exception.custom.MissFieldException;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -46,6 +48,46 @@ public class PersonalityController {
             return ResponseEntity.ok(response);
         }catch (MissFieldException e){
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @PostMapping("/update")
+    public ResponseEntity<?> chatUpdate(@RequestBody PersonalityDto personalityDto) {
+
+        try {
+            PersonalityDto response = personalityService.updatePersonality(personalityDto);
+
+            return ResponseEntity.ok(response);
+        }catch (MissFieldException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }catch (RuntimeException e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception e){
+            return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+        }
+
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> chatDelete(@RequestBody PersonalityDto personalityDto) {
+
+        try {
+            boolean result = personalityService.deletePersonality(personalityDto.getId());
+
+            Map<String, Object> response = new HashMap<>();
+            response.put("result", result);
+
+            if(result == true) {
+                return ResponseEntity.ok(response);
+            }else {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
         }catch (RuntimeException e){
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
         }catch (Exception e){
