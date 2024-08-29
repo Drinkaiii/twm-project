@@ -87,56 +87,53 @@ function populateCategorySelect(categories) {
     });
 }
 
-// function submitForm() {
-//     const category = document.getElementById('general-category-name').value;
-//     const url = document.getElementById('general-category-url').value;
-//     const selectedCategory = document.getElementById('faq-category-select').value;
-//     const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
-//     let payload = {};
-//
-//     const questions = [];
-//     const answers = [];
-//
-//     //deal with input questions and answers
-//     for (let i = 0; i < questionAnswerPairs.length; i++) {
-//         const question = questionAnswerPairs[i].querySelector('input[name="questions[]"]').value.trim();
-//         const answer = questionAnswerPairs[i].querySelector('input[name="answers[]"]').value.trim();
-//
-//         if (question === "" && answer === "") { //pass
-//             continue;
-//         } else if (question === "" || answer === "") { //both answer and question should be input
-//             alert("請確保每一組問題和答案都已填寫");
-//             return;
-//         } else { //valid -> add
-//             questions.push(question);
-//             answers.push(answer);
-//         }
-//     }
-//
-//     if (category && url) {
-//         payload = {
-//             category: category,
-//             url: url
-//         };
-//     } else if (selectedCategory) {
-//         payload = {
-//             type: selectedCategory,
-//             questions: questions,
-//             answers: answers
-//         };
-//     } else {
-//         alert("請輸入類別及連結！");
-//         return;
-//     }
-//
-//     fetch('/api/submit', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json'
-//         },
-//         body: JSON.stringify(payload)
-//     })
-//         .then(response => response.json())
-//         .then(data => console.log('Success:', data))
-//         .catch(error => console.error('Error:', error));
-// }
+function submitForm() {
+    const selectedCategory = Number(document.getElementById('faq-category-select').value);
+    const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
+
+    if (!selectedCategory) {
+        alert("請選擇類別！");
+        return;
+    }
+    //deal with input questions and answers
+    for (let i = 0; i < questionAnswerPairs.length; i++) {
+        const question = questionAnswerPairs[i].querySelector('input[name="questions[]"]').value.trim();
+        const answer = questionAnswerPairs[i].querySelector('input[name="answers[]"]').value.trim();
+
+        if (question === "" && answer === "") { //pass
+            continue;
+        } else if (question === "" || answer === "") { //both answer and question should be input
+            alert("請確保每一組問題和答案都已填寫");
+            return;
+        }
+
+
+        const payload = {
+            type: selectedCategory,
+            question: question,
+            answer: answer
+        };
+
+        console.log(payload);
+
+        fetch('api/1.0/admin/chat/create', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+        })
+        .then(response => {
+            if (response.ok) {
+                return {};
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(data => {
+            alert('已成功儲存類別及問答！');
+            console.log('Success:', data);
+        })
+        .catch(error => console.error('Error:', error));
+    }
+}
