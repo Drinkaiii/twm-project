@@ -81,17 +81,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .then(data => {
-                rememberEmail();
                 const jwtToken = data.accessToken;
                 localStorage.setItem('jwtToken', jwtToken);
                 const userId = data.user.id;
                 localStorage.setItem('userId', userId);
+                if(data.user.authTime === null || data.user.authTime === ""){
+                    window.location.href = '../terms.html';
+                    return;
+                }
+                rememberEmail();
                 window.location.href = '../chat.html';
             })
             .catch( error => {
                 if (error.message === "BadRequest"){
                     captchaWarning.style.display = "block";
                 }else{
+                    console.log(error.message);
                     showPopUp();
                 }
             })

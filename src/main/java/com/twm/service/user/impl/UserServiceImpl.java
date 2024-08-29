@@ -11,6 +11,7 @@ import com.twm.service.user.UserService;
 import com.twm.util.EmailUtil;
 import com.twm.util.JwtUtil;
 import jakarta.servlet.http.HttpSession;
+import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -60,12 +63,16 @@ public class UserServiceImpl implements UserService {
                     throw new LoginFailedException("Invalid email or password");
                 }
                 Integer id = nativeUser.getId().intValue();
-                log.info("id");
                 return generateAuthResponse(userRepository.getUserById(nativeUser.getId().intValue()));
             case "twm":
             default:
                 throw new InvalidProviderException("Invalid provider");
         }
+    }
+
+    @Override
+    public Boolean updateAuthTime(String userId) {
+        return userRepository.updateAuthTimeByUserId(userId, getCurrentTime()) > 0;
     }
 
     @Override
@@ -95,6 +102,7 @@ public class UserServiceImpl implements UserService {
         userInfo.put("id", userDto.getId());
         userInfo.put("provider", userDto.getProvider());
         userInfo.put("email", userDto.getEmail());
+        userInfo.put("authTime", userDto.getAuthTime());
         String jwtToken = jwtUtil.getToken(userInfo);
         int expiresIn = jwtUtil.getExpiration();
         response.put("accessToken", jwtToken);
@@ -116,5 +124,11 @@ public class UserServiceImpl implements UserService {
     public boolean validateCaptcha(String captchaInput, HttpSession session) {
         String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
         return captchaSession != null && captchaSession.equals(captchaInput);
+    }
+
+    private String getCurrentTime() {
+        Date date = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        return sdf.format(date);
     }
 }

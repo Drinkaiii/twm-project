@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     header();
     passwordEyes();
-
     const emailInput = document.querySelector('input[name="email"]');
     const passwordInput = document.querySelector('input[name="password"]');
     const checkPasswordInput = document.querySelector('input[name="checkPassword"]');

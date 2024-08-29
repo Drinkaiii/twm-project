@@ -7,4 +7,5 @@ public interface UserRepository {
     UserDto getNativeUserByEmailAndProvider(String email);
     UserDto getUserById(int userId);
     UserDto updatePasswordByEmail(UserDto userDto);
+    int updateAuthTimeByUserId(String userId, String authTime);
 }

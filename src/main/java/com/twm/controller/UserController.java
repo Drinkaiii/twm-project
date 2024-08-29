@@ -54,10 +54,6 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
-        log.info(signInRequest.get("email").toString());
-        log.info(signInRequest.get("password").toString());
-        log.info(signInRequest.get("captcha").toString());
-        log.info(signInRequest.get("provider").toString());
         if (userService.validateCaptcha((String)signInRequest.get("captcha"),session)) {
             return ResponseEntity.ok(userService.signIn(signInRequest));
         } else {
@@ -78,6 +74,15 @@ public class UserController {
             return ResponseEntity.ok("The password has been updated");
         else
             return ResponseEntity.ok("Something went woring. The password has not been updated");
+    }
+
+    @GetMapping("/update-authTime")
+    public ResponseEntity<?> updateAuthTime(@RequestParam String userId) {
+        if (userService.updateAuthTime(userId)){
+            return ResponseEntity.ok("The auth time has been updated");
+        }else{
+            throw new RuntimeException("Failed to update auth time");
+        }
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)
