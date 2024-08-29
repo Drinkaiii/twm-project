@@ -34,7 +34,6 @@ public class CaptchaController {
 
         HttpSession session = request.getSession();
         session.setAttribute(KAPTCHA_SESSION_KEY, capText); //save random text into session
-
         ServletOutputStream out = null;
         try {
             out = response.getOutputStream();

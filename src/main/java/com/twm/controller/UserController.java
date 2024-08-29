@@ -52,7 +52,6 @@ public class UserController {
         }
     }
 
-
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
         if (userService.validateCaptcha((String) signInRequest.get("captcha"), session)) {
@@ -79,6 +78,24 @@ public class UserController {
             return ResponseEntity.ok(Map.of("result", "The password has been updated."));
         else
             return new ResponseEntity(ErrorResponseDto.error("Something went woring. The password has not been updated."), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/solve-jwt")
+    public ResponseEntity<?> solveJwt(@RequestParam("token") String token){
+        Map<String, Object> claims = userService.solveJwt(token);
+        if (claims != null)
+            return ResponseEntity.ok(claims);
+        else
+            return new ResponseEntity(ErrorResponseDto.error("Invalid JWT"), HttpStatus.BAD_REQUEST);
+    }
+
+    @GetMapping("/update-authTime")
+    public ResponseEntity<?> updateAuthTime(@RequestParam String userId) {
+        if (userService.updateAuthTime(userId)){
+            return ResponseEntity.ok("The auth time has been updated");
+        }else{
+            throw new RuntimeException("Failed to update auth time");
+        }
     }
 
     @ExceptionHandler(InvalidEmailFormatException.class)
