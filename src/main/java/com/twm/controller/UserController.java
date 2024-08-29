@@ -81,6 +81,15 @@ public class UserController {
             return new ResponseEntity(ErrorResponseDto.error("Something went woring. The password has not been updated."), HttpStatus.BAD_REQUEST);
     }
 
+    @GetMapping("/solve-jwt")
+    public ResponseEntity<?> solveJwt(String token){
+        Map<String, Object> claims = userService.solveJwt(token);
+        if (claims != null)
+            return ResponseEntity.ok(claims);
+        else
+            return new ResponseEntity(ErrorResponseDto.error("Invalid JWT"), HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler(InvalidEmailFormatException.class)
     public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailFormatException(InvalidEmailFormatException ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
