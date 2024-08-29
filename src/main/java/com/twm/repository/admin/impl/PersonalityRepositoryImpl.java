@@ -1,10 +1,8 @@
 package com.twm.repository.admin.impl;
 
-import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.admin.PersonalityRepository;
-import com.twm.rowmapper.CreateButtonRowMapper;
 import com.twm.rowmapper.PersonalityRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
