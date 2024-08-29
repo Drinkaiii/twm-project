@@ -19,13 +19,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-<<<<<<< HEAD
 import java.text.SimpleDateFormat;
 import java.util.Date;
-=======
 import java.util.HashMap;
->>>>>>> develop
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
