@@ -17,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -89,6 +90,15 @@ public class UserRepositoryImpl implements UserRepository {
         } else {
             throw new RuntimeException("Failed to update password for email: " + userDto.getEmail());
         }
+    }
+
+    @Override
+    public int updateAuthTimeByUserId(String userId, String authTime) {
+        String sql = "UPDATE users SET auth_time = :authTime WHERE id = :userId";
+        Map<String, Object> map = new HashMap<>();
+        map.put("userId", userId);
+        map.put("authTime", authTime);
+        return namedParameterJdbcTemplate.update(sql, map);
     }
 
 }
