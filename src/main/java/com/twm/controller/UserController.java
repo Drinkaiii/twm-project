@@ -82,7 +82,7 @@ public class UserController {
     }
 
     @GetMapping("/solve-jwt")
-    public ResponseEntity<?> solveJwt(String token){
+    public ResponseEntity<?> solveJwt(@RequestParam("token") String token){
         Map<String, Object> claims = userService.solveJwt(token);
         if (claims != null)
             return ResponseEntity.ok(claims);

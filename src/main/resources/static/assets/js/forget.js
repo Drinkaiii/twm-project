@@ -7,10 +7,10 @@ const input_verify = document.querySelector(".inputHalf input");
 
 // attach functions
 button.addEventListener("click", submit);
-input_email.addEventListener('input', checkButtonState);
-input_verify.addEventListener('input', checkButtonState);
+input_email.addEventListener("input", checkButtonState);
+input_verify.addEventListener("input", checkButtonState);
 
-//default setting
+//initial setting
 switchButton(false);// button
 document.querySelector(".error .warning").style.display = "none";//email formation wrong message
 
