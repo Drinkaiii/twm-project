@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin</title>
+    <link rel="stylesheet" href="./assets/commonElement/css/reset.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_colors.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_fonts.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/header.css" />
+    <link rel="stylesheet" href="./assets/css/admin.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/footer.css" />
+    <script src="./assets/js/admin.js"></script>
+</head>
+<body>
+    <header>
+        <a class="logo" href="/">
+            <img src="./assets/commonElement/img/Logo_twm_White.svg" alt="台灣大哥大" />
+        </a>
+    </header>
+    <h1>後台管理系統</h1>
+
+    <label for="category-type">請選擇您欲查看或更新的按鈕類別或問答：</label>
+    <select id="category-type" onchange="toggleCategoryFields()">
+        <option value="">--請選擇--</option>
+        <option value="general">總類別</option>
+        <option value="faq">常見問題類別</option>
+    </select>
+
+    <div id="category-table"></div>
+    <div id="general-category-fields" class="hidden">
+        <h2>請輸入類別名稱及連結</h2>
+        <label for="general-category-name">類別名稱：</label>
+        <input type="text" id="general-category-name">
+        <br>
+        <label for="general-category-url">連結：</label>
+        <input type="text" id="general-category-url">
+    </div>
+    <div id="category-warning" class="hidden" style="color: var(--Orange); margin: 10px 20px;">請先選擇或新增類別</div>
+    <div id="faq-category-fields" class="hidden">
+        <div id="faq-action-buttons">
+            <button type="button" onclick="showFaqSelect()">選擇現有的類別</button>
+            <button type="button" onclick="showFaqAdd()">新增類別</button>
+        </div>
+        <div id="faq-select-existing" class="hidden">
+            <select id="faq-category-select" onchange="checkCategorySelection()">
+                <option value="">--請選擇--</option>
+                <!-- 這裡會動態插入選項 -->
+            </select>
+        </div>
+
+        <div id="type-table" class="hidden"></div>
+
+        <div id="updateModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button" onclick="closeModal()">&times;</span>
+                <h2>編輯問題</h2>
+                <label for="type-select">類別：</label>
+                <select id="type-select">
+                    <option value="">--請選擇--</option>
+                    <!-- 這裡會動態插入選項 -->
+                </select>
+                <br>
+                <label for="question-input">問題：</label>
+                <input type="text" id="question-input">
+                <br>
+                <label for="answer-input">答案：</label>
+                <textarea id="answer-input"></textarea>
+                <br>
+                <button type="button" onclick="saveQuestion()">保存</button>
+            </div>
+        </div>
+
+        <div id="faq-add-new" class="hidden">
+            <label for="faq-category-name"></label>
+            <input type="text" id="faq-category-name" oninput="checkCategorySelection()">
+        </div>
+    </div>
+
+    <button type="button" id="add-qa" class="hidden" onclick="addQa()">新增</button>
+
+    <div id="questions-answers-section" class="hidden">
+        <h2>請輸入至少一個屬於該類別的問題及答案</h2>
+        <div id="question-answer-container">
+            <div class="question-answer-group">
+                <label for="question-0">問題：</label>
+                <input type="text" id="question-0" name="questions[]" disabled>
+                <br>
+                <label for="answer-0">答案：</label>
+                <input type="text" id="answer-0" name="answers[]" disabled>
+            </div>
+        </div>
+        <button type="button" onclick="addQuestionAnswer()">新增更多問題及答案</button>
+    </div>
+
+    <div id="submit-section-general" class="submit-section hidden">
+        <button type="button" id="submit-general" onclick="submitGeneral()">新增</button>
+    </div>
+
+    <div id="submit-section-faq-qa" class="submit-section hidden">
+        <button type="button" id="submit-faq-qa" onclick="submitFaqQa()">新增</button>
+    </div>
+    <div id="submit-section-faq-type" class="submit-section hidden">
+        <button type="button" id="submit-faq-type" onclick="submitFaqType()">新增</button>
+    </div>
+</body>
+</html>
