@@ -3,12 +3,10 @@ package com.twm.controller;
 import com.twm.dto.UserDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.dto.ResetPasswordDto;
-import com.twm.exception.custom.DuplicatedEmailExcetion;
-import com.twm.exception.custom.InvalidEmailFormatException;
-import com.twm.exception.custom.InvalidProviderException;
-import com.twm.exception.custom.LoginFailedException;
+import com.twm.exception.custom.*;
 import com.twm.service.user.UserService;
 
+import jakarta.mail.AuthenticationFailedException;
 import jakarta.servlet.http.HttpSession;
 
 import jakarta.validation.Valid;
@@ -54,12 +52,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
-        if (userService.validateCaptcha((String) signInRequest.get("captcha"), session)) {
-            return ResponseEntity.ok(userService.signIn(signInRequest));
-        } else {
-            ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
-            return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
-        }
+        return ResponseEntity.ok(userService.signIn(signInRequest,session));
     }
 
     @GetMapping("/email/reset-password")
@@ -120,6 +113,12 @@ public class UserController {
     public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(DuplicatedEmailExcetion ex) {
         ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
         return new ResponseEntity<>(errorResponse, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(VerificationFailedException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleInvalidEmailOrPasswordException(VerificationFailedException ex) {
+        ErrorResponseDto<String> errorResponse = ErrorResponseDto.error(ex.getMessage());
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
 
 }

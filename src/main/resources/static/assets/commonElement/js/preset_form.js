@@ -1,6 +1,5 @@
 /** 密碼欄位眼睛 */
 function passwordEyes() {
-  console.log("passwordEyes");
   $(".input.password .passwordInside").append('<div class="inputEyeBtn" />');
 
   $(".inputEyeBtn").on("mousedown touchstart", passwordOpenEyes);

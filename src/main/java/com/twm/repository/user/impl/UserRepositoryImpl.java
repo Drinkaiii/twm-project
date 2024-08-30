@@ -101,4 +101,38 @@ public class UserRepositoryImpl implements UserRepository {
         return namedParameterJdbcTemplate.update(sql, map);
     }
 
+    @Override
+    public UserDto getTwmUserByEmailAndProvider(String email){
+        try {
+            String sql = "SELECT * FROM users WHERE email = :email AND provider = :provider";
+            Map<String, Object> map = new HashMap<>();
+            map.put("email", email);
+            map.put("provider", "twm");
+            SqlParameterSource paramSource = new MapSqlParameterSource(map);
+            return namedParameterJdbcTemplate.queryForObject(sql, paramSource, new BeanPropertyRowMapper<>(UserDto.class));
+        } catch (EmptyResultDataAccessException e) {
+            return null;
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    @Override
+    public Integer createTwmUser (String email){
+        try {
+            String sql = "INSERT INTO users (email,password,provider) VALUES (:email,:password,:provider)";
+            Map<String, Object> map = new HashMap<>();
+            map.put("email", email);
+            map.put("password", "");
+            map.put("provider", "twm");
+            KeyHolder keyHolder = new GeneratedKeyHolder();
+            SqlParameterSource paramSource = new MapSqlParameterSource(map);
+            namedParameterJdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"id"});
+            return keyHolder.getKey().intValue();
+        }
+        catch (DataAccessException e) {
+            log.error("user dao:"+e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
 }
