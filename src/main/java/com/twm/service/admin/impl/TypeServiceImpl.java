@@ -31,6 +31,11 @@ public class TypeServiceImpl implements TypeService {
     }
 
     @Override
+    public Map<String, Object> getTypeAll() {
+        return Map.of("data", typeRepository.getTypeAll());
+    }
+
+    @Override
     public TypesDto updateType(TypesDto typesDto) {
         return typeRepository.updateType(typesDto);
     }
