@@ -72,7 +72,10 @@ function showFaqSelect() {
     document.getElementById('faq-add-new').classList.add('hidden');
     document.getElementById('submit-section-faq-qa').classList.remove('hidden');
     document.getElementById('submit-section-faq-type').classList.add('hidden');
+    document.getElementById('questions-answers-section').classList.remove('hidden');
+    document.getElementById('all-type-table').classList.add('hidden');
 
+    fetchCategories();
     checkCategorySelection();
 }
 
@@ -82,9 +85,11 @@ function showFaqAdd() {
     document.getElementById('faq-add-new').classList.remove('hidden');
     document.getElementById('submit-section-faq-qa').classList.add('hidden');
     document.getElementById('submit-section-faq-type').classList.remove('hidden');
+    document.getElementById('questions-answers-section').classList.add('hidden');
     document.getElementById('type-table').innerHTML = '';
 
     checkCategorySelection();
+    handleTypeAndDisplayTable()
 }
 
 function addQuestionAnswer() {
@@ -309,7 +314,6 @@ function deleteQuestion(id) {
 
 }
 
-
 function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
     const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
@@ -360,5 +364,98 @@ function submitFaqQa() {
     }
 }
 
+function submitFaqType() {
+    const categoryName = document.getElementById('faq-category-name').value;
+
+    if (!categoryName) {
+        alert('請輸入類別名稱');
+        return;
+    }
+
+    createCategoryType(categoryName);
+}
+
+function createCategoryType(categoryName) {
+    return fetch('api/1.0/admin/type/create', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type_name: categoryName
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                // handleCategoriesAndDisplayTable(typeId);
+                console.log("ok");
+                return {};
+            } else {
+                throw new Error('Network response was not ok');
+            }
+        })
+        .then(data => {
+            alert('已成功儲存問題類別！');
+            console.log('Success:', data);
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function handleTypeAndDisplayTable() {
+    fetch(`api/1.0/admin/type/review?id=1`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('all-type-table').classList.remove('hidden');
+            const filteredData = data.data;
+            console.log(filteredData);
+
+            // if (filteredData.length === 0) {
+            //     document.getElementById('type-table').classList.add('hidden');
+            //     return;
+            // }
+
+            currentQuestions = filteredData;
+
+            let tableHtml = `
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>類別</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+            filteredData.forEach(type => {
+                tableHtml += `
+                <tr>
+                    <td>${type.id}</td>                    
+                    <td>${type.type_name}</td>
+                    <td>
+                        <button type="button" class="update-button" onclick="updateType(${type.id})">編輯</button>
+                        <button type="button" class="delete-button" onclick="deleteType(${type.id})">删除</button>
+                    </td>
+                </tr>
+            `;
+            });
+
+            tableHtml += `
+                </tbody>
+            </table>
+        `;
+
+            document.getElementById('all-type-table').innerHTML = tableHtml;
+            document.getElementById('submit-section-faq-type').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching questions:', error));
+}
 
 

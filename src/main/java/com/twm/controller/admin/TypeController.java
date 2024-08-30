@@ -1,9 +1,7 @@
 package com.twm.controller.admin;
 
-import com.twm.dto.CreateButtonDto;
 import com.twm.dto.TypesDto;
 import com.twm.dto.error.ErrorResponseDto;
-import com.twm.exception.custom.MissFieldException;
 import com.twm.service.admin.TypeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
