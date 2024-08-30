@@ -36,11 +36,9 @@ public class JwtFilter extends OncePerRequestFilter {
 
         String requestURI = request.getRequestURI();
 
-        log.info("enter JwtFilter 1");
-
         if (requestURI.matches("/api/1.0/chat/agents") || requestURI.matches("/api/1.0/admin/.*")) {
 
-            log.info("enter JwtFilter 2");
+            log.info("enter JwtFilter");
 
             final String authHeader = request.getHeader("Authorization");
 

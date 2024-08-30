@@ -1,10 +1,8 @@
 package com.twm.repository.admin.impl;
 
-import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.admin.PersonalityRepository;
-import com.twm.rowmapper.CreateButtonRowMapper;
 import com.twm.rowmapper.PersonalityRowMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataAccessException;
@@ -13,14 +11,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-@Transactional
 @RequiredArgsConstructor
 public class PersonalityRepositoryImpl implements PersonalityRepository {
 
