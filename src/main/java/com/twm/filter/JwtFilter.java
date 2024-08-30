@@ -34,61 +34,74 @@ public class JwtFilter extends OncePerRequestFilter {
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
 
+        log.info("enter JwtFilter");
         String requestURI = request.getRequestURI();
+        String[] excludedPaths = {
+                "/api/1.0/user/signup",
+                "/api/1.0/user/signin",
+                "/api/1.0/user/update-authTime",
+                "/captcha/image",
+                "/.*\\.html",
+                "/assets/.*"
+        };
 
-        if (requestURI.matches("/api/1.0/chat/agents") || requestURI.matches("/api/1.0/admin/.*")) {
-
-            log.info("enter JwtFilter");
-
-            final String authHeader = request.getHeader("Authorization");
-
-            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                log.error("Token validation error 1");
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"Invalid token\"}");
-//                filterChain.doFilter(request, response);
+        for (String path : excludedPaths)
+            if (requestURI.matches(path)) {
+                filterChain.doFilter(request, response);
                 return;
             }
 
-            final String token = authHeader.substring(7);
-
-            log.info(token);
-
-            try {
-
-                if (token.isEmpty() || !jwtUtil.isTokenValid(token)) {
-                    log.error("Token validation error 2");
-                    response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                    response.setContentType("application/json");
-                    response.getWriter().write("{\"error\":\"Invalid token\"}");
-//                filterChain.doFilter(request, response);
-                    return;
-                }
-
-                Map<String,Object> claims = jwtUtil.getClaims(token);
-
-                log.info("claims : " + claims);
-
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        claims,
-                        null,
-                        List.of()
-                );
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request)
-                );
-                SecurityContextHolder.getContext().setAuthentication(authToken);
-
-
-            } catch (Exception e) {
-                log.error("Token validation error", e);
-                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-                response.setContentType("application/json");
-                response.getWriter().write("{\"error\":\"Invalid token\"}");
-                return;
-            }
+        final String authHeader = request.getHeader("Authorization");
+        System.out.println(authHeader);
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            log.error("Token validation error 1");
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\":\"Invalid token\"}");
+            return;
         }
+
+        final String token = authHeader.substring(7);
+
+        log.info(token);
+
+        try {
+
+            if (token.isEmpty() || !jwtUtil.isTokenValid(token)) {
+                log.error("Token validation error 2");
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.setContentType("application/json");
+                response.getWriter().write("{\"error\":\"Invalid token\"}");
+//                filterChain.doFilter(request, response);
+                return;
+            }
+
+            Map<String,Object> claims = jwtUtil.getClaims(token);
+
+            log.info("claims : " + claims);
+
+
+
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    claims,
+                    null,
+                    List.of()
+            );
+            authToken.setDetails(
+                    new WebAuthenticationDetailsSource().buildDetails(request)
+            );
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+
+
+        } catch (Exception e) {
+            log.error("Token validation error", e);
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\":\"Invalid token\"}");
+            return;
+        }
+
         filterChain.doFilter(request, response);
     }
 }

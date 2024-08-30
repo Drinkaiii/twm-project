@@ -33,12 +33,13 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public Integer createNativeUser(UserDto userDto){
         try {
-            String sql = "INSERT INTO users (email,password,provider) VALUES (:email,:password,:provider)";
+            String sql = "INSERT INTO users (email,password,provider,role) VALUES (:email,:password,:provider,:role)";
             String encodedPassword = passwordEncoder.encode(userDto.getPassword());
             Map<String, Object> map = new HashMap<>();
             map.put("email", userDto.getEmail());
             map.put("password", encodedPassword);
             map.put("provider", userDto.getProvider());
+            map.put("role", "ROLE");
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource paramSource = new MapSqlParameterSource(map);
             namedParameterJdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"id"});

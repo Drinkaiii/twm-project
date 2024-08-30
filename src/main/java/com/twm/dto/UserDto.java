@@ -34,4 +34,6 @@ public class UserDto {
     private String authTime;
 
     private String captcha;
+
+    private String role;
 }
