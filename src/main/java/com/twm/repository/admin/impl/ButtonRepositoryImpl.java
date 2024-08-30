@@ -11,14 +11,12 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Repository
-@Transactional
 @RequiredArgsConstructor
 public class ButtonRepositoryImpl implements ButtonRepository {
 
@@ -91,6 +89,12 @@ public class ButtonRepositoryImpl implements ButtonRepository {
                     "WHERE id = :id;";
 
             Map<String, Object> updateMap = new HashMap<String, Object>();
+
+            if(createButtonDto.getId() == null) {
+                updateMap.put("id", origin.getId());
+            }else {
+                updateMap.put("id", createButtonDto.getId());
+            }
 
             if(createButtonDto.getType() == null) {
                 updateMap.put("typeId", origin.getType());
