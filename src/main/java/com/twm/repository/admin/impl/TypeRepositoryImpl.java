@@ -46,6 +46,19 @@ public class TypeRepositoryImpl implements TypeRepository {
     }
 
     @Override
+    public List<TypesDto> getTypeAll() {
+        String sql = "SELECT * FROM types";
+        MapSqlParameterSource parameters = new MapSqlParameterSource();
+        List<TypesDto> typesDtos = namedParameterJdbcTemplate.query(sql, parameters, (RowMapper<TypesDto>) (rs, rowNum) -> {
+            TypesDto typesDto = new TypesDto();
+            typesDto.setId(rs.getLong("id"));
+            typesDto.setTypeName(rs.getString("type_name"));
+            return typesDto;
+        });
+        return (typesDtos.size() > 0) ? typesDtos : null;
+    }
+
+    @Override
     public TypesDto updateType(TypesDto typesDto) {
         String sql = "UPDATE types SET type_name = :type_name WHERE id = :id";
         MapSqlParameterSource parameters = new MapSqlParameterSource();
