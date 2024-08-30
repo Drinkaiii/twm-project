@@ -8,4 +8,7 @@ public interface UserRepository {
     UserDto getUserById(int userId);
     UserDto updatePasswordByEmail(UserDto userDto);
     int updateAuthTimeByUserId(String userId, String authTime);
+    UserDto getTwmUserByEmailAndProvider(String email);
+    Integer createTwmUser (String email);
+
 }

@@ -1,6 +1,5 @@
 package com.twm.service.admin.impl;
 
-import com.twm.dto.CreateButtonDto;
 import com.twm.dto.PersonalityDto;
 import com.twm.repository.admin.PersonalityRepository;
 import com.twm.service.admin.PersonalityService;

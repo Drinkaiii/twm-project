@@ -1,6 +1,62 @@
 document.addEventListener('DOMContentLoaded', () => {
-    header();
-    passwordEyes();
+
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = "../chat.html";
+                } else {
+                    throw new Error("Token is invalid or an error occurred during the validation.");
+                }
+            })
+    }
+
+    const twmLoginButton = document.querySelector(`#twmLoginButton`);
+    twmLoginButton.addEventListener('click', () => {
+        const redirectUri = "https://twm-appworks.com/account_login.html";
+        window.location.href = `https://stage.oauth.taiwanmobile.com/MemberOAuth/authPageLogin?response_type=code&client_id=appworks&redirect_uri=${redirectUri}&state=appstate&prompt=&showLoginPage=Y`;
+    })
+
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const code = urlParams.get('code');
+    console.log(code);
+    if (code !== null) {
+        fetch('/api/1.0/user/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                accessToken: code,
+                provider: "twm"
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new error("fail to get access token");
+                }
+            })
+            .then(data => {
+                const jwtToken = data.accessToken;
+                localStorage.setItem('jwtToken', jwtToken);
+                const userId = data.user.id;
+                localStorage.setItem('userId', userId);
+                if (data.user.authTime === null || data.user.authTime === "") {
+                    window.location.href = '../terms.html';
+                    return;
+                }
+                window.location.href = '../chat.html';
+            })
+            .catch(error => {
+                showPopUp('登入失敗，請重新登入。');
+            })
+    }
     window.onload = loadUserEmail;
     const emailInput = document.querySelector('input[name="email"]');
     const passwordInput = document.querySelector('input[name="password"]');
@@ -11,16 +67,30 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordLengthWarning = document.querySelector(`#passwordLengthWarning`);
     const captchaWarning = document.querySelector(`#captchaWarning`);
 
-    emailInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    passwordInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    captchaInput.addEventListener('input', () => {
-        updateButtonState();
-    });
-    document.querySelector('.btnBox a').addEventListener('click',() => {
+    function updateButtonState() {
+        const isEmailValid = isValidEmail(emailInput.value);
+        const isPasswordValid = isValidLengthPassword(passwordInput.value) && isValidFormatPassword(passwordInput.value);
+        const isCaptchaValid = captchaInput.value.trim() !== '';
+
+        if (isEmailValid && isPasswordValid && isCaptchaValid) {
+            loginButton.classList.remove("btnLdisable");
+            loginButton.classList.add("btnLfill");
+            loginButton.style.pointerEvents = 'auto';
+        } else {
+            loginButton.classList.remove("btnLfill");
+            loginButton.classList.add("btnLdisable");
+            loginButton.style.pointerEvents = 'none';
+        }
+
+    }
+
+    emailInput.addEventListener('input', updateButtonState);
+    passwordInput.addEventListener('input', updateButtonState);
+    captchaInput.addEventListener('input', updateButtonState);
+
+    updateButtonState();
+
+    loginButton.addEventListener('click', () => {
         //check button status
         if (loginButton.classList.contains('btnLdisable')) {
             return;
@@ -32,7 +102,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isValidEmail(emailInput.value)) {
             formatWarning.style.display = "block";
             hasError = true;
-        }else{
+        } else {
             formatWarning.style.display = "none";
         }
 
@@ -41,7 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
             passwordLengthWarning.style.display = "block";
             hasError = true;
             return;
-        }else{
+        } else {
             passwordLengthWarning.style.display = "none";
         }
 
@@ -49,7 +119,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isValidFormatPassword(passwordInput.value)) {
             passwordFormatWarning.style.display = "block";
             hasError = true;
-        }else{
+        } else {
             passwordFormatWarning.style.display = "none";
         }
 
@@ -57,16 +127,16 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        fetch('/api/1.0/user/signin',{
-            method : 'POST',
-            headers : {
+        fetch('/api/1.0/user/signin', {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json'
             },
-            body : JSON.stringify({
-                email : emailInput.value,
-                password : passwordInput.value,
-                provider : "native",
-                captcha : captchaInput.value
+            body: JSON.stringify({
+                email: emailInput.value,
+                password: passwordInput.value,
+                provider: "native",
+                captcha: captchaInput.value
             })
         })
             .then(response => {
@@ -74,9 +144,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     return response.json();
                 } else if (response.status === 403) {
                     throw new Error('Forbidden');
-                } else if (response.status === 400){
+                } else if (response.status === 400) {
                     throw new Error('BadRequest');
-                } else{
+                } else {
                     throw new Error('LoginFailed');
                 }
             })
@@ -85,24 +155,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('jwtToken', jwtToken);
                 const userId = data.user.id;
                 localStorage.setItem('userId', userId);
-                if(data.user.authTime === null || data.user.authTime === ""){
+                if (data.user.authTime === null || data.user.authTime === "") {
                     window.location.href = '../terms.html';
                     return;
                 }
                 rememberEmail();
                 window.location.href = '../chat.html';
             })
-            .catch( error => {
-                if (error.message === "BadRequest"){
+            .catch(error => {
+                if (error.message === "BadRequest") {
                     captchaWarning.style.display = "block";
-                }else{
+                } else {
                     console.log(error.message);
-                    showPopUp();
+                    showPopUp('帳號或密碼有誤，請重新輸入');
                 }
             })
     })
 
-    function rememberEmail(){
+    header();
+    passwordEyes();
+    updateButtonState();
+
+    function rememberEmail() {
         const email = emailInput.value;
         const rememberMe = document.getElementById('checkbox').checked;
         if (rememberMe) {
@@ -120,16 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function updateButtonState() {
-        if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '') {
-            loginButton.classList.remove("btnLdisable");
-            loginButton.classList.add("btnLfill");
-        } else {
-            loginButton.classList.remove("btnLfill");
-            loginButton.classList.add("btnLdisable");
-        }
-    }
-
     function isValidEmail(email) {
         const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         return emailPattern.test(email);
@@ -144,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return passwordPattern.test(password);
     }
 
-    function showPopUp(){
+    function showPopUp(message) {
         const popupOverlay = document.createElement('div');
         popupOverlay.id = 'popupOverlay';
         popupOverlay.style.position = 'fixed';
@@ -168,7 +232,7 @@ document.addEventListener('DOMContentLoaded', () => {
         popupContent.style.textAlign = 'center';
 
         const popupText = document.createElement('p');
-        popupText.textContent = '帳號或密碼有誤，請重新輸入';
+        popupText.textContent = message;
 
         const closeButton = document.createElement('button');
         closeButton.id = 'closeButton';
@@ -188,7 +252,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         document.body.appendChild(popupOverlay);
     }
-    function closePopUp(){
+
+    function closePopUp() {
         const popupOverlay = document.getElementById('popupOverlay');
         if (popupOverlay) {
             document.body.removeChild(popupOverlay);
