@@ -16,7 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const twmLoginButton = document.querySelector(`#twmLoginButton`);
     twmLoginButton.addEventListener('click', () => {
-        window.location.href = 'https://stage.oauth.taiwanmobile.com/MemberOAuth/authPageLogin?response_type=code&client_id=appworks&redirect_uri=http://localhost:8080/account_login.html&state=appstate&prompt=&showLoginPage=Y';
+        const redirectUri = "https://twm-appworks.com/account_login.html";
+        window.location.href = `https://stage.oauth.taiwanmobile.com/MemberOAuth/authPageLogin?response_type=code&client_id=appworks&redirect_uri=${redirectUri}&state=appstate&prompt=&showLoginPage=Y`;
     })
 
     const queryString = window.location.search;

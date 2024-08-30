@@ -184,7 +184,7 @@ public class UserServiceImpl implements UserService {
 
         // set header
         HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED); // 保持 Content-Type 为 application/x-www-form-urlencoded
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
         headers.set("Authorization", "Bearer " + accessToken);
 
         // create an empty request entity with headers only
