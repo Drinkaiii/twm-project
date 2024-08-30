@@ -121,7 +121,7 @@ function checkCategorySelection() {
 }
 
 let token;
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     fetchCategories();
     token = localStorage.getItem('jwtToken');
 });
@@ -149,7 +149,7 @@ function populateCategorySelect(categories) {
         select.appendChild(option);
     });
 
-    select.addEventListener('change', function() {
+    select.addEventListener('change', function () {
         console.log(select);
         typeId = select.value;
 
@@ -166,19 +166,19 @@ function handleCategoriesAndDisplayTable(typeId) {
             'Authorization': `Bearer ${token}`
         }
     })
-    .then(response => response.json())
-    .then(data => {
-        document.getElementById('type-table').classList.remove('hidden');
-        const filteredData = data.data.filter(item => item.type === parseInt(typeId));
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('type-table').classList.remove('hidden');
+            const filteredData = data.data.filter(item => item.type === parseInt(typeId));
 
-        if (filteredData.length === 0) {
-            document.getElementById('type-table').classList.add('hidden');
-            return;
-        }
+            if (filteredData.length === 0) {
+                document.getElementById('type-table').classList.add('hidden');
+                return;
+            }
 
-        currentQuestions = filteredData;
+            currentQuestions = filteredData;
 
-        let tableHtml = `
+            let tableHtml = `
             <table class="styled-table">
                 <thead>
                     <tr>
@@ -191,8 +191,8 @@ function handleCategoriesAndDisplayTable(typeId) {
                 <tbody>
         `;
 
-        filteredData.forEach(question => {
-            tableHtml += `
+            filteredData.forEach(question => {
+                tableHtml += `
                 <tr>
                     <td>${question.id}</td>                    
                     <td>${question.question}</td>
@@ -203,17 +203,17 @@ function handleCategoriesAndDisplayTable(typeId) {
                     </td>
                 </tr>
             `;
-        });
+            });
 
-        tableHtml += `
+            tableHtml += `
                 </tbody>
             </table>
         `;
 
-        document.getElementById('type-table').innerHTML = tableHtml;
-        document.getElementById('submit-section-faq-qa').classList.remove('hidden');
-    })
-    .catch(error => console.error('Error fetching questions:', error));
+            document.getElementById('type-table').innerHTML = tableHtml;
+            document.getElementById('submit-section-faq-qa').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching questions:', error));
 }
 
 let selectedId;
@@ -244,7 +244,7 @@ function populateTypeSelect(categories) {
         select.appendChild(option);
     });
 
-    select.addEventListener('change', function() {
+    select.addEventListener('change', function () {
         document.getElementById('type-select').value = select.value;
     });
 }
@@ -344,19 +344,19 @@ function submitFaqQa() {
             },
             body: JSON.stringify(payload)
         })
-        .then(response => {
-            if (response.ok) {
-                handleCategoriesAndDisplayTable(typeId);
-                return {};
-            } else {
-                throw new Error('Network response was not ok');
-            }
-        })
-        .then(data => {
-            alert('已成功儲存類別及問答！');
-            console.log('Success:', data);
-        })
-        .catch(error => console.error('Error:', error));
+            .then(response => {
+                if (response.ok) {
+                    handleCategoriesAndDisplayTable(typeId);
+                    return {};
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                alert('已成功儲存類別及問答！');
+                console.log('Success:', data);
+            })
+            .catch(error => console.error('Error:', error));
     }
 }
 
