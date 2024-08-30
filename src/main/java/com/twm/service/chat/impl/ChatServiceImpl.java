@@ -112,53 +112,6 @@ public class ChatServiceImpl implements ChatService {
         return chatRepository.findAnswerByQuestion(buttonId);
     }
 
-//    @Override
-//    public void saveButton(CreateButtonDto createButtonDto){
-//
-//        chatRepository.saveButton(createButtonDto);
-//
-////        Map<String, Object> result = new HashMap<>();
-////        result.put("data", chatRepository.saveButton(createButtonDto));
-//
-////        return result;
-//    }
-//
-//    @Override
-//    public Map<String, Object> getButton(Integer id){
-//
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("data", chatRepository.getButton(id));
-//
-//        return result;
-//
-//    }
-//
-//    @Override
-//    public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
-//        return chatRepository.updateButton(createButtonDto);
-//    }
-//
-//    @Override
-//    public boolean deleteButton(Long id) {
-//        return chatRepository.deleteButton(id);
-//    }
-
-//    @Override
-//    public Map<String, Object> savePersonality(PersonalityDto personalityDto) {
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("result", chatRepository.savePersonality(personalityDto));
-//
-//        return result;
-//    }
-//
-//    @Override
-//    public Map<String, Object> getPersonality(Integer id) {
-//        Map<String, Object> result = new HashMap<>();
-//        result.put("data", chatRepository.getPersonality(id));
-//
-//        return result;
-//    }
-
     public List<ReturnCategoryDto> getAllCategoryButtons() {return chatRepository.findAllCategoryButtons();};
 
     @Override
