@@ -27,8 +27,8 @@ public class TypeController {
     }
 
     @GetMapping("/review")
-    public ResponseEntity<?> chatReview(Integer id) {
-        return ResponseEntity.ok(typeService.getType(id));
+    public ResponseEntity<?> chatReview() {
+        return ResponseEntity.ok(typeService.getTypeAll());
     }
 
     @PostMapping("/update")

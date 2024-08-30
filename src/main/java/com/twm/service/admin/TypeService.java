@@ -11,6 +11,8 @@ public interface TypeService {
 
     Map<String, Object> getType(Integer id);
 
+    Map<String, Object> getTypeAll();
+
     TypesDto updateType(TypesDto typesDto);
 
     boolean deleteType(Long id);
