@@ -303,7 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function addMessage(text,role){
+    function addMessage(text, role) {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -315,15 +315,16 @@ document.addEventListener('DOMContentLoaded', () => {
         content.className = "content";
         const time = document.createElement("time");
         time.textContent = timeString;
-        if(role === "user"){
+
+        if (role === "user") {
             content.textContent = text;
             dialog.appendChild(content);
             dialog.appendChild(time);
             li.className = "msg msgRight";
             li.appendChild(dialog);
             messageContainer.appendChild(li);
-        }else if(role === "chatgpt"){
-            content.textContent = text;
+        } else if (role === "chatgpt") {
+            content.innerHTML = text; // 使用 innerHTML 以解析 HTML 標籤
             dialog.appendChild(content);
             dialog.appendChild(time);
             li.className = "msg";
@@ -332,7 +333,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(avatar);
             li.appendChild(dialog);
             messageContainer.appendChild(li);
-        }else{
+        } else {
             li.className = "msg";
             const avatar = document.createElement("i");
             avatar.className = "avatar";
@@ -345,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 linkButton.className = "btn";
                 linkButton.style.textAlign = "left";
                 linkButton.setAttribute('data-id', item.id);
-                linkButton.addEventListener("click",function (){
+                linkButton.addEventListener("click", function () {
                     const id = this.getAttribute('data-id');
                     faqAnswer(id);
                 })
@@ -358,6 +359,63 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         scrollDown();
     }
+
+
+    // function addMessage(text,role){
+    //     const now = new Date();
+    //     const hours = String(now.getHours()).padStart(2, '0');
+    //     const minutes = String(now.getMinutes()).padStart(2, '0');
+    //     const timeString = `${hours}:${minutes}`;
+    //     const li = document.createElement('li');
+    //     const dialog = document.createElement('div');
+    //     dialog.className = "dialog";
+    //     const content = document.createElement("div");
+    //     content.className = "content";
+    //     const time = document.createElement("time");
+    //     time.textContent = timeString;
+    //     if(role === "user"){
+    //         content.textContent = text;
+    //         dialog.appendChild(content);
+    //         dialog.appendChild(time);
+    //         li.className = "msg msgRight";
+    //         li.appendChild(dialog);
+    //         messageContainer.appendChild(li);
+    //     }else if(role === "chatgpt"){
+    //         content.textContent = text;
+    //         dialog.appendChild(content);
+    //         dialog.appendChild(time);
+    //         li.className = "msg";
+    //         const avatar = document.createElement("i");
+    //         avatar.className = "avatar";
+    //         li.appendChild(avatar);
+    //         li.appendChild(dialog);
+    //         messageContainer.appendChild(li);
+    //     }else{
+    //         li.className = "msg";
+    //         const avatar = document.createElement("i");
+    //         avatar.className = "avatar";
+    //         const guidance = document.createElement("p");
+    //         guidance.textContent = "請選擇以下選項：";
+    //         content.appendChild(guidance);
+    //         text.forEach(item => {
+    //             const linkButton = document.createElement("button");
+    //             linkButton.textContent = item.question;
+    //             linkButton.className = "btn";
+    //             linkButton.style.textAlign = "left";
+    //             linkButton.setAttribute('data-id', item.id);
+    //             linkButton.addEventListener("click",function (){
+    //                 const id = this.getAttribute('data-id');
+    //                 faqAnswer(id);
+    //             })
+    //             content.appendChild(linkButton);
+    //         })
+    //         dialog.appendChild(content);
+    //         li.appendChild(avatar);
+    //         li.appendChild(dialog);
+    //         messageContainer.appendChild(li);
+    //     }
+    //     scrollDown();
+    // }
 
     function scrollDown() {
         $("main").scrollTop($("main").prop("scrollHeight"));
@@ -393,7 +451,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => { return response.json(); })
             .then(data => {
-                const response = data.data;
+                const response = marked.parse(data.data);
                 addMessage(response,"chatgpt");
             })
             .catch(error => {
@@ -434,7 +492,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .then(data => {
-                const response = data.data;
+                const response = marked.parse(data.data);
                 sessionId = data.sessionId;
                 addMessage(response,"chatgpt");
             })
