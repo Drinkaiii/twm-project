@@ -5,12 +5,21 @@ import lombok.extern.log4j.Log4j2;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.servlet.resource.*;
 import org.springframework.web.bind.annotation.*;
 
 @Log4j2
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @Order(10)
+    @ExceptionHandler(value = UsernameNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ResponseEntity<?> handleUsernameNotFoundException(UsernameNotFoundException e) {
+        log.warn(e);
+        return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
+    }
 
     @Order(99)
     @ExceptionHandler(value = NoResourceFoundException.class)
