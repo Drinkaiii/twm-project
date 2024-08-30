@@ -6,20 +6,20 @@ function toggleCategoryFields() {
     document.getElementById('submit-section-general').classList.add('hidden');
     document.getElementById('submit-section-faq-qa').classList.add('hidden');
     document.getElementById('submit-section-faq-type').classList.add('hidden');
-    document.getElementById('add-name-and-url').classList.add('hidden');
-    document.getElementById('general-category-fields').classList.add('hidden');
     document.getElementById('category-warning').classList.add('hidden');
 
     document.getElementById('category-table').innerHTML = '';
 
     if (categoryType === 'general') {
+        document.getElementById('general-category-fields').classList.remove('hidden');
+        document.getElementById('submit-section-general').classList.remove('hidden');
+
         fetchCategoriesAndDisplayTable();
-        document.getElementById('add-name-and-url').classList.remove('hidden');
     } else if (categoryType === 'faq') {
         document.getElementById('faq-category-fields').classList.remove('hidden');
+        document.getElementById('category-warning').classList.remove('hidden');
         document.getElementById('submit-section-faq-qa').classList.remove('hidden');
         document.getElementById('questions-answers-section').classList.remove('hidden');
-        document.getElementById('category-warning').classList.remove('hidden');
     }
 }
 
@@ -83,6 +83,7 @@ function showFaqAdd() {
     document.getElementById('faq-add-new').classList.remove('hidden');
     document.getElementById('submit-section-faq-qa').classList.add('hidden');
     document.getElementById('submit-section-faq-type').classList.remove('hidden');
+    document.getElementById('type-table').innerHTML = '';
 
     checkCategorySelection();
 }
@@ -119,17 +120,23 @@ function checkCategorySelection() {
         categoryWarning.classList.remove('hidden');
     }
 }
-
+let token;
 document.addEventListener("DOMContentLoaded", function() {
     fetchCategories();
+    token = localStorage.getItem('jwtToken');
 });
 
 function fetchCategories() {
     fetch('api/1.0/chat/routines?category=4')
         .then(response => response.json())
-        .then(data => populateCategorySelect(data.data))
+        .then(data => {
+            populateCategorySelect(data.data);
+            populateTypeSelect(data.data);
+        })
         .catch(error => console.error('Error fetching categories:', error));
 }
+
+let typeId;
 
 function populateCategorySelect(categories) {
     const select = document.getElementById('faq-category-select');
@@ -141,7 +148,162 @@ function populateCategorySelect(categories) {
         option.textContent = category.type_name;
         select.appendChild(option);
     });
+
+    select.addEventListener('change', function() {
+        console.log(select);
+        typeId = select.value;
+
+        handleCategoriesAndDisplayTable(typeId);
+    });
 }
+
+let currentQuestions = [];
+
+function handleCategoriesAndDisplayTable(typeId) {
+    fetch(`api/1.0/admin/chat/review`)
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('type-table').classList.remove('hidden');
+            const filteredData = data.data.filter(item => item.type === parseInt(typeId));
+
+            if (filteredData.length === 0) {
+                document.getElementById('type-table').classList.add('hidden');
+                return;
+            }
+
+            currentQuestions = filteredData;
+
+            let tableHtml = `
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>問題</th>
+                            <th>答案</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredData.forEach(question => {
+                tableHtml += `
+                    <tr>
+                        <td>${question.id}</td>                    
+                        <td>${question.question}</td>
+                        <td>${question.answer}</td>
+                        <td>
+                            <button type="button" class="update-button" onclick="updateQuestion(${question.id})">編輯</button>
+                            <button type="button" class="delete-button" onclick="deleteQuestion(${question.id})">删除</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('type-table').innerHTML = tableHtml;
+            document.getElementById('submit-section-faq-qa').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching questions:', error));
+}
+
+let selectedId;
+
+function updateQuestion(id) {
+    selectedId = id;
+    const questionData = findQuestionById(id);
+
+    document.getElementById('question-input').value = questionData.question;
+    document.getElementById('answer-input').value = questionData.answer;
+
+    document.getElementById('updateModal').style.display = 'block';
+}
+
+function findQuestionById(id) {
+    return currentQuestions.find(question => question.id === id);
+}
+
+function populateTypeSelect(categories) {
+    const select = document.getElementById('type-select');
+    select.innerHTML = '<option value="">--請選擇--</option>';
+
+    categories.forEach(category => {
+        const option = document.createElement('option');
+        option.value = category.id;
+        option.textContent = category.type_name;
+        select.appendChild(option);
+    });
+
+    select.addEventListener('change', function() {
+        document.getElementById('type-select').value = select.value;
+    });
+}
+
+function closeModal() {
+    document.getElementById('updateModal').style.display = 'none';
+}
+
+function saveQuestion() {
+    const updatedType = document.getElementById('type-select').value;
+    const updatedQuestion = document.getElementById('question-input').value;
+    const updatedAnswer = document.getElementById('answer-input').value;
+
+    fetch(`api/1.0/admin/chat/update`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedId,
+            type: updatedType,
+            question: updatedQuestion,
+            answer: updatedAnswer
+        })
+    }).then(response => {
+        if (response.ok) {
+            console.log('更新成功');
+            closeModal();
+            handleCategoriesAndDisplayTable(updatedType);
+        } else {
+            console.error('更新失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+    closeModal();
+}
+
+function deleteQuestion(id) {
+    selectedId = id;
+    fetch(`api/1.0/admin/chat/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedId
+        })
+    }).then(response => {
+        if (response.ok) {
+            console.log('更新成功');
+            closeModal();
+            handleCategoriesAndDisplayTable(typeId);
+        } else {
+            console.error('更新失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+}
+
 
 function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
@@ -193,7 +355,5 @@ function submitFaqQa() {
     }
 }
 
-function addNameAndUrl() {
-    document.getElementById('general-category-fields').classList.remove('hidden');
-    document.getElementById('submit-section-general').classList.remove('hidden');
-}
+
+

@@ -1,6 +1,5 @@
 package com.twm.rowmapper;
 
-import com.twm.dto.ButtonDto;
 import com.twm.dto.CreateButtonDto;
 import org.springframework.jdbc.core.RowMapper;
 
