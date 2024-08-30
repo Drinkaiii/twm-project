@@ -1,14 +1,14 @@
-package com.twm.repository.admin;
+package com.twm.service.admin;
 
 import com.twm.dto.CreateButtonDto;
 import com.twm.dto.TypesDto;
 
-import java.util.List;
+import java.util.Map;
 
-public interface TypeRepository {
+public interface TypeService {
 
     void saveType(TypesDto typesDto);
-    List<TypesDto> getType(Integer id);
+    Map<String, Object> getType(Integer id);
     TypesDto updateType(TypesDto typesDto);
     boolean deleteType(Long id);
 
