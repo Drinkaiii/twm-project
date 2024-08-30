@@ -90,6 +90,12 @@ public class ButtonRepositoryImpl implements ButtonRepository {
 
             Map<String, Object> updateMap = new HashMap<String, Object>();
 
+            if(createButtonDto.getId() == null) {
+                updateMap.put("id", origin.getId());
+            }else {
+                updateMap.put("id", createButtonDto.getId());
+            }
+
             if(createButtonDto.getType() == null) {
                 updateMap.put("typeId", origin.getType());
             }else {
