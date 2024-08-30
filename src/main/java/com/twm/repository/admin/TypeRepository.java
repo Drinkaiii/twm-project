@@ -11,6 +11,8 @@ public interface TypeRepository {
 
     List<TypesDto> getType(Integer id);
 
+    List<TypesDto> getTypeAll();
+
     TypesDto updateType(TypesDto typesDto);
 
     boolean deleteType(Long id);
