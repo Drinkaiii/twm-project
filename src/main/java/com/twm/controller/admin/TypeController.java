@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -42,14 +43,14 @@ public class TypeController {
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponseDto<String>> handleRuntimeException(RuntimeException e) {
-        log.error(e.getMessage());
+        log.warn(e.getMessage());
         return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(MissFieldException.class)
-    public ResponseEntity<ErrorResponseDto<String>> handleMissFieldException(MissFieldException e) {
-        log.error(e.getMessage());
-        return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponseDto<String>> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e) {
+        log.warn(e.getMessage());
+        return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
 }

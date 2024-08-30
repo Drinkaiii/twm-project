@@ -8,8 +8,11 @@ import java.util.List;
 public interface TypeRepository {
 
     void saveType(TypesDto typesDto);
+
     List<TypesDto> getType(Integer id);
+
     TypesDto updateType(TypesDto typesDto);
+
     boolean deleteType(Long id);
 
 }

@@ -8,8 +8,11 @@ import java.util.Map;
 public interface TypeService {
 
     void saveType(TypesDto typesDto);
+
     Map<String, Object> getType(Integer id);
+
     TypesDto updateType(TypesDto typesDto);
+
     boolean deleteType(Long id);
 
 }

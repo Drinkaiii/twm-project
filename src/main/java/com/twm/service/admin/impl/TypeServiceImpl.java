@@ -19,7 +19,6 @@ import java.util.Map;
 public class TypeServiceImpl implements TypeService {
 
     private final TypeRepository typeRepository;
-    private final ButtonRepository buttonRepository;
 
     @Override
     public void saveType(TypesDto typesDto) {
