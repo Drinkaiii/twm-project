@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (userDto == null)
             throw new UsernameNotFoundException("User not found");
 
-        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE"+userDto.getRole()));
+        List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(userDto.getRole()));
 
         return org.springframework.security.core.userdetails.User.builder()
                 .username(userDto.getEmail())

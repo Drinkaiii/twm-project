@@ -11,6 +11,7 @@ import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
@@ -36,23 +37,22 @@ public class JwtFilter extends OncePerRequestFilter {
 
         log.info("enter JwtFilter");
         String requestURI = request.getRequestURI();
-        String[] excludedPaths = {
-                "/api/1.0/user/signup",
-                "/api/1.0/user/signin",
-                "/api/1.0/user/update-authTime",
-                "/captcha/image",
-                "/.*\\.html",
-                "/assets/.*"
-        };
+        String[] includedPaths = {"/api/1.0/chat/agents","/api/1.0/admin/.*"};
 
-        for (String path : excludedPaths)
+        boolean shouldFilter = false;
+        for (String path : includedPaths) {
             if (requestURI.matches(path)) {
-                filterChain.doFilter(request, response);
-                return;
+                shouldFilter = true;
+                break;
             }
+        }
+        if (!shouldFilter) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         final String authHeader = request.getHeader("Authorization");
-        System.out.println(authHeader);
+
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.error("Token validation error 1");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -80,13 +80,10 @@ public class JwtFilter extends OncePerRequestFilter {
 
             log.info("claims : " + claims);
 
-
-
-
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     claims,
                     null,
-                    List.of()
+                    List.of(new SimpleGrantedAuthority("ROLE_"+(String)claims.get("role")))
             );
             authToken.setDetails(
                     new WebAuthenticationDetailsSource().buildDetails(request)

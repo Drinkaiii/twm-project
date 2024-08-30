@@ -39,7 +39,7 @@ public class UserRepositoryImpl implements UserRepository {
             map.put("email", userDto.getEmail());
             map.put("password", encodedPassword);
             map.put("provider", userDto.getProvider());
-            map.put("role", "ROLE");
+            map.put("role", "USER");
             KeyHolder keyHolder = new GeneratedKeyHolder();
             SqlParameterSource paramSource = new MapSqlParameterSource(map);
             namedParameterJdbcTemplate.update(sql, paramSource, keyHolder, new String[]{"id"});
