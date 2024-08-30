@@ -29,7 +29,6 @@ function fetchCategoriesAndDisplayTable() {
         .then(response => response.json())
         .then(data => {
             const categories = data.data;
-            console.log(categories);
             let tableHtml = `
                 <table class="styled-table">
                     <thead>
@@ -120,6 +119,7 @@ function checkCategorySelection() {
         categoryWarning.classList.remove('hidden');
     }
 }
+
 let token;
 document.addEventListener("DOMContentLoaded", function() {
     fetchCategories();
@@ -160,55 +160,60 @@ function populateCategorySelect(categories) {
 let currentQuestions = [];
 
 function handleCategoriesAndDisplayTable(typeId) {
-    fetch(`api/1.0/admin/chat/review`)
-        .then(response => response.json())
-        .then(data => {
-            document.getElementById('type-table').classList.remove('hidden');
-            const filteredData = data.data.filter(item => item.type === parseInt(typeId));
+    fetch(`api/1.0/admin/chat/review`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('type-table').classList.remove('hidden');
+        const filteredData = data.data.filter(item => item.type === parseInt(typeId));
 
-            if (filteredData.length === 0) {
-                document.getElementById('type-table').classList.add('hidden');
-                return;
-            }
+        if (filteredData.length === 0) {
+            document.getElementById('type-table').classList.add('hidden');
+            return;
+        }
 
-            currentQuestions = filteredData;
+        currentQuestions = filteredData;
 
-            let tableHtml = `
-                <table class="styled-table">
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>問題</th>
-                            <th>答案</th>
-                            <th>操作</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-            `;
-
-            filteredData.forEach(question => {
-                tableHtml += `
+        let tableHtml = `
+            <table class="styled-table">
+                <thead>
                     <tr>
-                        <td>${question.id}</td>                    
-                        <td>${question.question}</td>
-                        <td>${question.answer}</td>
-                        <td>
-                            <button type="button" class="update-button" onclick="updateQuestion(${question.id})">編輯</button>
-                            <button type="button" class="delete-button" onclick="deleteQuestion(${question.id})">删除</button>
-                        </td>
+                        <th>ID</th>
+                        <th>問題</th>
+                        <th>答案</th>
+                        <th>操作</th>
                     </tr>
-                `;
-            });
+                </thead>
+                <tbody>
+        `;
 
+        filteredData.forEach(question => {
             tableHtml += `
-                    </tbody>
-                </table>
+                <tr>
+                    <td>${question.id}</td>                    
+                    <td>${question.question}</td>
+                    <td>${question.answer}</td>
+                    <td>
+                        <button type="button" class="update-button" onclick="updateQuestion(${question.id})">編輯</button>
+                        <button type="button" class="delete-button" onclick="deleteQuestion(${question.id})">删除</button>
+                    </td>
+                </tr>
             `;
+        });
 
-            document.getElementById('type-table').innerHTML = tableHtml;
-            document.getElementById('submit-section-faq-qa').classList.remove('hidden');
-        })
-        .catch(error => console.error('Error fetching questions:', error));
+        tableHtml += `
+                </tbody>
+            </table>
+        `;
+
+        document.getElementById('type-table').innerHTML = tableHtml;
+        document.getElementById('submit-section-faq-qa').classList.remove('hidden');
+    })
+    .catch(error => console.error('Error fetching questions:', error));
 }
 
 let selectedId;
@@ -220,6 +225,7 @@ function updateQuestion(id) {
     document.getElementById('question-input').value = questionData.question;
     document.getElementById('answer-input').value = questionData.answer;
 
+    document.getElementById('type-select').value = questionData.type;
     document.getElementById('updateModal').style.display = 'block';
 }
 
@@ -266,11 +272,11 @@ function saveQuestion() {
         })
     }).then(response => {
         if (response.ok) {
-            console.log('更新成功');
+            alert('更新成功');
             closeModal();
             handleCategoriesAndDisplayTable(updatedType);
         } else {
-            console.error('更新失敗');
+            alert('更新失敗');
         }
     }).catch(error => {
         console.error('Error updating question:', error);
@@ -292,11 +298,10 @@ function deleteQuestion(id) {
         })
     }).then(response => {
         if (response.ok) {
-            console.log('更新成功');
             closeModal();
             handleCategoriesAndDisplayTable(typeId);
         } else {
-            console.error('更新失敗');
+            alert('刪除失敗');
         }
     }).catch(error => {
         console.error('Error updating question:', error);
@@ -331,17 +336,17 @@ function submitFaqQa() {
             answer: answer
         };
 
-        console.log(payload);
-
         fetch('api/1.0/admin/chat/create', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${token}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(payload)
         })
         .then(response => {
             if (response.ok) {
+                handleCategoriesAndDisplayTable(typeId);
                 return {};
             } else {
                 throw new Error('Network response was not ok');
