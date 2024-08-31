@@ -1,15 +1,13 @@
 package com.twm.filter;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.twm.dto.error.ErrorResponseDto;
 import com.twm.util.JwtUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,30 +21,31 @@ import java.util.Map;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private JwtUtil jwtUtil;
+    private final JwtUtil jwtUtil;
 
     @Override
-    protected void doFilterInternal(
-            @NonNull HttpServletRequest request,
-            @NonNull HttpServletResponse response,
-            @NonNull FilterChain filterChain
-    ) throws ServletException, IOException {
+    protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
-        log.info("enter JwtFilter");
+        // filter for the pages
         String requestURI = request.getRequestURI();
-        String[] includedPaths = {"/api/1.0/chat/agents","/api/1.0/admin/.*"};
+        List<String> excludedPaths = List.of(
+                "/api/1.0/user/signup",
+                "/api/1.0/user/signin",
+                "/api/1.0/user/update-authTime",
+                "/api/1.0/user/email/reset-password",
+                "/api/1.0/user/reset-password",
+                "/api/1.0/user/solve-jwt",
+                "/captcha/image",
+                "/assets/",
+                "/account_",
+                "/result_"
+        );
 
-        boolean shouldFilter = false;
-        for (String path : includedPaths) {
-            if (requestURI.matches(path)) {
-                shouldFilter = true;
-                break;
-            }
-        }
-        if (!shouldFilter) {
+        boolean isExcluded = excludedPaths.stream().anyMatch(requestURI::startsWith);
+        if (isExcluded) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -62,32 +61,23 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         final String token = authHeader.substring(7);
-
-        log.info(token);
-
         try {
-
             if (token.isEmpty() || !jwtUtil.isTokenValid(token)) {
                 log.error("Token validation error 2");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Invalid token\"}");
-//                filterChain.doFilter(request, response);
                 return;
             }
 
             Map<String,Object> claims = jwtUtil.getClaims(token);
-
-            log.info("claims : " + claims);
 
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     claims,
                     null,
                     List.of(new SimpleGrantedAuthority("ROLE_"+(String)claims.get("role")))
             );
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource().buildDetails(request)
-            );
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
 
