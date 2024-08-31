@@ -39,6 +39,7 @@ public class JwtFilter extends OncePerRequestFilter {
                 "/api/1.0/user/update-authTime",
                 "/api/1.0/user/email/reset-password",
                 "/api/1.0/user/reset-password",
+                "/solve-jwt",
                 "/captcha/image",
                 "/**/*.html",
                 "/assets/**"
