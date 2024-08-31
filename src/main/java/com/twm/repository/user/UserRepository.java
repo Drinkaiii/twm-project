@@ -10,5 +10,5 @@ public interface UserRepository {
     int updateAuthTimeByUserId(String userId, String authTime);
     UserDto getTwmUserByEmailAndProvider(String email);
     Integer createTwmUser (String email);
-
+    Integer saveSupportRecords(String name,String email,String description,String requestTime);
 }
