@@ -52,7 +52,6 @@ public class JwtFilter extends OncePerRequestFilter {
         }
 
         final String authHeader = request.getHeader("Authorization");
-        System.out.println(authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.error("Token validation error 1");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -80,7 +79,6 @@ public class JwtFilter extends OncePerRequestFilter {
             );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
-            System.out.println(claims.get("role"));
 
         } catch (Exception e) {
             log.error("Token validation error", e);
