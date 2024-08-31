@@ -1,4 +1,12 @@
 $(document).ready(function () {
+    const token = localStorage.getItem('jwtToken');
+    if (token) {
+        verifyJwtToken(token);
+    }else{
+        window.history.back();
+        return;
+    }
+    document.body.style.display = 'block';
     // Scroll到底部自動勾選checkbox、button可用
     $(".content").scroll(function () {
         maxScrollHeight = $(".content").prop("scrollHeight") - $(".content").height() - 0;
@@ -89,6 +97,32 @@ $(document).ready(function () {
             document.body.removeChild(popupOverlay);
         }
         window.location.href = '../account_login.html';
+    }
+
+    function verifyJwtToken(token){
+        fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Token is invalid or an error occurred during the validation.");
+                }
+            })
+            .then(data => {
+                console.log(data.id)
+                console.log(data.authTime)
+                if (data.authTime !== null || data.authTime !== "") {
+                    window.history.back();
+                }
+            })
+            .catch(error => {
+                localStorage.removeItem("userInfo");
+                localStorage.removeItem("jwtToken");
+                localStorage.removeItem("userId");
+                window.history.back();
+            })
     }
 
 });

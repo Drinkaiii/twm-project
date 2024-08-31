@@ -39,19 +39,23 @@ public class JwtFilter extends OncePerRequestFilter {
                 "/api/1.0/user/update-authTime",
                 "/api/1.0/user/email/reset-password",
                 "/api/1.0/user/reset-password",
-                "/solve-jwt",
+                "/api/1.0/user/solve-jwt",
                 "/captcha/image",
+                "/favicon.ico",
                 "/**/*.html",
                 "/assets/**"
         };
 
         for (String path : excludedPaths) {
+            log.info("excluded path: {}", path);
+            log.info("requestURI: {}", requestURI);
             if (pathMatcher.match(path, requestURI)) {
+                log.info("1."+requestURI);
                 filterChain.doFilter(request, response);
                 return;
             }
         }
-
+        log.info("2.requestURI: {}", requestURI);
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.error("Token validation error 1");

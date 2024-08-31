@@ -1,5 +1,11 @@
 //===========================================stack process===========================================
-
+// verify JwtToken
+const jwtToken = localStorage.getItem('jwtToken');
+if (jwtToken) {
+    verifyJwtToken(jwtToken);
+}else{
+    document.body.style.display = 'block';
+}
 // get the elements
 const button = document.querySelector(".btnBox");
 const input_password = document.querySelector(".origin input");
@@ -114,4 +120,27 @@ function switchButton(isEnabled) {
 function isValidPassword(password) {
     const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordPattern.test(password);
+}
+
+function verifyJwtToken(token){
+    fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+        method: 'GET'
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Token is invalid or an error occurred during the validation.");
+            }
+        })
+        .then(data => {
+            localStorage.setItem("userInfo",data.email)
+            window.location.href = "../chat.html";
+        })
+        .catch(error => {
+            localStorage.removeItem("userInfo");
+            localStorage.removeItem("jwtToken");
+            localStorage.removeItem("userId");
+            document.body.style.display = 'block';
+        })
 }

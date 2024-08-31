@@ -9,6 +9,9 @@ main {
     padding: 20px;
 }
 
+body{
+    display: none;
+}
 .terms {
     max-width: 1000px;
     margin: 0 auto;
