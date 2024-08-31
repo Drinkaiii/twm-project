@@ -2,6 +2,7 @@ package com.twm.service.user;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.dto.supportDto;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 
@@ -14,5 +15,7 @@ public interface UserService {
     Boolean resetPassword(ResetPasswordDto resetPasswordDto);
     boolean validateCaptcha(String captchaInput, HttpSession session);
     Boolean updateAuthTime(String userId);
-    public Map solveJwt(String token);
+    Map solveJwt(String token);
+    Boolean saveSupportRequestRecord(supportDto supportDto);
+
 }

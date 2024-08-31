@@ -3,10 +3,10 @@ package com.twm.controller;
 import com.twm.dto.UserDto;
 import com.twm.dto.error.ErrorResponseDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.dto.supportDto;
 import com.twm.exception.custom.*;
 import com.twm.service.user.UserService;
 
-import jakarta.mail.AuthenticationFailedException;
 import jakarta.servlet.http.HttpSession;
 
 import jakarta.validation.Valid;
@@ -88,6 +88,23 @@ public class UserController {
             return ResponseEntity.ok("The auth time has been updated");
         }else{
             throw new RuntimeException("Failed to update auth time");
+        }
+    }
+
+    @PostMapping("/support-request")
+    public ResponseEntity<?> supportRequest(@Valid @RequestBody supportDto supportDto, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            List<String> errors = bindingResult.getAllErrors()
+                    .stream()
+                    .map(ObjectError::getDefaultMessage)
+                    .collect(Collectors.toList());
+            ErrorResponseDto<List<String>> errorResponse = ErrorResponseDto.error(errors);
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+        if(userService.saveSupportRequestRecord(supportDto)){
+            return ResponseEntity.ok("The request has been saved.");
+        }else{
+            return new ResponseEntity<>(ErrorResponseDto.error("Failed to save the request"), HttpStatus.BAD_REQUEST);
         }
     }
 

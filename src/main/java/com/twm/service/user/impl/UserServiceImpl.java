@@ -2,6 +2,7 @@ package com.twm.service.user.impl;
 
 import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.dto.supportDto;
 import com.twm.exception.custom.*;
 import com.twm.repository.user.UserRepository;
 import com.twm.service.user.UserService;
@@ -112,6 +113,12 @@ public class UserServiceImpl implements UserService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public Boolean saveSupportRequestRecord(supportDto supportDto){
+        Integer affectedRows = userRepository.saveSupportRecords(supportDto.getName(),supportDto.getEmail(),supportDto.getDescription(),getCurrentTime());
+        return affectedRows != null && affectedRows != 0;
     }
 
     private Map<String, Object> generateAuthResponse(UserDto userDto) {
