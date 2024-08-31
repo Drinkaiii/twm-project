@@ -1,8 +1,8 @@
--- MySQL dump 10.13  Distrib 8.4.0, for Win64 (x86_64)
+-- MySQL dump 10.13  Distrib 8.0.38, for macos14 (arm64)
 --
 -- Host: localhost    Database: twm
 -- ------------------------------------------------------
--- Server version	8.4.0
+-- Server version	8.0.38
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -30,7 +30,7 @@ CREATE TABLE `buttons` (
   PRIMARY KEY (`id`),
   KEY `buttons_type_id_foreign` (`type_id`),
   CONSTRAINT `buttons_type_id_foreign` FOREIGN KEY (`type_id`) REFERENCES `types` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=63 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=64 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -122,6 +122,32 @@ INSERT INTO `records` VALUES (3,1,'HI','您好！有什麼我可以幫您解答�
 UNLOCK TABLES;
 
 --
+-- Table structure for table `support`
+--
+
+DROP TABLE IF EXISTS `support`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `support` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) DEFAULT NULL,
+  `email` varchar(255) DEFAULT NULL,
+  `description` text,
+  `request_time` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `support`
+--
+
+LOCK TABLES `support` WRITE;
+/*!40000 ALTER TABLE `support` DISABLE KEYS */;
+/*!40000 ALTER TABLE `support` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `types`
 --
 
@@ -170,7 +196,7 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,NULL,'test@test.com','$2a$10$Q2WtuXg7wzly6DvSMrxwoOey/QAC44NOpwQJxt4axIBlm91HgZrB6','native','2024-08-30 16:01:39','ADMIN'),(2,NULL,'kai410705@gmail.com','$2a$10$kCo63tguAkG557vhSnQNhOEt62vT.3MgmXu07XE6/.fdVyrzJPh8G','native','2024-08-30 22:09:46','ADMIN'),(3,NULL,'test3333@test.com','$2a$10$wwANCgiSwb8l7..tqvPJXOIWC08IgTLbQVhUOWfp3f6./APw0GSEy','native','2024-08-31 00:16:08','USER');
+INSERT INTO `users` VALUES (1,NULL,'test@test.com','$2a$10$Q2WtuXg7wzly6DvSMrxwoOey/QAC44NOpwQJxt4axIBlm91HgZrB6','native','2024-08-30 16:01:39','USER'),(2,NULL,'kai410705@gmail.com','$2a$10$kCo63tguAkG557vhSnQNhOEt62vT.3MgmXu07XE6/.fdVyrzJPh8G','native','2024-08-30 22:09:46','USER'),(3,NULL,'test3333@test.com','$2a$10$wwANCgiSwb8l7..tqvPJXOIWC08IgTLbQVhUOWfp3f6./APw0GSEy','native','2024-08-31 00:16:08','ADMIN');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -183,4 +209,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-08-31  0:28:09
+-- Dump completed on 2024-08-31 13:06:12
