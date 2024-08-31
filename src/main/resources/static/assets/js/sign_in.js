@@ -1,44 +1,19 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    // To determine whether an OAuth login redirection has occurred by checking if the URL contains a "code" parameter, and to load a loading animation accordingly.
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const code = urlParams.get('code');
     if (code !== null) {
-        const overlay = document.createElement('div');
-        overlay.style.position = 'fixed';
-        overlay.style.top = '0';
-        overlay.style.left = '0';
-        overlay.style.width = '100%';
-        overlay.style.height = '100%';
-        overlay.style.backgroundColor = 'white';
-        overlay.style.zIndex = '1000';
-        overlay.style.display = 'flex';
-        overlay.style.justifyContent = 'center';
-        overlay.style.alignItems = 'center';
-        overlay.innerHTML = '<img class="loading" src="./assets/commonElement/img/Icon_Loading.svg">';
-        document.body.appendChild(overlay);
+        loading();
     }
 
+    // verify JwtToken
     const token = localStorage.getItem('jwtToken');
     if (token) {
-        fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
-            method: 'GET'
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error("Token is invalid or an error occurred during the validation.");
-                }
-            })
-            .then(data => {
-                console.log(data);
-                localStorage.setItem("userInfo",data.email)
-                window.location.href = "../chat.html";
-            })
-            .catch(error => {
-                localStorage.removeItem("userInfo");
-            })
+        verifyJwtToken(token);
+    }else{
+        document.body.style.display = 'block';
     }
 
     const twmLoginButton = document.querySelector(`#twmLoginButton`);
@@ -48,37 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     })
 
     if (code !== null) {
-        fetch('/api/1.0/user/signin', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                accessToken: code,
-                provider: "twm"
-            })
-        })
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new error("fail to get access token");
-                }
-            })
-            .then(data => {
-                const jwtToken = data.accessToken;
-                localStorage.setItem('jwtToken', jwtToken);
-                const userId = data.user.id;
-                localStorage.setItem('userId', userId);
-                if (data.user.authTime === null || data.user.authTime === "") {
-                    window.location.href = '../terms.html';
-                    return;
-                }
-                window.location.href = '../chat.html';
-            })
-            .catch(error => {
-                showPopUp('登入失敗，請重新登入。');
-            })
+        OAuthSignIn();
     }
     window.onload = loadUserEmail;
     const emailInput = document.querySelector('input[name="email"]');
@@ -106,6 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     }
+
     emailInput.addEventListener('input', updateButtonState);
     passwordInput.addEventListener('input', updateButtonState);
     captchaInput.addEventListener('input', updateButtonState);
@@ -173,10 +119,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
             .then(data => {
-                const jwtToken = data.accessToken;
-                localStorage.setItem('jwtToken', jwtToken);
-                const userId = data.user.id;
-                localStorage.setItem('userId', userId);
+                localStorage.setItem('jwtToken', data.accessToken);
+                localStorage.setItem('userId', data.user.id);
+                localStorage.setItem("userInfo",data.user.email);
                 if (data.user.authTime === null || data.user.authTime === "") {
                     window.location.href = '../terms.html';
                     return;
@@ -196,6 +141,80 @@ document.addEventListener('DOMContentLoaded', () => {
     header();
     passwordEyes();
     updateButtonState();
+
+    function verifyJwtToken(token){
+        fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Token is invalid or an error occurred during the validation.");
+                }
+            })
+            .then(data => {
+                localStorage.setItem("userInfo",data.email)
+                window.location.href = "../chat.html";
+            })
+            .catch(error => {
+                localStorage.removeItem("userInfo");
+                localStorage.removeItem("jwtToken");
+                localStorage.removeItem("userId");
+                document.body.style.display = 'block';
+            })
+    }
+
+    function OAuthSignIn(){
+        fetch('/api/1.0/user/signin', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                accessToken: code,
+                provider: "twm"
+            })
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new error("fail to get access token");
+                }
+            })
+            .then(data => {
+                const jwtToken = data.accessToken;
+                localStorage.setItem('jwtToken', jwtToken);
+                const userId = data.user.id;
+                localStorage.setItem('userId', userId);
+                localStorage.setItem("userInfo",data.user.email);
+                if (data.user.authTime === null || data.user.authTime === "") {
+                    window.location.href = '../terms.html';
+                    return;
+                }
+                window.location.href = '../chat.html';
+            })
+            .catch(error => {
+                showPopUp('登入失敗，請重新登入。');
+            })
+    }
+
+    function loading(){
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'white';
+        overlay.style.zIndex = '1000';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.innerHTML = '<img class="loading" src="./assets/commonElement/img/Icon_Loading.svg">';
+        document.body.appendChild(overlay);
+    }
 
     function rememberEmail() {
         const rememberMe = document.getElementById('checkbox').checked;

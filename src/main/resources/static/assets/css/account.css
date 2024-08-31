@@ -14,6 +14,11 @@ h1 {
   padding: 20px 12px;
   background: var(--Gray);
 }
+
+body{
+  display: none;
+}
+
 .loginForm {
   display: grid;
   gap: 16px;
