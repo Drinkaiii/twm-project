@@ -1,3 +1,10 @@
+let token;
+document.addEventListener("DOMContentLoaded", function () {
+    token = localStorage.getItem('jwtToken');
+    solveJwt(token);
+    fetchCategories();
+});
+
 function toggleCategoryFields() {
     const categoryType = document.getElementById('category-type').value;
     document.getElementById('character-fields').classList.add('hidden');
@@ -8,6 +15,7 @@ function toggleCategoryFields() {
     document.getElementById('submit-section-faq-type').classList.add('hidden');
     document.getElementById('category-warning').classList.add('hidden');
 
+    document.getElementById('support-table').innerHTML = '';
     document.getElementById('character-table').innerHTML = '';
 
     if (categoryType === 'general') {
@@ -21,6 +29,8 @@ function toggleCategoryFields() {
         document.getElementById('submit-section-faq-qa').classList.remove('hidden');
         document.getElementById('questions-answers-section').classList.remove('hidden');
         document.getElementById('faq-add-new').classList.add('hidden');
+    } else if (categoryType === 'support') {
+        fetchSupportAndDisplayTable();
     }
 }
 
@@ -139,14 +149,13 @@ function checkCategorySelection() {
     }
 }
 
-let token;
-document.addEventListener("DOMContentLoaded", function () {
-    fetchCategories();
-    token = localStorage.getItem('jwtToken');
-});
-
 function fetchCategories() {
-    fetch('api/1.0/chat/routines?category=4')
+    fetch(`api/1.0/chat/routines?category=4`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
         .then(response => response.json())
         .then(data => {
             populateCategorySelect(data.data);
@@ -638,4 +647,93 @@ function deleteCharacter(charId) {
     });
 
 }
+
+function solveJwt(token) {
+    fetch(`api/1.0/user/solve-jwt?token=${token}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Failed to solve JWT');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            const userRole = data.role;
+
+            if (userRole !== 'ADMIN') {
+                window.location.href = '../account_login.html';
+            } else {
+                console.log('User is an admin, proceeding...');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('無法解碼JWT，請檢查Token是否正確');
+        });
+}
+
+function fetchSupportAndDisplayTable() {
+    fetch(`api/1.0/admin/support/review`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('support-table').classList.remove('hidden');
+            const filteredData = data.data;
+
+            if (filteredData.length === 0) {
+                document.getElementById('support-table').classList.add('hidden');
+                return;
+            }
+
+            currentData = filteredData;
+
+            let tableHtml = `
+                <table class="styled-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>姓名</th>
+                            <th>信箱</th>
+                            <th>描述</th>
+                            <th>時間</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            filteredData.forEach(support => {
+                tableHtml += `
+                    <tr>
+                        <td>${support.id}</td>
+                        <td>${support.name}</td>
+                        <td>${support.email}</td>                   
+                        <td>${support.description}</td>
+                        <td>${support.request_time}</td>
+                    </tr>
+                `;
+            });
+
+            tableHtml += `
+                    </tbody>
+                </table>
+            `;
+
+            document.getElementById('support-table').innerHTML = tableHtml;
+        })
+        .catch(error => console.error('Error fetching categories:', error));
+}
+
+
+
 
