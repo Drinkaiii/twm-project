@@ -19,27 +19,37 @@
 </header>
 <h1>後台管理系統</h1>
 
-<label for="category-type">請選擇您欲查看或更新的按鈕類別或問答：</label>
+<label for="category-type">請選擇您欲查看或更新的類別：</label>
 <select id="category-type" onchange="toggleCategoryFields()">
     <option value="">--請選擇--</option>
-    <option value="general">總類別</option>
-    <option value="faq">常見問題類別</option>
+    <option value="general">AI角色</option>
+    <option value="faq">常見問答</option>
 </select>
 
-<div id="category-table"></div>
-<div id="general-category-fields" class="hidden">
-    <h2>請輸入類別名稱及連結</h2>
-    <label for="general-category-name">類別名稱：</label>
-    <input type="text" id="general-category-name">
-    <br>
-    <label for="general-category-url">連結：</label>
-    <input type="text" id="general-category-url">
+<div id="updateCharacterModal" class="modal hidden">
+    <div class="modal-content">
+        <span class="close-button" onclick="closeModal()">&times;</span>
+        <h2>編輯角色名稱</h2>
+        <br>
+        <label for="character-input">角色名稱：</label>
+        <input type="text" id="character-input">
+        <br>
+        <button type="button" onclick="saveCharacter()">保存</button>
+    </div>
 </div>
-<div id="category-warning" class="hidden" style="color: var(--Orange); margin: 10px 20px;">請先選擇或新增類別</div>
+
+<div id="character-table"></div>
+<div id="character-fields" class="hidden">
+    <h2>請輸入欲新增的角色名稱</h2>
+    <label for="character-name"></label>
+    <input type="text" id="character-name">
+</div>
+
+<div id="category-warning" class="hidden" style="color: var(--Orange); margin: 10px 20px;">請先選擇或修改類別</div>
 <div id="faq-category-fields" class="hidden">
     <div id="faq-action-buttons">
         <button type="button" onclick="showFaqSelect()">選擇現有的類別</button>
-        <button type="button" onclick="showFaqAdd()">新增類別</button>
+        <button type="button" onclick="showFaqAdd()">修改類別</button>
     </div>
     <div id="faq-select-existing" class="hidden">
         <select id="faq-category-select" onchange="checkCategorySelection()">
@@ -71,7 +81,20 @@
         </div>
     </div>
 
+    <div id="updateTypeModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close-button" onclick="closeModal()">&times;</span>
+            <h2>編輯類別名稱</h2>
+            <br>
+            <label for="type-input">類別名稱：</label>
+            <input type="text" id="type-input">
+            <br>
+            <button type="button" onclick="saveType()">保存</button>
+        </div>
+    </div>
+
     <div id="faq-add-new" class="hidden">
+        <h2>請輸入欲新增的類別名稱</h2>
         <label for="faq-category-name"></label>
         <input type="text" id="faq-category-name" oninput="checkCategorySelection()">
     </div>
@@ -80,7 +103,7 @@
 <button type="button" id="add-qa" class="hidden" onclick="addQa()">新增</button>
 
 <div id="questions-answers-section" class="hidden">
-    <h2>請輸入至少一個屬於該類別的問題及答案</h2>
+    <h2>請輸入欲新增的類別問題及答案</h2>
     <div id="question-answer-container">
         <div class="question-answer-group">
             <label for="question-0">問題：</label>
