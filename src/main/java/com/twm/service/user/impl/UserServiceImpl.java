@@ -121,6 +121,7 @@ public class UserServiceImpl implements UserService {
         userInfo.put("provider", userDto.getProvider());
         userInfo.put("email", userDto.getEmail());
         userInfo.put("authTime", userDto.getAuthTime());
+        userInfo.put("role", userDto.getRole());
         String jwtToken = jwtUtil.getToken(userInfo);
         int expiresIn = jwtUtil.getExpiration();
         response.put("accessToken", jwtToken);
