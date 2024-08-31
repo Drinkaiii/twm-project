@@ -23,7 +23,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests((authorize) -> {
                     authorize
                             .requestMatchers("/api/1.0/admin/**").hasRole("ADMIN")
-                            .requestMatchers("/api/1.0/chat/agents").hasAnyRole("USER", "ADMIN")
+                            .requestMatchers("/api/1.0/chat/**").hasAnyRole("USER", "ADMIN")
                             .anyRequest().permitAll();
                 })
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
