@@ -202,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(showPopup, 0.1 * 60 * 1000);
+            timeout = setTimeout(showPopup, 15 * 60 * 1000);
         }
 
         function showPopup() {
