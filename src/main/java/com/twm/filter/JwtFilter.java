@@ -13,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
@@ -25,33 +26,33 @@ import java.util.Map;
 public class JwtFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
 
         // filter for the pages
         String requestURI = request.getRequestURI();
-        List<String> excludedPaths = List.of(
+        String[] excludedPaths = {
                 "/api/1.0/user/signup",
                 "/api/1.0/user/signin",
                 "/api/1.0/user/update-authTime",
                 "/api/1.0/user/email/reset-password",
                 "/api/1.0/user/reset-password",
-                "/api/1.0/user/solve-jwt",
                 "/captcha/image",
-                "/assets/",
-                "/account_",
-                "/result_"
-        );
+                "/**/*.html",
+                "/assets/**"
+        };
 
-        boolean isExcluded = excludedPaths.stream().anyMatch(requestURI::startsWith);
-        if (isExcluded) {
-            filterChain.doFilter(request, response);
-            return;
+        for (String path : excludedPaths) {
+            if (pathMatcher.match(path, requestURI)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
         }
 
         final String authHeader = request.getHeader("Authorization");
-
+        System.out.println(authHeader);
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.error("Token validation error 1");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -79,7 +80,7 @@ public class JwtFilter extends OncePerRequestFilter {
             );
             authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
             SecurityContextHolder.getContext().setAuthentication(authToken);
-
+            System.out.println(claims.get("role"));
 
         } catch (Exception e) {
             log.error("Token validation error", e);
