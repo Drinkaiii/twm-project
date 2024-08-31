@@ -121,17 +121,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const button = document.createElement('button');
         button.textContent = '確 認';
+        button.style.border = 'none';
+        button.style.backgroundColor = '#ff6600';
+        button.style.color = '#fff';
         button.style.marginTop = '20px';
-        button.style.fontWeight = "700";
-        button.style.padding = '7px 20px';
+        button.style.fontWeight = '700';
+        button.style.padding = '8px 20px';
+        button.style.cursor = 'pointer';
+        button.style.transition = 'background-color 0.3s ease';
+        button.style.borderRadius = '4px';
+        button.style.fontSize = '16px';
+        button.style.width = 'auto';
+
+        button.addEventListener('mouseover', () => {
+            button.style.backgroundColor = '#e65c00';
+        });
+
+        button.addEventListener('mouseout', () => {
+            button.style.backgroundColor = '#ff6600';
+        });
+
         button.onclick = function() {
             closeConnectionPopup(overlay);
             if (isReconnect) {
                 resetChatSystem();
             }
         };
-        modal.appendChild(button);
 
+        modal.appendChild(button);
         overlay.appendChild(modal);
         document.body.appendChild(overlay);
 
@@ -185,7 +202,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         function resetTimer() {
             clearTimeout(timeout);
-            timeout = setTimeout(showPopup, 15 * 60 * 1000);
+            timeout = setTimeout(showPopup, 0.1 * 60 * 1000);
         }
 
         function showPopup() {
@@ -214,24 +231,40 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const button = document.createElement('button');
             button.textContent = '確 認';
+            button.style.border = 'none';
+            button.style.backgroundColor = '#ff6600';
+            button.style.color = '#fff';
             button.style.marginTop = '20px';
-            button.style.fontWeight = "700";
-            button.style.padding = '7px 20px';
+            button.style.fontWeight = '700';
+            button.style.padding = '8px 20px';
+            button.style.cursor = 'pointer';
+            button.style.transition = 'background-color 0.3s ease';
+            button.style.borderRadius = '4px';
+            button.style.fontSize = '16px';
+            button.style.width = 'auto';
+
+            button.addEventListener('mouseover', () => {
+                button.style.backgroundColor = '#e65c00';
+            });
+
+            button.addEventListener('mouseout', () => {
+                button.style.backgroundColor = '#ff6600';
+            });
+
             button.onclick = function() {
                 closePopup(overlay);
             };
             modal.appendChild(button);
 
             overlay.appendChild(modal);
-
             document.body.appendChild(overlay);
-
         }
 
         function closePopup(overlay) {
             document.body.removeChild(overlay);
             resetSystem();
         }
+
 
         function resetSystem() {
             window.location.reload();
@@ -272,12 +305,12 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .catch(error => {
                 console.error('Error:', error);
-                prompt.textContent = "系統異常，請點擊下方按鈕轉接至真人客服。"
+                prompt.textContent = "系統異常，請點擊下方按鈕填寫客服表單。"
                 const button = document.createElement('button');
                 button.className = 'btn';
-                button.textContent = "前往真人客服頁面";
+                button.textContent = "";
                 button.addEventListener('click', function() {
-                    window.location.href = '#';
+                    window.location.href = 'https://twm-appworks.com/customer_service_form.html';
                 });
                 button_container.appendChild(button);
                 float.appendChild(float_content);
@@ -357,63 +390,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         scrollDown();
     }
-
-
-    // function addMessage(text,role){
-    //     const now = new Date();
-    //     const hours = String(now.getHours()).padStart(2, '0');
-    //     const minutes = String(now.getMinutes()).padStart(2, '0');
-    //     const timeString = `${hours}:${minutes}`;
-    //     const li = document.createElement('li');
-    //     const dialog = document.createElement('div');
-    //     dialog.className = "dialog";
-    //     const content = document.createElement("div");
-    //     content.className = "content";
-    //     const time = document.createElement("time");
-    //     time.textContent = timeString;
-    //     if(role === "user"){
-    //         content.textContent = text;
-    //         dialog.appendChild(content);
-    //         dialog.appendChild(time);
-    //         li.className = "msg msgRight";
-    //         li.appendChild(dialog);
-    //         messageContainer.appendChild(li);
-    //     }else if(role === "chatgpt"){
-    //         content.textContent = text;
-    //         dialog.appendChild(content);
-    //         dialog.appendChild(time);
-    //         li.className = "msg";
-    //         const avatar = document.createElement("i");
-    //         avatar.className = "avatar";
-    //         li.appendChild(avatar);
-    //         li.appendChild(dialog);
-    //         messageContainer.appendChild(li);
-    //     }else{
-    //         li.className = "msg";
-    //         const avatar = document.createElement("i");
-    //         avatar.className = "avatar";
-    //         const guidance = document.createElement("p");
-    //         guidance.textContent = "請選擇以下選項：";
-    //         content.appendChild(guidance);
-    //         text.forEach(item => {
-    //             const linkButton = document.createElement("button");
-    //             linkButton.textContent = item.question;
-    //             linkButton.className = "btn";
-    //             linkButton.style.textAlign = "left";
-    //             linkButton.setAttribute('data-id', item.id);
-    //             linkButton.addEventListener("click",function (){
-    //                 const id = this.getAttribute('data-id');
-    //                 faqAnswer(id);
-    //             })
-    //             content.appendChild(linkButton);
-    //         })
-    //         dialog.appendChild(content);
-    //         li.appendChild(avatar);
-    //         li.appendChild(dialog);
-    //         messageContainer.appendChild(li);
-    //     }
-    //     scrollDown();
-    // }
 
     function scrollDown() {
         $("main").scrollTop($("main").prop("scrollHeight"));
@@ -500,8 +476,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
     }
 
-    function showPopUp(url){
-        console.log(url);
+    function showPopUp(url) {
         const popupOverlay = document.createElement('div');
         popupOverlay.id = 'popupOverlay';
         popupOverlay.style.position = 'fixed';
@@ -528,31 +503,59 @@ document.addEventListener('DOMContentLoaded', () => {
         popupText.textContent = '即將前往 GeForce Now 官網';
 
         const trueButton = document.createElement('button');
-        trueButton.id = 'closeButton';
+        trueButton.id = 'trueButton';
         trueButton.textContent = '同 意';
-        trueButton.style.marginTop = '20px';
-        trueButton.style.marginRight = '20px';
-        trueButton.style.fontWeight = `700`;
-        trueButton.style.padding = '5px 15px';
+        trueButton.style.border = 'none';
+        trueButton.style.backgroundColor = '#ff6600';
+        trueButton.style.color = '#fff';
+        trueButton.style.margin = '10px 20px 0 auto';
+        trueButton.style.fontWeight = '700';
+        trueButton.style.padding = '8px 20px';
         trueButton.style.cursor = 'pointer';
-        trueButton.style.transition = 'background-color 0.5s ease';
+        trueButton.style.transition = 'background-color 0.3s ease';
+        trueButton.style.borderRadius = '4px';
+        trueButton.style.fontSize = '16px';
+        trueButton.style.width = 'auto';
 
-        trueButton.addEventListener('click', function(){
-            closePopUp(url,true);
+        trueButton.addEventListener('mouseover', () => {
+            trueButton.style.backgroundColor = '#e65c00';
+        });
+
+        trueButton.addEventListener('mouseout', () => {
+            trueButton.style.backgroundColor = '#ff6600';
+        });
+
+        trueButton.addEventListener('click', function () {
+            closePopUp(url, true);
         });
 
         const falseButton = document.createElement('button');
-        falseButton.id = 'closeButton';
+        falseButton.id = 'falseButton';
         falseButton.textContent = '不 同 意';
-        falseButton.style.marginTop = '20px';
-        falseButton.style.fontWeight = `700`;
-        falseButton.style.padding = '5px 15px';
+        falseButton.style.border = 'none';
+        falseButton.style.backgroundColor = '#ff6600';
+        falseButton.style.color = '#fff';
+        falseButton.style.margin = '10px auto 0 auto';
+        falseButton.style.fontWeight = '700';
+        falseButton.style.padding = '8px 20px';
         falseButton.style.cursor = 'pointer';
-        falseButton.style.transition = 'background-color 0.5s ease';
+        falseButton.style.transition = 'background-color 0.3s ease';
+        falseButton.style.borderRadius = '4px';
+        falseButton.style.fontSize = '16px';
+        falseButton.style.width = 'auto';
 
-        falseButton.addEventListener('click', function(){
-            closePopUp(url,false);
+        falseButton.addEventListener('mouseover', () => {
+            falseButton.style.backgroundColor = '#e65c00';
         });
+
+        falseButton.addEventListener('mouseout', () => {
+            falseButton.style.backgroundColor = '#ff6600';
+        });
+
+        falseButton.addEventListener('click', function () {
+            closePopUp(url, false);
+        });
+
         popupContent.appendChild(popupText);
         popupContent.appendChild(trueButton);
         popupContent.appendChild(falseButton);
@@ -562,18 +565,18 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(popupOverlay);
     }
 
-    function closePopUp(url,status){
+    function closePopUp(url, status) {
         const popupOverlay = document.getElementById('popupOverlay');
         if (popupOverlay) {
             document.body.removeChild(popupOverlay);
         }
-        if(status){
+        if (status) {
             console.log(url);
             window.location.href = url;
         }
     }
 
-    function showErrorPopUp(errorMessage){
+    function showErrorPopUp(errorMessage) {
         const popupOverlay = document.createElement('div');
         popupOverlay.id = 'popupOverlay';
         popupOverlay.style.position = 'fixed';
@@ -598,17 +601,31 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const popupText = document.createElement('p');
         popupText.textContent = errorMessage;
+
         const trueButton = document.createElement('button');
         trueButton.id = 'closeButton';
         trueButton.textContent = '確 認';
-        trueButton.style.marginTop = '20px';
-        trueButton.style.marginRight = '20px';
-        trueButton.style.fontWeight = `700`;
-        trueButton.style.padding = '5px 15px';
+        trueButton.style.border = 'none';
+        trueButton.style.backgroundColor = '#ff6600';
+        trueButton.style.color = '#fff';
+        trueButton.style.margin = '10px 10px 0 auto';
+        trueButton.style.fontWeight = '700';
+        trueButton.style.padding = '8px 20px';
         trueButton.style.cursor = 'pointer';
-        trueButton.style.transition = 'background-color 0.5s ease';
+        trueButton.style.transition = 'background-color 0.3s ease';
+        trueButton.style.borderRadius = '4px';
+        trueButton.style.fontSize = '16px';
+        trueButton.style.width = 'auto';
 
-        trueButton.addEventListener('click', function(){
+        trueButton.addEventListener('mouseover', () => {
+            trueButton.style.backgroundColor = '#e65c00';
+        });
+
+        trueButton.addEventListener('mouseout', () => {
+            trueButton.style.backgroundColor = '#ff6600';
+        });
+
+        trueButton.addEventListener('click', function () {
             closeErrorPopUp();
         });
 
@@ -618,15 +635,11 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.appendChild(popupOverlay);
     }
 
-    function closeErrorPopUp(){
+    function closeErrorPopUp() {
         const popupOverlay = document.getElementById('popupOverlay');
         if (popupOverlay) {
             document.body.removeChild(popupOverlay);
         }
     }
-
-
-
-
 
 });
