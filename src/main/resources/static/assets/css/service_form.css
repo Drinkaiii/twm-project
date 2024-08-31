@@ -107,13 +107,6 @@ button:hover {
     background-color: #e65c00;
 }
 
-.success-message {
-    display: none;
-    margin-top: 20px;
-    color: #ff6600;
-    font-weight: bold;
-    text-align: center;
-}
 .form-group {
     margin-bottom: 25px;
     border-bottom: 1px solid #eee;

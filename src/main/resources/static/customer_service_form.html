@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="./assets/commonElement/css/header.css" />
     <link rel="stylesheet" href="./assets/css/service_form.css" />
     <script src="./assets/commonElement/js/header.js"></script>
+    <script src="./assets/js/service_form.js"></script>
 </head>
 <body>
 <header>
@@ -53,16 +54,7 @@
             </div>
             <button type="submit">提 交</button>
         </form>
-        <p class="success-message" id="success-message">謝謝您的聯繫，我們將儘快回覆您。</p>
     </div>
 </div>>
-
-
-<script>
-    document.querySelector('.contact-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        document.getElementById('success-message').style.display = 'block';
-    });
-</script>
 </body>
 </html>
