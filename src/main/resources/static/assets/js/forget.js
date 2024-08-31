@@ -1,7 +1,7 @@
 //===========================================stack process===========================================
 
 // get the elements
-const button = document.querySelector(".btnBox");
+const button = document.querySelector("#sendEmailButton");
 const input_email = document.querySelector(".input input");
 const input_verify = document.querySelector(".inputHalf input");
 
@@ -18,6 +18,10 @@ document.querySelector(".error .warning").style.display = "none";//email formati
 
 // submit the data to back-end
 function submit() {
+
+    if (button.classList.contains('btnLdisable')) {
+        return;
+    }
 
     // get user's email and captcha
     const email = input_email.value;

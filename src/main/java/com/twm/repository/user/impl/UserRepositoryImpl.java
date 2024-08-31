@@ -136,4 +136,20 @@ public class UserRepositoryImpl implements UserRepository {
         }
     }
 
+    @Override
+    public Integer saveSupportRecords(String name,String email,String description,String requestTime){
+        try {
+            String sql = "INSERT INTO support (name,email,description,request_time) VALUES (:name,:email,:description,:requestTime)";
+            Map<String, Object> map = new HashMap<>();
+            map.put("name", name);
+            map.put("email", email);
+            map.put("description", description);
+            map.put("requestTime", requestTime);
+            return namedParameterJdbcTemplate.update(sql, map);
+        } catch (DataAccessException e) {
+            log.error("user dao:"+e.getMessage());
+            return null;
+        }
+    }
+
 }

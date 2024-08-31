@@ -246,8 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     inactivityTime();
 
-    function displayOtherQuestions(){}
-
     function displayNormalQuestions(){
         fetch('/api/1.0/chat/routines?category=4',{
             method: 'GET',

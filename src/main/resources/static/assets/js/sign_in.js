@@ -1,5 +1,24 @@
 document.addEventListener('DOMContentLoaded', () => {
 
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    const code = urlParams.get('code');
+    if (code !== null) {
+        const overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100%';
+        overlay.style.height = '100%';
+        overlay.style.backgroundColor = 'white';
+        overlay.style.zIndex = '1000';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.innerHTML = '<img class="loading" src="./assets/commonElement/img/Icon_Loading.svg">';
+        document.body.appendChild(overlay);
+    }
+
     const token = localStorage.getItem('jwtToken');
     if (token) {
         fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
@@ -7,10 +26,18 @@ document.addEventListener('DOMContentLoaded', () => {
         })
             .then(response => {
                 if (response.ok) {
-                    window.location.href = "../chat.html";
+                    return response.json();
                 } else {
                     throw new Error("Token is invalid or an error occurred during the validation.");
                 }
+            })
+            .then(data => {
+                console.log(data);
+                localStorage.setItem("userInfo",data.email)
+                window.location.href = "../chat.html";
+            })
+            .catch(error => {
+                localStorage.removeItem("userInfo");
             })
     }
 
@@ -20,10 +47,6 @@ document.addEventListener('DOMContentLoaded', () => {
         window.location.href = `https://stage.oauth.taiwanmobile.com/MemberOAuth/authPageLogin?response_type=code&client_id=appworks&redirect_uri=${redirectUri}&state=appstate&prompt=&showLoginPage=Y`;
     })
 
-    const queryString = window.location.search;
-    const urlParams = new URLSearchParams(queryString);
-    const code = urlParams.get('code');
-    console.log(code);
     if (code !== null) {
         fetch('/api/1.0/user/signin', {
             method: 'POST',
@@ -83,7 +106,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
     }
-
     emailInput.addEventListener('input', updateButtonState);
     passwordInput.addEventListener('input', updateButtonState);
     captchaInput.addEventListener('input', updateButtonState);
@@ -171,16 +193,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
     })
-
     header();
     passwordEyes();
     updateButtonState();
 
     function rememberEmail() {
-        const email = emailInput.value;
         const rememberMe = document.getElementById('checkbox').checked;
         if (rememberMe) {
-            localStorage.setItem('userEmail', email);
+            localStorage.setItem('userEmail', emailInput.value);
         } else {
             localStorage.removeItem('userEmail');
         }
