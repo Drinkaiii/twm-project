@@ -1,3 +1,10 @@
+let token;
+document.addEventListener("DOMContentLoaded", function () {
+    token = localStorage.getItem('jwtToken');
+    solveJwt(token);
+    fetchCategories();
+});
+
 function toggleCategoryFields() {
     const categoryType = document.getElementById('category-type').value;
     document.getElementById('character-fields').classList.add('hidden');
@@ -138,12 +145,6 @@ function checkCategorySelection() {
         categoryWarning.classList.remove('hidden');
     }
 }
-
-let token;
-document.addEventListener("DOMContentLoaded", function () {
-    fetchCategories();
-    token = localStorage.getItem('jwtToken');
-});
 
 function fetchCategories() {
     fetch('api/1.0/chat/routines?category=4')
@@ -638,4 +639,38 @@ function deleteCharacter(charId) {
     });
 
 }
+
+function solveJwt(token) {
+    fetch(`api/1.0/user/solve-jwt?token=${token}`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.message || 'Failed to solve JWT');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+
+            const userRole = data.role;
+
+            if (userRole !== 'ADMIN') {
+                window.location.href = '../account_login.html';
+            } else {
+                console.log('User is an admin, proceeding...');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('無法解碼JWT，請檢查Token是否正確');
+        });
+}
+
+
+
 
