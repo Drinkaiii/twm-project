@@ -1,6 +1,6 @@
 function toggleCategoryFields() {
     const categoryType = document.getElementById('category-type').value;
-    document.getElementById('general-category-fields').classList.add('hidden');
+    document.getElementById('character-fields').classList.add('hidden');
     document.getElementById('faq-category-fields').classList.add('hidden');
     document.getElementById('questions-answers-section').classList.add('hidden');
     document.getElementById('submit-section-general').classList.add('hidden');
@@ -8,49 +8,63 @@ function toggleCategoryFields() {
     document.getElementById('submit-section-faq-type').classList.add('hidden');
     document.getElementById('category-warning').classList.add('hidden');
 
-    document.getElementById('category-table').innerHTML = '';
+    document.getElementById('character-table').innerHTML = '';
 
     if (categoryType === 'general') {
-        document.getElementById('general-category-fields').classList.remove('hidden');
+        document.getElementById('character-fields').classList.remove('hidden');
         document.getElementById('submit-section-general').classList.remove('hidden');
 
-        fetchCategoriesAndDisplayTable();
+        fetchCharacterAndDisplayTable();
     } else if (categoryType === 'faq') {
         document.getElementById('faq-category-fields').classList.remove('hidden');
         document.getElementById('category-warning').classList.remove('hidden');
         document.getElementById('submit-section-faq-qa').classList.remove('hidden');
         document.getElementById('questions-answers-section').classList.remove('hidden');
+        document.getElementById('faq-add-new').classList.add('hidden');
     }
 }
 
+let currentData = [];
 
-function fetchCategoriesAndDisplayTable() {
-    fetch('api/1.0/chat/routines')
+function fetchCharacterAndDisplayTable() {
+    fetch(`api/1.0/admin/personality/review`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
         .then(response => response.json())
         .then(data => {
-            const categories = data.data;
+            document.getElementById('character-table').classList.remove('hidden');
+            const filteredData = data.data;
+
+            if (filteredData.length === 0) {
+                document.getElementById('character-table').classList.add('hidden');
+                return;
+            }
+
+            currentData = filteredData;
+
             let tableHtml = `
                 <table class="styled-table">
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>類別名稱</th>
-                            <th>連結</th>
+                            <th>描述</th>
                             <th>操作</th>
                         </tr>
                     </thead>
                     <tbody>
             `;
 
-            categories.forEach(category => {
+            filteredData.forEach(personality => {
                 tableHtml += `
                     <tr>
-                        <td>${category.id}</td>                    
-                        <td>${category.category}</td>
-                        <td>${category.url}</td>
+                        <td>${personality.id}</td>                    
+                        <td>${personality.description}</td>
                         <td>
-                            <button type="button" class="update-button" onclick="updateCategory(${category.id})">更新</button>
-                            <button type="button" class="delete-button" onclick="deleteCategory(${category.id})">删除</button>
+                            <button type="button" class="update-button" onclick="updateCharacter(${personality.id})">更新</button>
+                            <button type="button" class="delete-button" onclick="deleteCharacter(${personality.id})">删除</button>
                         </td>
                     </tr>
                 `;
@@ -61,7 +75,7 @@ function fetchCategoriesAndDisplayTable() {
                 </table>
             `;
 
-            document.getElementById('category-table').innerHTML = tableHtml;
+            document.getElementById('character-table').innerHTML = tableHtml;
         })
         .catch(error => console.error('Error fetching categories:', error));
 }
@@ -72,7 +86,10 @@ function showFaqSelect() {
     document.getElementById('faq-add-new').classList.add('hidden');
     document.getElementById('submit-section-faq-qa').classList.remove('hidden');
     document.getElementById('submit-section-faq-type').classList.add('hidden');
+    document.getElementById('questions-answers-section').classList.remove('hidden');
+    document.getElementById('all-type-table').classList.add('hidden');
 
+    fetchCategories();
     checkCategorySelection();
 }
 
@@ -82,9 +99,11 @@ function showFaqAdd() {
     document.getElementById('faq-add-new').classList.remove('hidden');
     document.getElementById('submit-section-faq-qa').classList.add('hidden');
     document.getElementById('submit-section-faq-type').classList.remove('hidden');
+    document.getElementById('questions-answers-section').classList.add('hidden');
     document.getElementById('type-table').innerHTML = '';
 
     checkCategorySelection();
+    handleTypeAndDisplayTable()
 }
 
 function addQuestionAnswer() {
@@ -157,8 +176,6 @@ function populateCategorySelect(categories) {
     });
 }
 
-let currentQuestions = [];
-
 function handleCategoriesAndDisplayTable(typeId) {
     fetch(`api/1.0/admin/chat/review`, {
         method: 'GET',
@@ -176,7 +193,7 @@ function handleCategoriesAndDisplayTable(typeId) {
                 return;
             }
 
-            currentQuestions = filteredData;
+            currentData = filteredData;
 
             let tableHtml = `
             <table class="styled-table">
@@ -230,7 +247,7 @@ function updateQuestion(id) {
 }
 
 function findQuestionById(id) {
-    return currentQuestions.find(question => question.id === id);
+    return currentData.find(question => question.id === id);
 }
 
 function populateTypeSelect(categories) {
@@ -251,6 +268,8 @@ function populateTypeSelect(categories) {
 
 function closeModal() {
     document.getElementById('updateModal').style.display = 'none';
+    document.getElementById('updateTypeModal').style.display = 'none';
+    document.getElementById('updateCharacterModal').style.display = 'none';
 }
 
 function saveQuestion() {
@@ -298,6 +317,7 @@ function deleteQuestion(id) {
         })
     }).then(response => {
         if (response.ok) {
+            alert('刪除成功');
             closeModal();
             handleCategoriesAndDisplayTable(typeId);
         } else {
@@ -308,7 +328,6 @@ function deleteQuestion(id) {
     });
 
 }
-
 
 function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
@@ -346,19 +365,277 @@ function submitFaqQa() {
         })
             .then(response => {
                 if (response.ok) {
+                    alert('新增成功');
                     handleCategoriesAndDisplayTable(typeId);
                     return {};
                 } else {
+                    alert('新增失敗');
                     throw new Error('Network response was not ok');
                 }
-            })
-            .then(data => {
-                alert('已成功儲存類別及問答！');
-                console.log('Success:', data);
             })
             .catch(error => console.error('Error:', error));
     }
 }
 
+function submitFaqType() {
+    const categoryName = document.getElementById('faq-category-name').value;
 
+    if (!categoryName) {
+        alert('請輸入類別名稱');
+        return;
+    }
+
+    createCategoryType(categoryName);
+}
+
+function createCategoryType(categoryName) {
+    return fetch('api/1.0/admin/type/create', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            type_name: categoryName
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                handleTypeAndDisplayTable();
+                alert("新增成功");
+                return {};
+            } else {
+                alert("新增失敗");
+                throw new Error('Network response was not ok');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function handleTypeAndDisplayTable() {
+    fetch(`api/1.0/admin/type/review`, {
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('all-type-table').classList.remove('hidden');
+            const filteredData = data.data;
+
+            if (filteredData.length === 0) {
+                document.getElementById('type-table').classList.add('hidden');
+                return;
+            }
+
+            currentData = filteredData;
+
+            let tableHtml = `
+            <table class="styled-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>類別</th>
+                        <th>操作</th>
+                    </tr>
+                </thead>
+                <tbody>
+        `;
+
+            filteredData.forEach(type => {
+                tableHtml += `
+                <tr>
+                    <td>${type.id}</td>                    
+                    <td>${type.type_name}</td>
+                    <td>
+                        <button type="button" class="update-button" onclick="updateType(${type.id})">編輯</button>
+                        <button type="button" class="delete-button" onclick="deleteType(${type.id})">删除</button>
+                    </td>
+                </tr>
+            `;
+            });
+
+            tableHtml += `
+                </tbody>
+            </table>
+        `;
+
+            document.getElementById('all-type-table').innerHTML = tableHtml;
+            document.getElementById('submit-section-faq-type').classList.remove('hidden');
+        })
+        .catch(error => console.error('Error fetching questions:', error));
+}
+
+let selectedTypeId;
+
+function updateType(typeId) {
+    selectedTypeId = typeId;
+    const typeData = findTypeById(typeId);
+
+    document.getElementById('type-input').value = typeData.type_name;
+
+    document.getElementById('updateTypeModal').style.display = 'block';
+}
+
+function findTypeById(id) {
+    return currentData.find(type => type.id === id);
+}
+
+function saveType() {
+    const updatedType = document.getElementById('type-input').value;
+
+    fetch(`api/1.0/admin/type/update`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedTypeId,
+            type_name: updatedType
+        })
+    }).then(response => {
+        if (response.ok) {
+            alert('更新成功');
+            closeModal();
+            handleTypeAndDisplayTable();
+        } else {
+            alert('更新失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+    closeModal();
+}
+
+function deleteType(typeId) {
+    selectedTypeId = typeId;
+    fetch(`api/1.0/admin/type/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedTypeId
+        })
+    }).then(response => {
+        if (response.ok) {
+            alert('刪除成功');
+            closeModal();
+            handleTypeAndDisplayTable();
+        } else {
+            alert('刪除失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+}
+
+function submitGeneral() {
+    const characterName = document.getElementById('character-name').value;
+
+    if (!characterName) {
+        alert('請輸入角色名稱');
+        return;
+    }
+
+    createCharacterType(characterName);
+}
+
+function createCharacterType(characterName) {
+    return fetch('api/1.0/admin/personality/create', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            description: characterName
+        })
+    })
+        .then(response => {
+            if (response.ok) {
+                fetchCharacterAndDisplayTable();
+                alert('新增成功');
+                return {};
+            } else {
+                alert('新增失敗');
+                throw new Error('Network response was not ok');
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+let selectedCharId;
+
+function updateCharacter(charId) {
+    selectedCharId = charId;
+    const charData = findCharById(charId);
+
+    document.getElementById('character-input').value = charData.description;
+
+    document.getElementById('updateCharacterModal').style.display = 'block';
+}
+
+function findCharById(id) {
+    return currentData.find(char => char.id === id);
+}
+
+function saveCharacter() {
+    const updatedChar = document.getElementById('character-input').value;
+    console.log(updatedChar)
+
+    fetch(`api/1.0/admin/personality/update`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedCharId,
+            description: updatedChar
+        })
+    }).then(response => {
+        if (response.ok) {
+            alert('更新成功');
+            closeModal();
+            fetchCharacterAndDisplayTable();
+        } else {
+            alert('更新失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+    closeModal();
+}
+
+function deleteCharacter(charId) {
+    selectedCharId = charId;
+    fetch(`api/1.0/admin/personality/delete`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            id: selectedCharId
+        })
+    }).then(response => {
+        if (response.ok) {
+            alert('刪除成功');
+            closeModal();
+            fetchCharacterAndDisplayTable();
+        } else {
+            alert('刪除失敗');
+        }
+    }).catch(error => {
+        console.error('Error updating question:', error);
+    });
+
+}
 
