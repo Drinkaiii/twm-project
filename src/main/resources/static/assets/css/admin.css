@@ -215,6 +215,11 @@ input[type="text"] {
     cursor: pointer;
 }
 
+#question-answer-controls {
+    display: flex;
+    justify-content: flex-start;
+    gap: 10px;
+}
 
 
 
