@@ -122,11 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.setItem('jwtToken', data.accessToken);
                 localStorage.setItem('userId', data.user.id);
                 localStorage.setItem("userInfo",data.user.email);
+                rememberEmail();
                 if (data.user.authTime === null || data.user.authTime === "") {
                     window.location.href = '../terms.html';
                     return;
                 }
-                rememberEmail();
                 window.location.href = '../chat.html';
             })
             .catch(error => {
