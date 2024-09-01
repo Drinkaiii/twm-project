@@ -73,7 +73,7 @@ function submit() {
 
 // check the submit button status and switch it
 function checkButtonState() {
-    if (input_email.value.trim() !== "" && input_verify.value.trim() !== "")
+    if (input_email.value.trim() !== "" && input_verify.value.trim().length === 6)
         switchButton(true)
     else
         switchButton(false)
