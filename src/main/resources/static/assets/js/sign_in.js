@@ -38,7 +38,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function updateButtonState() {
         const isEmailValid = isValidEmail(emailInput.value);
         const isPasswordValid = isValidLengthPassword(passwordInput.value) && isValidFormatPassword(passwordInput.value);
-        const isCaptchaValid = captchaInput.value.trim() !== '';
+        const isCaptchaValid = captchaInput.value.trim().length === 6;
 
         if (isEmailValid && isPasswordValid && isCaptchaValid) {
             loginButton.classList.remove("btnLdisable");
@@ -138,6 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             })
     })
+
     header();
     passwordEyes();
     updateButtonState();
@@ -219,6 +220,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function rememberEmail() {
         const rememberMe = document.getElementById('checkbox').checked;
         if (rememberMe) {
+            localStorage.removeItem('userEmail', emailInput.value);
             localStorage.setItem('userEmail', emailInput.value);
         } else {
             localStorage.removeItem('userEmail');
@@ -276,13 +278,27 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeButton = document.createElement('button');
         closeButton.id = 'closeButton';
         closeButton.textContent = '確 認';
+        closeButton.style.border = 'none';
+        closeButton.style.backgroundColor = '#ff6600';
+        closeButton.style.color = '#fff';
         closeButton.style.marginTop = '20px';
-        closeButton.style.fontWeight = `700`;
-        closeButton.style.padding = '5px 15px';
+        closeButton.style.fontWeight = '700';
+        closeButton.style.padding = '8px 20px';
         closeButton.style.cursor = 'pointer';
-        closeButton.style.transition = 'background-color 0.5s ease';
+        closeButton.style.transition = 'background-color 0.3s ease';
+        closeButton.style.borderRadius = '4px';
+        closeButton.style.fontSize = '16px';
+        closeButton.style.width = 'auto';
 
         closeButton.addEventListener('click', closePopUp);
+
+        closeButton.addEventListener('mouseenter', function() {
+            closeButton.style.backgroundColor = '#e65c00';
+        });
+
+        closeButton.addEventListener('mouseleave', function() {
+            closeButton.style.backgroundColor = '#ff6600';
+        });
 
         popupContent.appendChild(popupText);
         popupContent.appendChild(closeButton);

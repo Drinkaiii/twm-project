@@ -47,15 +47,12 @@ public class JwtFilter extends OncePerRequestFilter {
         };
 
         for (String path : excludedPaths) {
-            log.info("excluded path: {}", path);
-            log.info("requestURI: {}", requestURI);
             if (pathMatcher.match(path, requestURI)) {
-                log.info("1."+requestURI);
                 filterChain.doFilter(request, response);
                 return;
             }
         }
-        log.info("2.requestURI: {}", requestURI);
+
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             log.error("Token validation error 1");

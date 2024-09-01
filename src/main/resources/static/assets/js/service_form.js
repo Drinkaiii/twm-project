@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
         verifyJwtToken(token);
     }else{
         window.location.href = '../account_login.html';
+        return;
     }
 
     document.querySelector('.contact-form').addEventListener('submit', function(e) {
