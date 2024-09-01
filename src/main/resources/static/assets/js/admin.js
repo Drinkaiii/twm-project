@@ -668,6 +668,7 @@ function solveJwt(token) {
             const userRole = data.role;
 
             if (userRole !== 'ADMIN') {
+                alert('請確認是否已管理員身份登入');
                 window.location.href = '../account_login.html';
             } else {
                 console.log('User is an admin, proceeding...');
@@ -675,7 +676,8 @@ function solveJwt(token) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('無法解碼JWT，請檢查Token是否正確');
+            alert('請確認是否登入');
+            window.location.href = '../account_login.html';
         });
 }
 
