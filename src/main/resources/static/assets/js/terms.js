@@ -23,6 +23,7 @@ $(document).ready(function () {
             $(".btn").addClass("disabled");
         }
     });
+
     const nextButton = document.querySelector(".termsBox a");
     const userId = localStorage.getItem('userId');
 
@@ -111,11 +112,10 @@ $(document).ready(function () {
                 }
             })
             .then(data => {
-                console.log(data.id)
-                console.log(data.authTime)
-                if (data.authTime !== null || data.authTime !== "") {
-                    window.history.back();
+                if (data.authTime === null || data.authTime === "") {
+                    return;
                 }
+                window.history.back();
             })
             .catch(error => {
                 localStorage.removeItem("userInfo");

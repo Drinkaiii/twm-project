@@ -18,6 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const passwordFormatWarning = document.querySelector(`#passwordFormatWarning`);
     const passwordLengthWarning = document.querySelector(`#passwordLengthWarning`);
     const passwordMatchWarning = document.querySelector(`#passwordMatchWarning`);
+    const captchaWarning = document.querySelector(`#captchaWarning`);
 
     emailInput.addEventListener('input', updateButtonState);
     passwordInput.addEventListener('input', updateButtonState);
@@ -83,7 +84,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 } else if (response.status === 403) {
                     showPopUp("帳號已存在，請重新輸入。",403);
                 } else if (response.status === 400) {
-                    showPopUp("驗證碼錯誤，請重新輸入。",400);
+                    captchaWarning.style.display = "block";
                 }
             })
             .catch(error => {
@@ -93,7 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     function updateButtonState() {
-        if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim() !== '' && checkPasswordInput.value.trim() !== '') {
+        if (emailInput.value.trim() !== '' && passwordInput.value.trim() !== '' && captchaInput.value.trim().length === 6 && checkPasswordInput.value.trim() !== '') {
             registerButton.classList.remove("btnLdisable");
             registerButton.classList.add("btnLfill");
         } else {
@@ -149,15 +150,30 @@ document.addEventListener('DOMContentLoaded', () => {
         const closeButton = document.createElement('button');
         closeButton.id = 'closeButton';
         closeButton.textContent = '確 認';
+        closeButton.style.border = 'none';
+        closeButton.style.backgroundColor = '#ff6600';
+        closeButton.style.color = '#fff';
         closeButton.style.marginTop = '20px';
-        closeButton.style.fontWeight = `700`;
-        closeButton.style.padding = '5px 15px';
+        closeButton.style.fontWeight = '700';
+        closeButton.style.padding = '8px 20px';
         closeButton.style.cursor = 'pointer';
-        closeButton.style.transition = 'background-color 0.5s ease';
+        closeButton.style.transition = 'background-color 0.3s ease';
+        closeButton.style.borderRadius = '4px';
+        closeButton.style.fontSize = '16px';
+        closeButton.style.width = 'auto';
 
         closeButton.addEventListener('click', function() {
             closePopUp(status);
         });
+
+        closeButton.addEventListener('mouseenter', function() {
+            closeButton.style.backgroundColor = '#e65c00';
+        });
+
+        closeButton.addEventListener('mouseleave', function() {
+            closeButton.style.backgroundColor = '#ff6600';
+        });
+
 
         popupContent.appendChild(popupText);
         popupContent.appendChild(closeButton);

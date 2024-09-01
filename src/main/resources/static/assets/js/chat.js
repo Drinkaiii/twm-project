@@ -19,48 +19,52 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(data => {
                 const response = data.data;
-                response.forEach(item => {
-                    const firstGroupButton = document.createElement('button');
-                    firstGroupButton.className = 'btn';
-                    firstGroupButton.style.width = '470px';
-                    firstGroupButton.textContent = item.category;
-                    firstGroupButton.setAttribute('dataId', item.id);
-                    if( item.id === 4){
-                        firstGroupButton.addEventListener('click',function () {
-                            const buttons = document.querySelectorAll('.btn');
-                            buttons.forEach(button => {
-                                button.style.display = 'none';
+                if(Array.isArray(response) && response.length > 0){
+                    response.forEach(item => {
+                        const firstGroupButton = document.createElement('button');
+                        firstGroupButton.className = 'btn';
+                        firstGroupButton.style.width = '470px';
+                        firstGroupButton.textContent = item.category;
+                        firstGroupButton.setAttribute('dataId', item.id);
+                        if( item.id === 4){
+                            firstGroupButton.addEventListener('click',function () {
+                                const buttons = document.querySelectorAll('.btn');
+                                buttons.forEach(button => {
+                                    button.style.display = 'none';
+                                });
+                                displayNormalQuestions();
                             });
-                            displayNormalQuestions();
-                        });
-                    }else{
-                        firstGroupButton.addEventListener('click',function() {
-                            const id = firstGroupButton.getAttribute('dataId');
-                            fetch(`/api/1.0/chat/routines?category=${id}`,{
-                                method: 'GET',
-                                headers: {
-                                    'Authorization': `Bearer ${token}`
-                                }
-                            })
-                                .then(response => {
-                                    if (response.ok){
-                                        return response.json();
-                                    }else{
-                                        throw new Error("fail to get category info");
+                        }else{
+                            firstGroupButton.addEventListener('click',function() {
+                                const id = firstGroupButton.getAttribute('dataId');
+                                fetch(`/api/1.0/chat/routines?category=${id}`,{
+                                    method: 'GET',
+                                    headers: {
+                                        'Authorization': `Bearer ${token}`
                                     }
                                 })
-                                .then(data => {
-                                    const url = data.data;
-                                    showPopUp(url);
-                                })
-                                .catch(error => {
-                                    showErrorPopUp('很抱歉，該功能維護中，請稍後再試。');
-                                })
-                        })
-                    }
-                    button_container.appendChild(firstGroupButton);
-                });
-                float.appendChild(float_content);
+                                    .then(response => {
+                                        if (response.ok){
+                                            return response.json();
+                                        }else{
+                                            throw new Error("fail to get category info");
+                                        }
+                                    })
+                                    .then(data => {
+                                        const url = data.data;
+                                        showPopUp(url);
+                                    })
+                                    .catch(error => {
+                                        showErrorPopUp('很抱歉，該功能維護中，請稍後再試。');
+                                    })
+                            })
+                        }
+                        button_container.appendChild(firstGroupButton);
+                    });
+                    float.appendChild(float_content);
+                }else{
+                    float.style.display = "block";
+                }
             })
             .catch(error =>{
                 window.location.href = '../account_login.html';
@@ -277,45 +281,122 @@ document.addEventListener('DOMContentLoaded', () => {
         document.onclick = resetTimer;
         document.onscroll = resetTimer;
     };
+
     inactivityTime();
 
-    function displayNormalQuestions(){
-        fetch('/api/1.0/chat/routines?category=4',{
+
+    function displayNormalQuestions() {
+        fetch('/api/1.0/chat/routines?category=4', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`
             }
         })
-            .then(response => { return response.json(); })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("fail to get category info");
+                }
+            })
             .then(data => {
                 const response = data.data;
-                response.forEach(item => {
-                    const button = document.createElement('button');
-                    button.className = 'btn';
-                    button.textContent = item.id+". "+item.type_name;
-                    button.setAttribute('data-id', item.id);
-                    button.addEventListener('click',function() {
-                        const id = this.getAttribute('data-id');
-                        floatBoxClose();
-                        faqInfo(id);
-                    })
-                    button_container.appendChild(button);
-                });
+                const itemsPerPage = 8;
+                let currentPage = 1;
+                const totalPages = Math.ceil(response.length / itemsPerPage);
+
+                function displayPage(page) {
+                    button_container.innerHTML = '';
+                    const start = (page - 1) * itemsPerPage;
+                    const end = start + itemsPerPage;
+                    const pageItems = response.slice(start, end);
+
+                    pageItems.forEach(item => {
+                        const button = document.createElement('button');
+                        button.className = 'btn';
+                        button.textContent = item.id + ". " + item.type_name;
+                        button.style.width = '470px';
+                        button.setAttribute('data-id', item.id);
+                        button.addEventListener('click', function() {
+                            const id = this.getAttribute('data-id');
+                            floatBoxClose();
+                            faqInfo(id);
+                        });
+                        button_container.appendChild(button);
+                    });
+
+                    addPaginationButtons();
+                }
+
+                function addPaginationButtons() {
+                    const paginationContainer = document.createElement('div');
+                    paginationContainer.className = 'pagination-container';
+
+                    paginationContainer.style.display = 'flex';
+                    paginationContainer.style.gap='10px';
+                    paginationContainer.style.flexDirection = 'row';
+                    paginationContainer.style.justifyContent = 'space-between';
+
+                    if (currentPage > 1) {
+                        const prevButton = document.createElement('button');
+                        prevButton.className = 'btn';
+                        prevButton.textContent = '上一頁';
+                        prevButton.style.backgroundColor = '#ff6600';
+                        prevButton.style.color = 'white';
+                        prevButton.addEventListener('mouseover', () => {
+                            prevButton.style.backgroundColor = '#e65c00';
+                        });
+
+                        prevButton.addEventListener('mouseout', () => {
+                            prevButton.style.backgroundColor = '#ff6600';
+                        });
+                        prevButton.addEventListener('click', function() {
+                            currentPage--;
+                            displayPage(currentPage);
+                        });
+                        paginationContainer.appendChild(prevButton);
+                    }
+
+                    if (currentPage < totalPages) {
+                        const nextButton = document.createElement('button');
+                        nextButton.className = 'btn';
+                        nextButton.style.backgroundColor = '#ff6600';
+                        nextButton.style.color = 'white';
+                        nextButton.textContent = '下一頁';
+                        nextButton.addEventListener('mouseover', () => {
+                            nextButton.style.backgroundColor = '#e65c00';
+                        });
+
+                        nextButton.addEventListener('mouseout', () => {
+                            nextButton.style.backgroundColor = '#ff6600';
+                        });
+                        nextButton.addEventListener('click', function() {
+                            currentPage++;
+                            displayPage(currentPage);
+                        });
+                        paginationContainer.appendChild(nextButton);
+                    }
+
+                    button_container.appendChild(paginationContainer);
+                }
+
+                displayPage(currentPage);
+
                 float.appendChild(float_content);
             })
             .catch(error => {
-                console.error('Error:', error);
-                prompt.textContent = "系統異常，請點擊下方按鈕填寫客服表單。"
+                prompt.textContent = "系統維護中，請點擊下方按鈕填寫客服表單。"
                 const button = document.createElement('button');
                 button.className = 'btn';
-                button.textContent = "";
+                button.textContent = "客服表單";
                 button.addEventListener('click', function() {
                     window.location.href = 'https://twm-appworks.com/customer_service_form.html';
                 });
                 button_container.appendChild(button);
                 float.appendChild(float_content);
-            })
+            });
     }
+
     messageInput.addEventListener('input', () => {
         if (messageInput.value.trim().length > 0){
             floatBoxClose();
@@ -439,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         if (userMessage.length > 100){
-            alert("已達提問字數上限，請重新輸入!")
+            showErrorPopUp("已達提問字數上限，請重新輸入!");
             return;
         }
         addMessage(userMessage,"user");

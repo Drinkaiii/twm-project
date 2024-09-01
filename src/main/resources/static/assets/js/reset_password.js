@@ -29,13 +29,21 @@ document.querySelector(".check .warning").style.display = "none";//password form
 document.querySelector(".input .notice").style.display = "none";//password check formation wrong message
 document.querySelector(".captcha .warning").style.display = "none";//captcha formation wrong message
 fetch(`/api/1.0/user/solve-jwt?token=${token}`, {method: "GET"})
-    .then(response => response.json())
+    .then(response => {
+        if (response.status === 400)
+            throw new Error('Bad Request: Invalid token or request.');
+        return response.json();
+    })
     .then(data => {
         let [name, domain] = data.email.split("@");
         let maskedName = name.slice(0, 3) + "*****";
         let maskedDomain = domain.slice(-4);
         text_account.textContent = `${maskedName}@*****${maskedDomain}`;
-    });
+    })
+    .catch(error => {
+    console.error(error.message);
+    window.location.href = "../account_forget.html";
+});
 
 //===========================================function===========================================
 // submit the data to back-end
