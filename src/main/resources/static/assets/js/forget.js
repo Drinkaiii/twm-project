@@ -18,8 +18,7 @@ input_verify.addEventListener("input", checkButtonState);
 
 //initial setting
 switchButton(false);// button
-document.querySelector(".error .warning").style.display = "none";//email formation wrong message
-
+document.querySelector(".js-captcha-warning").style.display = "none";//captcha formation wrong message
 //===========================================function===========================================
 
 // submit the data to back-end
@@ -33,12 +32,12 @@ function submit() {
     const email = input_email.value;
     const captcha = input_verify.value;
 
-    // check email and show error message
+    // check email formation and show error message
     if (!isValidEmail(email)) {
-        document.querySelector(".input .warning").style.display = "block";
+        document.querySelector(".js-email-warning-1").style.display = "block";
         return;
     } else {
-        document.querySelector(".input .warning").style.display = "none";
+        document.querySelector(".js-email-warning-1").style.display = "none";
     }
 
     // disable button when button is clicked
@@ -50,7 +49,18 @@ function submit() {
             if (response.ok) {
                 window.location.href = `/result_mail.html?result=${true}`;
             } else {
-                document.querySelector(".error .warning").style.display = "block";//captcha is wrong
+                response.json().then(data => {
+                    document.querySelectorAll(".warning").forEach(element => {
+                        element.style.display = "none";
+                    });
+                    if (data.error === "captcha is wrong.") {
+                        document.querySelector(".js-captcha-warning").style.display = "block";
+                    } else if (data.error === "email is not exist.") {
+                        document.querySelector(".js-email-warning-2").style.display = "block";
+                    } else {
+                        document.querySelector(".js-system-warning").style.display = "block";
+                    }
+                });
             }
         })
         .catch(error => {

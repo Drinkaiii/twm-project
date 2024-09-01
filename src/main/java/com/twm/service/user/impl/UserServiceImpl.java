@@ -66,7 +66,7 @@ public class UserServiceImpl implements UserService {
                     throw new VerificationFailedException("Authentication failed");
                 }
                 String email = (String) signInRequest.get("email");
-                if (!validateEmail(email)) {
+                if (!checkoutEmailFormat(email)) {
                     throw new InvalidEmailFormatException("Invalid email format");
                 }
                 UserDto nativeUser = userRepository.getNativeUserByEmailAndProvider(email);
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
         return response;
     }
 
-    private Boolean validateEmail(String email) {
+    private Boolean checkoutEmailFormat(String email) {
         String emailPattern = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,6}$";
         if (email == null) {
             return false;
@@ -150,6 +150,13 @@ public class UserServiceImpl implements UserService {
     public boolean validateCaptcha(String captchaInput, HttpSession session) {
         String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
         return captchaSession != null && captchaSession.equals(captchaInput);
+    }
+
+    public boolean validateEmail(String email){
+        if (userRepository.getNativeUserByEmailAndProvider(email) != null)
+            return true;
+        else
+            return false;
     }
 
     private String getCurrentTime() {
