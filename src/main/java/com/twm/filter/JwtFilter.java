@@ -34,6 +34,7 @@ public class JwtFilter extends OncePerRequestFilter {
         // filter for the pages
         String requestURI = request.getRequestURI();
         String[] excludedPaths = {
+                "/",
                 "/api/1.0/user/signup",
                 "/api/1.0/user/signin",
                 "/api/1.0/user/update-authTime",
