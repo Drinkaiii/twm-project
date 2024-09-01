@@ -39,10 +39,12 @@
                     <div class="input">
                         <label for="inputext">帳號</label>
                         <input type="email" name="inputEmail" placeholder="請輸入E-mail"/>
-                        <div class="state warning">格式有誤，請重新輸入</div>
+                        <div class="state warning js-email-warning-1">格式有誤，請重新輸入</div>
+                        <div class="state warning js-email-warning-2">該帳號不存在</div>
+                        <div class="state warning js-system-warning">系統發生錯誤，請稍後再嘗試</div>
                     </div>
                     <div class="veriCodeBox">
-                        <div class="input error">
+                        <div class="input">
                             <label for="inputext">驗證碼</label>
                             <div class="inputHalf">
                                 <input type="text" name="inputext" maxlength="6" placeholder="請輸入驗證碼"/>
@@ -50,7 +52,7 @@
                                     <img src="/captcha/image" alt="vari_code"/>
                                 </div>
                             </div>
-                            <div class="state warning">驗證碼錯誤</div>
+                            <div class="state warning js-captcha-warning">驗證碼錯誤</div>
                         </div>
                     </div>
                     <div class="btnBox">
