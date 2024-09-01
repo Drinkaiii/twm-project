@@ -49,6 +49,10 @@ fetch(`/api/1.0/user/solve-jwt?token=${token}`, {method: "GET"})
 // submit the data to back-end
 function submit() {
 
+    if (button.classList.contains('btnLdisable')) {
+        return;
+    }
+
     // get the password and captcha
     const password_value = input_password.value;
     const password_check_value = input_password_check.value;
