@@ -13,6 +13,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -55,7 +56,7 @@ public class TypeRepositoryImpl implements TypeRepository {
             typesDto.setTypeName(rs.getString("type_name"));
             return typesDto;
         });
-        return (typesDtos.size() > 0) ? typesDtos : null;
+        return typesDtos != null ? typesDtos : new ArrayList<>();
     }
 
     @Override
