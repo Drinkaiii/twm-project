@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('.log-out-content').addEventListener('click',function (){
     localStorage.removeItem('jwtToken');
     localStorage.removeItem('userId');
+    localStorage.removeItem('userInfo');
     window.location.href = '/account_login.html';
   });
 

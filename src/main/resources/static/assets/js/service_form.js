@@ -1,5 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
     const token = localStorage.getItem('jwtToken');
+    if (token) {
+        verifyJwtToken(token);
+    }else{
+        window.location.href = '../account_login.html';
+    }
+
     document.querySelector('.contact-form').addEventListener('submit', function(e) {
         e.preventDefault();
     });
@@ -112,5 +118,28 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.removeChild(popupOverlay);
         }
         location.reload();
+    }
+
+    function verifyJwtToken(token){
+        fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+            method: 'GET'
+        })
+            .then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error("Token is invalid or an error occurred during the validation.");
+                }
+            })
+            .then(data => {
+                localStorage.setItem("userInfo",data.email);
+                document.body.style.display = 'block';
+            })
+            .catch(error => {
+                localStorage.removeItem("userInfo");
+                localStorage.removeItem("jwtToken");
+                localStorage.removeItem("userId");
+                window.location.href = '../account_login.html';
+            })
     }
 });

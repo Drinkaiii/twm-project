@@ -1,5 +1,11 @@
 //===========================================stack process===========================================
-
+// verify JwtToken
+const token = localStorage.getItem('jwtToken');
+if (token) {
+    verifyJwtToken(token);
+}else{
+    document.body.style.display = 'block';
+}
 // get the elements
 const button = document.querySelector("#sendEmailButton");
 const input_email = document.querySelector(".input input");
@@ -85,3 +91,25 @@ function isValidEmail(email) {
     return emailPattern.test(email);
 }
 
+function verifyJwtToken(token){
+    fetch(`/api/1.0/user/solve-jwt?token=${token}`, {
+        method: 'GET'
+    })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error("Token is invalid or an error occurred during the validation.");
+            }
+        })
+        .then(data => {
+            localStorage.setItem("userInfo",data.email)
+            window.location.href = "../chat.html";
+        })
+        .catch(error => {
+            localStorage.removeItem("userInfo");
+            localStorage.removeItem("jwtToken");
+            localStorage.removeItem("userId");
+            document.body.style.display = 'block';
+        })
+}
