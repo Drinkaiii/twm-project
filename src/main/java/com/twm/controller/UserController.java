@@ -59,6 +59,8 @@ public class UserController {
     public ResponseEntity<?> sendResetPasswordEmail(String email, String captcha, HttpSession session) {
         if (!userService.validateCaptcha(captcha, session))
             return new ResponseEntity<>(ErrorResponseDto.error("captcha is wrong."), HttpStatus.BAD_REQUEST);
+        if (!userService.validateEmail(email))
+            return new ResponseEntity<>(ErrorResponseDto.error("email is not exist."), HttpStatus.BAD_REQUEST);
         userService.sendResetPasswordEmail(email);
         return ResponseEntity.ok(Map.of("result", "The email has been sent."));
     }

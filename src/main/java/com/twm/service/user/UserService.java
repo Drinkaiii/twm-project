@@ -14,6 +14,7 @@ public interface UserService {
     void sendResetPasswordEmail(String email);
     Boolean resetPassword(ResetPasswordDto resetPasswordDto);
     boolean validateCaptcha(String captchaInput, HttpSession session);
+    boolean validateEmail(String email);
     Boolean updateAuthTime(String userId);
     Map solveJwt(String token);
     Boolean saveSupportRequestRecord(supportDto supportDto);
