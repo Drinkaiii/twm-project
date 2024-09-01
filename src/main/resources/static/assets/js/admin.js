@@ -341,6 +341,7 @@ function deleteQuestion(id) {
 function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
     const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
+    let isAlerted = 0;
 
     if (!selectedCategory) {
         alert("請選擇類別！");
@@ -351,10 +352,11 @@ function submitFaqQa() {
         const question = questionAnswerPairs[i].querySelector('input[name="questions[]"]').value.trim();
         const answer = questionAnswerPairs[i].querySelector('input[name="answers[]"]').value.trim();
 
-        if (question === "" && answer === "") { //pass
-            continue;
-        } else if (question === "" || answer === "") { //both answer and question should be input
-            alert("請確保每一組問題和答案都已填寫");
+        if (question === "" || answer === "") { //both answer and question should be input
+            if (isAlerted === 0) {
+                alert("請確保每一組問題和答案都已填寫");
+            }
+            isAlerted = 1;
             return;
         }
 
@@ -376,6 +378,7 @@ function submitFaqQa() {
                 if (response.ok) {
                     alert('新增成功');
                     handleCategoriesAndDisplayTable(typeId);
+                    clearInputs('.question-answer-group');
                     return {};
                 } else {
                     alert('新增失敗');
@@ -394,7 +397,10 @@ function submitFaqType() {
         return;
     }
 
-    createCategoryType(categoryName);
+    createCategoryType(categoryName)
+        .then(() => {
+            document.getElementById('faq-category-name').value = '';
+        });
 }
 
 function createCategoryType(categoryName) {
@@ -432,9 +438,10 @@ function handleTypeAndDisplayTable() {
         .then(data => {
             document.getElementById('all-type-table').classList.remove('hidden');
             const filteredData = data.data;
+            console.log(filteredData.length);
 
             if (filteredData.length === 0) {
-                document.getElementById('type-table').classList.add('hidden');
+                document.getElementById('all-type-table').classList.add('hidden');
                 return;
             }
 
@@ -548,11 +555,14 @@ function submitGeneral() {
     const characterName = document.getElementById('character-name').value;
 
     if (!characterName) {
-        alert('請輸入角色名稱');
+        alert('請輸入角色描述');
         return;
     }
 
-    createCharacterType(characterName);
+    createCharacterType(characterName)
+        .then(() => {
+            document.getElementById('character-name').value = '';
+        });
 }
 
 function createCharacterType(characterName) {
@@ -596,7 +606,16 @@ function findCharById(id) {
 
 function saveCharacter() {
     const updatedChar = document.getElementById('character-input').value;
-    console.log(updatedChar)
+
+    if (updatedChar === '') {
+        alert('角色描述不能為空');
+        return;
+    }
+
+    if (updatedChar.length > 50) {
+        alert('字數過長: ' + updatedChar.length + '字 (最多50字）');
+        return;
+    }
 
     fetch(`api/1.0/admin/personality/update`, {
         method: 'POST',
@@ -668,6 +687,7 @@ function solveJwt(token) {
             const userRole = data.role;
 
             if (userRole !== 'ADMIN') {
+                alert('您無權限查看此頁');
                 window.location.href = '../account_login.html';
             } else {
                 console.log('User is an admin, proceeding...');
@@ -675,7 +695,8 @@ function solveJwt(token) {
         })
         .catch(error => {
             console.error('Error:', error);
-            alert('無法解碼JWT，請檢查Token是否正確');
+            alert('請確認是否登入');
+            window.location.href = '../account_login.html';
         });
 }
 
@@ -732,6 +753,23 @@ function fetchSupportAndDisplayTable() {
             document.getElementById('support-table').innerHTML = tableHtml;
         })
         .catch(error => console.error('Error fetching categories:', error));
+}
+
+function removeQuestionAnswer() {
+    const container = document.getElementById('question-answer-container');
+    const questionAnswerGroups = container.getElementsByClassName('question-answer-group');
+
+    if (questionAnswerGroups.length > 1) {
+        container.removeChild(questionAnswerGroups[questionAnswerGroups.length - 1]);
+    } else {
+        alert('至少保留一組問題及答案');
+    }
+
+    checkCategorySelection();
+}
+
+function clearInputs(selector) {
+    document.querySelectorAll(`${selector} input`).forEach(input => input.value = '');
 }
 
 
