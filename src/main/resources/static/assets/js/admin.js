@@ -696,16 +696,13 @@ function solveJwt(token) {
             const userRole = data.role;
 
             if (userRole !== 'ADMIN') {
-                alert('您無權限查看此頁');
-                window.location.href = '../account_login.html';
+                window.location.href = '../../404.html';
             } else {
                 console.log('User is an admin, proceeding...');
             }
         })
         .catch(error => {
-            console.error('Error:', error);
-            alert('請確認是否登入');
-            window.location.href = '../account_login.html';
+            window.location.href = '../../404.html';
         });
 }
 
