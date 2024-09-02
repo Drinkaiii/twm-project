@@ -570,6 +570,11 @@ function submitGeneral() {
 }
 
 function createCharacterType(characterName) {
+    if (characterName.length > 200) {
+        alert('字數過長: ' + characterName.length + '字 (最多200字）');
+        return;
+    }
+
     return fetch('api/1.0/admin/personality/create', {
         method: 'POST',
         headers: {
@@ -616,8 +621,8 @@ function saveCharacter() {
         return;
     }
 
-    if (updatedChar.length > 50) {
-        alert('字數過長: ' + updatedChar.length + '字 (最多50字）');
+    if (updatedChar.length > 200) {
+        alert('字數過長: ' + updatedChar.length + '字 (最多200字）');
         return;
     }
 
