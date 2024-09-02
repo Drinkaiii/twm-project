@@ -436,7 +436,7 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(dialog);
             messageContainer.appendChild(li);
         } else if (role === "chatgpt") {
-            content.innerHTML = text; // 使用 innerHTML 以解析 HTML 標籤
+            content.innerHTML = text;
             dialog.appendChild(content);
             dialog.appendChild(time);
             li.className = "msg";
