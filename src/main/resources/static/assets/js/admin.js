@@ -342,6 +342,7 @@ function submitFaqQa() {
     const selectedCategory = Number(document.getElementById('faq-category-select').value);
     const questionAnswerPairs = document.querySelectorAll('.question-answer-group');
     let isAlerted = 0;
+    let isAdded = 0;
 
     if (!selectedCategory) {
         alert("請選擇類別！");
@@ -376,7 +377,10 @@ function submitFaqQa() {
         })
             .then(response => {
                 if (response.ok) {
-                    alert('新增成功');
+                    if (isAdded === 0) {
+                        alert('新增成功');
+                    }
+                    isAdded = 1;
                     handleCategoriesAndDisplayTable(typeId);
                     clearInputs('.question-answer-group');
                     return {};
