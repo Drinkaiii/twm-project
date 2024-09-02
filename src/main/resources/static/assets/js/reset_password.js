@@ -7,7 +7,7 @@ if (jwtToken) {
     document.body.style.display = 'block';
 }
 // get the elements
-const button = document.querySelector(".btnBox");
+const button = document.querySelector("#sendEmailButton");
 const input_password = document.querySelector(".origin input");
 const input_password_check = document.querySelector(".check input");
 const input_verify = document.querySelector(".veriCodeBox input");
@@ -130,7 +130,7 @@ function switchButton(isEnabled) {
 
 // check password formation
 function isValidPassword(password) {
-    const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+    const passwordPattern = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordPattern.test(password);
 }
 
