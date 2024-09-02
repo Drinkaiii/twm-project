@@ -34,7 +34,7 @@ public class RedisConfig {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
         redisStandaloneConfiguration.setPassword(password);
         LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .commandTimeout(Duration.ofSeconds(timeout))
+                .commandTimeout(Duration.ofMillis(timeout))
                 .shutdownTimeout(Duration.ofMillis(100))
                 .clientOptions(ClientOptions.builder()
                         .sslOptions(SslOptions.builder().build())
