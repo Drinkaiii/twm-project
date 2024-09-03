@@ -25,7 +25,7 @@ public class ChatController {
     @PostMapping("/agents")
     public ResponseEntity<?> chat(@RequestBody RecordDto recordDto) {
 
-        Long userId = 1L;
+        Long userId = recordDto.getUserId();
         String sessionId = recordDto.getSessionId();
         String question = recordDto.getQuestion();
 
