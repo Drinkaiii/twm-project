@@ -45,6 +45,7 @@ function fetchCharacterAndDisplayTable() {
     })
         .then(response => response.json())
         .then(data => {
+            console.log(data);
             document.getElementById('character-table').classList.remove('hidden');
             const filteredData = data.data;
 

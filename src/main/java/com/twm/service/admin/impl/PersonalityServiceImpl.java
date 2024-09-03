@@ -46,11 +46,8 @@ public class PersonalityServiceImpl implements PersonalityService {
             List<PersonalityDto> personalities = personalityRepository.getPersonality(id); //get sql data
             log.info("Data retrieved from the database.");
 
-            for (PersonalityDto personality : personalities) {
-                personality.setDescription(personality.getDescription());
-            }
-
             redisUtil.setJsonDataToCache(CACHE_KEY, personalities);
+            result.put("data", personalities);
         }
 
         return result;
