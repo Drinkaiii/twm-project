@@ -5,6 +5,7 @@ import com.twm.exception.custom.MissFieldException;
 import com.twm.repository.admin.ButtonRepository;
 import com.twm.rowmapper.CreateButtonRowMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -16,6 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class ButtonRepositoryImpl implements ButtonRepository {
@@ -31,7 +34,7 @@ public class ButtonRepositoryImpl implements ButtonRepository {
         map.put("question", createButtonDto.getQuestion());
         map.put("answer", createButtonDto.getAnswer());
 
-        if(createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
+        if (createButtonDto.getQuestion().isEmpty() || createButtonDto.getAnswer().isEmpty()) {
             throw new MissFieldException("Failed to save button");
         }
 
@@ -43,7 +46,7 @@ public class ButtonRepositoryImpl implements ButtonRepository {
 //            int buttonId = keyHolder.getKey().intValue();
 //
 //            return buttonId;
-        }catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new RuntimeException("Failed to save button", e);
         }
     }
@@ -54,21 +57,21 @@ public class ButtonRepositoryImpl implements ButtonRepository {
         String sql = "";
         Map<String, Object> map = new HashMap<String, Object>();
 
-        if(id > 0) {
+        if (id > 0) {
             sql = "SELECT * FROM buttons WHERE id = :id;";
             map.put("id", id);
-        }else{
+        } else {
             sql = "SELECT * FROM buttons;";
         }
 
         try {
             List<CreateButtonDto> buttonList = namedParameterJdbcTemplate.query(sql, map, new CreateButtonRowMapper());
-            if(!buttonList.isEmpty()){
+            if (!buttonList.isEmpty()) {
                 return buttonList;
-            }else {
+            } else {
                 throw new MissFieldException("The answer of question don't exist");
             }
-        }catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new RuntimeException("Failed to get button", e);
         }
     }
@@ -90,27 +93,27 @@ public class ButtonRepositoryImpl implements ButtonRepository {
 
             Map<String, Object> updateMap = new HashMap<String, Object>();
 
-            if(createButtonDto.getId() == null) {
+            if (createButtonDto.getId() == null) {
                 updateMap.put("id", origin.getId());
-            }else {
+            } else {
                 updateMap.put("id", createButtonDto.getId());
             }
 
-            if(createButtonDto.getType() == null) {
+            if (createButtonDto.getType() == null) {
                 updateMap.put("typeId", origin.getType());
-            }else {
+            } else {
                 updateMap.put("typeId", createButtonDto.getType());
             }
 
-            if(createButtonDto.getQuestion() == null) {
+            if (createButtonDto.getQuestion() == null) {
                 updateMap.put("question", origin.getQuestion());
-            }else {
+            } else {
                 updateMap.put("question", createButtonDto.getQuestion());
             }
 
-            if(createButtonDto.getAnswer() == null) {
+            if (createButtonDto.getAnswer() == null) {
                 updateMap.put("answer", origin.getAnswer());
-            }else {
+            } else {
                 updateMap.put("answer", createButtonDto.getAnswer());
             }
 
@@ -124,7 +127,7 @@ public class ButtonRepositoryImpl implements ButtonRepository {
 
             return namedParameterJdbcTemplate.queryForObject(selectSql, selectMap, new CreateButtonRowMapper());
 
-        }catch (DataAccessException e){
+        } catch (DataAccessException e) {
             throw new RuntimeException("Failed to update button", e);
         }
     }
@@ -140,9 +143,9 @@ public class ButtonRepositoryImpl implements ButtonRepository {
 
         Integer result = namedParameterJdbcTemplate.update(sql, new MapSqlParameterSource(map), keyHolder);
 
-        if(result > 0) {
+        if (result > 0) {
             return true;
-        }else {
+        } else {
             return false;
         }
     }
