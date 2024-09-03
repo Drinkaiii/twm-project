@@ -29,19 +29,29 @@ public class RedisConfig {
     @Value("${spring.data.redis.timeout}")
     private Integer timeout;
 
+    @Value("${redis.ssl.enable}")
+    private boolean sslEnable;
+
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
         RedisStandaloneConfiguration redisStandaloneConfiguration = new RedisStandaloneConfiguration(host, port);
         redisStandaloneConfiguration.setPassword(password);
-        LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-                .commandTimeout(Duration.ofMillis(timeout))
-                .shutdownTimeout(Duration.ofMillis(100))
-                .clientOptions(ClientOptions.builder()
-                        .sslOptions(SslOptions.builder().build())
-                        .build())
-                .useSsl()
-                .build();
-
+        LettuceClientConfiguration clientConfig;
+        if (sslEnable) {
+            clientConfig = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofMillis(timeout))
+                    .shutdownTimeout(Duration.ofMillis(100))
+                    .clientOptions(ClientOptions.builder()
+                            .sslOptions(SslOptions.builder().build())
+                            .build())
+                    .useSsl()
+                    .build();
+        } else {
+            clientConfig = LettuceClientConfiguration.builder()
+                    .commandTimeout(Duration.ofMillis(timeout))
+                    .shutdownTimeout(Duration.ofMillis(100))
+                    .build();
+        }
         return new LettuceConnectionFactory(redisStandaloneConfiguration, clientConfig);
     }
 
