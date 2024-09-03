@@ -61,7 +61,7 @@ public class ChatServiceImpl implements ChatService {
         }catch (RuntimeException e) {
             throw new RuntimeException("Failed to load history", e);
         }
-
+        log.info("對話紀錄: " + sessionHistory);
         messages.add(new SystemMessage("這些是你們的對話紀錄 : " + sessionHistory));
 
         try {
