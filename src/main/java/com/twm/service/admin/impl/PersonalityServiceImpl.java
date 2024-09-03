@@ -23,11 +23,13 @@ public class PersonalityServiceImpl implements PersonalityService {
 
     private final PersonalityRepository personalityRepository;
 
-    private static final String CACHE_KEY = "personality";
+    private String CACHE_KEY = "personality";
 
     @Override
     public Map<String, Object> savePersonality(PersonalityDto personalityDto) {
         Map<String, Object> result = new HashMap<>();
+        log.info("Data saved to the database. Cache will be cleared.");
+        redisUtil.clearCache(CACHE_KEY);
         result.put("result", personalityRepository.savePersonality(personalityDto));
 
         return result;
@@ -43,9 +45,8 @@ public class PersonalityServiceImpl implements PersonalityService {
             log.info("Data retrieved from Redis cache.");
             result.put("data", redisUtil.getListDataFromCache(CACHE_KEY));
         } else {
-            List<PersonalityDto> personalities = personalityRepository.getPersonality(id); //get sql data
             log.info("Data retrieved from the database.");
-
+            List<PersonalityDto> personalities = personalityRepository.getPersonality(id); //get sql data
             redisUtil.setJsonDataToCache(CACHE_KEY, personalities);
             result.put("data", personalities);
         }
@@ -55,11 +56,15 @@ public class PersonalityServiceImpl implements PersonalityService {
 
     @Override
     public PersonalityDto updatePersonality(PersonalityDto personalityDto) {
+        log.info("Data saved to the database. Cache will be cleared.");
+        redisUtil.clearCache(CACHE_KEY);
         return personalityRepository.updatePersonality(personalityDto);
     }
 
     @Override
     public boolean deletePersonality(Long id) {
+        log.info("Data saved to the database. Cache will be cleared.");
+        redisUtil.clearCache(CACHE_KEY);
         return personalityRepository.deletePersonality(id);
     }
 

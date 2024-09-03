@@ -55,7 +55,7 @@ public class RedisUtil {
         return redisTemplate.hasKey(key);
     }
 
-    private String getDataFromCache(String key) {
+    public String getDataFromCache(String key) {
         try {
             return redisTemplate.opsForValue().get(key);
         } catch (RedisConnectionFailureException ex) {
@@ -64,7 +64,7 @@ public class RedisUtil {
         }
     }
 
-    private void setDataToCache(String key, String value) {
+    public void setDataToCache(String key, String value) {
         try {
             redisTemplate.opsForValue().set(key, value);
         } catch (RedisConnectionFailureException ex) {
@@ -72,7 +72,7 @@ public class RedisUtil {
         }
     }
 
-    private void clearCache(String key) {
+    public void clearCache(String key) {
         try {
             redisTemplate.delete(key);
         } catch (RedisConnectionFailureException ex) {
