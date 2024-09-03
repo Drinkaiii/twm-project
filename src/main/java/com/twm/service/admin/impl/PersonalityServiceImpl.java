@@ -3,11 +3,14 @@ package com.twm.service.admin.impl;
 import com.twm.dto.PersonalityDto;
 import com.twm.repository.admin.PersonalityRepository;
 import com.twm.service.admin.PersonalityService;
+import com.twm.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -15,7 +18,12 @@ import java.util.Map;
 @Slf4j
 public class PersonalityServiceImpl implements PersonalityService {
 
+    @Autowired
+    private RedisUtil redisUtil;
+
     private final PersonalityRepository personalityRepository;
+
+    private static final String CACHE_KEY = "personality";
 
     @Override
     public Map<String, Object> savePersonality(PersonalityDto personalityDto) {
@@ -27,8 +35,23 @@ public class PersonalityServiceImpl implements PersonalityService {
 
     @Override
     public Map<String, Object> getPersonality(Integer id) {
+
         Map<String, Object> result = new HashMap<>();
-        result.put("data", personalityRepository.getPersonality(id));
+        boolean isCached = redisUtil.isCacheExist(CACHE_KEY);
+
+        if (isCached) {
+            log.info("Data retrieved from Redis cache.");
+            result.put("data", redisUtil.getListDataFromCache(CACHE_KEY));
+        } else {
+            List<PersonalityDto> personalities = personalityRepository.getPersonality(id); //get sql data
+            log.info("Data retrieved from the database.");
+
+            for (PersonalityDto personality : personalities) {
+                personality.setDescription(personality.getDescription());
+            }
+
+            redisUtil.setJsonDataToCache(CACHE_KEY, personalities);
+        }
 
         return result;
     }
