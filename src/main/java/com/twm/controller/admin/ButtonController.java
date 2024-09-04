@@ -29,11 +29,11 @@ public class ButtonController {
 //            Map<String, Object> response = chatService.saveButton(createButtonDto);
 
             return ResponseEntity.ok().build();
-        }catch (MissFieldException e){
+        } catch (MissFieldException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
@@ -48,11 +48,11 @@ public class ButtonController {
             Map<String, Object> response = buttonService.getButton(id);
 
             return ResponseEntity.ok(response);
-        }catch (MissFieldException e){
+        } catch (MissFieldException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
@@ -65,11 +65,11 @@ public class ButtonController {
             CreateButtonDto response = buttonService.updateButton(createButtonDto);
 
             return ResponseEntity.ok(response);
-        }catch (MissFieldException e){
+        } catch (MissFieldException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
-        }catch (RuntimeException e){
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 
@@ -84,15 +84,15 @@ public class ButtonController {
             Map<String, Object> response = new HashMap<>();
             response.put("result", result);
 
-            if(result == true) {
+            if (result == true) {
                 return ResponseEntity.ok(response);
-            }else {
+            } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
-            
-        }catch (RuntimeException e){
+
+        } catch (RuntimeException e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.NOT_FOUND);
-        }catch (Exception e){
+        } catch (Exception e) {
             return new ResponseEntity<>(ErrorResponseDto.error(e.getMessage()), HttpStatus.BAD_REQUEST);
         }
 

@@ -150,4 +150,15 @@ public class ButtonRepositoryImpl implements ButtonRepository {
         }
     }
 
+    public Long findTypeById(Long id) {
+        String sql = "SELECT type_id FROM buttons WHERE id = :id";
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("id", id);
+
+        Long type = namedParameterJdbcTemplate.queryForObject(sql, params, Long.class);
+
+        return type;
+    }
+
 }
