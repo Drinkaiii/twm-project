@@ -56,7 +56,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            log.error("Token validation error 1");
+            log.info("Token validation error 1");
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"Invalid token\"}");
@@ -66,7 +66,7 @@ public class JwtFilter extends OncePerRequestFilter {
         final String token = authHeader.substring(7);
         try {
             if (token.isEmpty() || !jwtUtil.isTokenValid(token)) {
-                log.error("Token validation error 2");
+                log.info("Token validation error 2");
                 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
                 response.setContentType("application/json");
                 response.getWriter().write("{\"error\":\"Invalid token\"}");
@@ -84,7 +84,7 @@ public class JwtFilter extends OncePerRequestFilter {
             SecurityContextHolder.getContext().setAuthentication(authToken);
 
         } catch (Exception e) {
-            log.error("Token validation error", e);
+            log.info("Token validation error", e);
             response.setStatus(HttpServletResponse.SC_NOT_FOUND);
             response.setContentType("application/json");
             response.getWriter().write("{\"error\":\"Invalid token\"}");
