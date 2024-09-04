@@ -1,7 +1,7 @@
 package com.twm.service.user.impl;
 
-import com.twm.dto.UserDto;
 import com.twm.dto.ResetPasswordDto;
+import com.twm.dto.UserDto;
 import com.twm.dto.supportDto;
 import com.twm.exception.custom.*;
 import com.twm.repository.user.UserRepository;
@@ -12,23 +12,26 @@ import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 
 @Service
 @RequiredArgsConstructor
@@ -47,6 +50,9 @@ public class UserServiceImpl implements UserService {
     private String twmToken;
     @Value("${twmBaseUrl}")
     private String twmBaseUrl;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @Override
     public Map<String, Object> signUp(UserDto userDto) {
@@ -81,7 +87,7 @@ public class UserServiceImpl implements UserService {
                 if (twmUser == null) {
                     int userId = userRepository.createTwmUser(userProfileMap.get("email").toString());
                     return generateAuthResponse(userRepository.getUserById(userId));
-                }else{
+                } else {
                     return generateAuthResponse(userRepository.getUserById(twmUser.getId().intValue()));
                 }
             default:
@@ -116,8 +122,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Boolean saveSupportRequestRecord(supportDto supportDto){
-        Integer affectedRows = userRepository.saveSupportRecords(supportDto.getName(),supportDto.getEmail(),supportDto.getDescription(),getCurrentTime());
+    public Boolean saveSupportRequestRecord(supportDto supportDto) {
+        Integer affectedRows = userRepository.saveSupportRecords(supportDto.getName(), supportDto.getEmail(), supportDto.getDescription(), getCurrentTime());
         return affectedRows != null && affectedRows != 0;
     }
 
@@ -147,12 +153,20 @@ public class UserServiceImpl implements UserService {
         return matcher.matches();
     }
 
-    public boolean validateCaptcha(String captchaInput, HttpSession session) {
-        String captchaSession = (String) session.getAttribute(KAPTCHA_SESSION_KEY);
-        return captchaSession != null && captchaSession.equals(captchaInput);
+    public boolean validateCaptcha(String captchaId, String captcha) {
+        String storedCaptcha = jdbcTemplate.queryForObject(
+                "SELECT code FROM captcha WHERE id = ?", new Object[]{captchaId}, String.class);
+
+        if (storedCaptcha != null && storedCaptcha.equals(captcha)) {
+            jdbcTemplate.update("DELETE FROM captcha WHERE id = ?", captchaId);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
-    public boolean validateEmail(String email){
+    public boolean validateEmail(String email) {
         if (userRepository.getNativeUserByEmailAndProvider(email) != null)
             return true;
         else
