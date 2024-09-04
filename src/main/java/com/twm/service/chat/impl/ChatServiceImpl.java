@@ -132,7 +132,7 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ReturnQuestionDto> getButtonsByType(Long typeId) {
-        String CACHE_KEY = "button";
+        String CACHE_KEY = "button_" + typeId;
         List<ReturnQuestionDto> buttons;
         boolean isCached = redisUtil.isCacheExist(CACHE_KEY);
 
