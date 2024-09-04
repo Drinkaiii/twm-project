@@ -26,7 +26,8 @@ public class ButtonServiceImpl implements ButtonService {
     public void saveButton(CreateButtonDto createButtonDto) {
 
         log.info("Data saved to the database. Cache will be cleared.");
-        redisUtil.clearCache("button");
+        redisUtil.clearCache("button_" + createButtonDto.getType());
+        redisUtil.clearCache("answer_" + createButtonDto.getId());
         buttonRepository.saveButton(createButtonDto);
 
 //        Map<String, Object> result = new HashMap<>();
@@ -48,15 +49,20 @@ public class ButtonServiceImpl implements ButtonService {
     @Override
     public CreateButtonDto updateButton(CreateButtonDto createButtonDto) {
         log.info("Data saved to the database. Cache will be cleared.");
-        redisUtil.clearCache("button");
+        redisUtil.clearCache("button_" + createButtonDto.getType());
+        redisUtil.clearCache("answer_" + createButtonDto.getId());
         return buttonRepository.updateButton(createButtonDto);
     }
 
     @Override
     public boolean deleteButton(Long id) {
-        log.info("Data saved to the database. Cache will be cleared.");
-        redisUtil.clearCache("button");
+
+        log.info("Data deleted from the database. Cache will be cleared.");
+        redisUtil.clearCache("button_" + buttonRepository.findTypeById(id));
+        redisUtil.clearCache("answer_" + id);
+
         return buttonRepository.deleteButton(id);
     }
+
 
 }
