@@ -1,5 +1,4 @@
 document.addEventListener('DOMContentLoaded', () => {
-
     // To determine whether an OAuth login redirection has occurred by checking if the URL contains a "code" parameter, and to load a loading animation accordingly.
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
@@ -16,6 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.display = 'block';
     }
 
+    loadCaptchaImage();
     const twmLoginButton = document.querySelector(`#twmLoginButton`);
     twmLoginButton.addEventListener('click', () => {
         const redirectUri = "https://twm-appworks.com/account_login.html";
@@ -104,7 +104,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: emailInput.value,
                 password: passwordInput.value,
                 provider: "native",
-                captcha: captchaInput.value
+                captcha: captchaInput.value,
+                captchaId: localStorage.getItem('captchaId')
             })
         })
             .then(response => {
@@ -314,5 +315,22 @@ document.addEventListener('DOMContentLoaded', () => {
             document.body.removeChild(popupOverlay);
         }
         window.location.href = '../account_login.html';
+    }
+
+    function loadCaptchaImage(){
+        fetch('/captcha/image')
+            .then(response =>{
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                console.log('captchaImage:'+data.captchaImage);
+                console.log('captchaId:'+data.captchaId);
+                document.getElementById('captchaImage').src = data.captchaImage;
+                localStorage.setItem('captchaId',data.captchaId);
+            })
+            .catch(error => {
+                console.error('Error loading captcha:', error);
+            });
     }
 })

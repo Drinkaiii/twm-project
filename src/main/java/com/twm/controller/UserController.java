@@ -7,8 +7,6 @@ import com.twm.dto.supportDto;
 import com.twm.exception.custom.*;
 import com.twm.service.user.UserService;
 
-import jakarta.servlet.http.HttpSession;
-
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -33,7 +31,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult bindingResult, HttpSession session) {
+    public ResponseEntity<?> signup(@Valid @RequestBody UserDto userDto, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             List<String> errors = bindingResult.getAllErrors()
                     .stream()
@@ -42,7 +40,7 @@ public class UserController {
             ErrorResponseDto<List<String>> errorResponse = ErrorResponseDto.error(errors);
             return ResponseEntity.badRequest().body(errorResponse);
         }
-        if (userService.validateCaptcha(userDto.getCaptcha(), session)) {
+        if (userService.validateCaptcha(userDto.getCaptchaId(),userDto.getCaptcha())) {
             return ResponseEntity.ok(userService.signUp(userDto));
         } else {
             ErrorResponseDto<String> errorResponse = ErrorResponseDto.error("Authentication failed");
@@ -51,13 +49,13 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest, HttpSession session) {
-        return ResponseEntity.ok(userService.signIn(signInRequest,session));
+    public ResponseEntity<?> signin(@RequestBody Map<String, Object> signInRequest) {
+        return ResponseEntity.ok(userService.signIn(signInRequest));
     }
 
     @GetMapping("/email/reset-password")
-    public ResponseEntity<?> sendResetPasswordEmail(String email, String captcha, HttpSession session) {
-        if (!userService.validateCaptcha(captcha, session))
+    public ResponseEntity<?> sendResetPasswordEmail(String email, String captcha,String captchaId) {
+        if (!userService.validateCaptcha(captchaId,captcha))
             return new ResponseEntity<>(ErrorResponseDto.error("captcha is wrong."), HttpStatus.BAD_REQUEST);
         if (!userService.validateEmail(email))
             return new ResponseEntity<>(ErrorResponseDto.error("email is not exist."), HttpStatus.BAD_REQUEST);
@@ -66,8 +64,8 @@ public class UserController {
     }
 
     @PostMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto, HttpSession session) {
-        if (!userService.validateCaptcha(resetPasswordDto.getCaptcha(), session))
+    public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordDto resetPasswordDto) {
+        if (!userService.validateCaptcha(resetPasswordDto.getCaptchaId(), resetPasswordDto.getCaptcha()))
             return new ResponseEntity<>(ErrorResponseDto.error("captcha is wrong."), HttpStatus.BAD_REQUEST);
         if (userService.resetPassword(resetPasswordDto))
             return ResponseEntity.ok(Map.of("result", "The password has been updated."));

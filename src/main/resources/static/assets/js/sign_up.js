@@ -7,8 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }else{
         document.body.style.display = 'block';
     }
+
     header();
     passwordEyes();
+    loadCaptchaImage();
+
     const emailInput = document.querySelector('input[name="email"]');
     const passwordInput = document.querySelector('input[name="password"]');
     const checkPasswordInput = document.querySelector('input[name="checkPassword"]');
@@ -75,7 +78,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 email: emailInput.value,
                 password: passwordInput.value,
                 provider: "native",
-                captcha: captchaInput.value
+                captcha: captchaInput.value,
+                captchaId: localStorage.getItem('captchaId')
             })
         })
             .then(response => {
@@ -213,6 +217,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 localStorage.removeItem("userId");
                 document.body.style.display = 'block';
             })
+    }
+
+    function loadCaptchaImage(){
+        fetch('/captcha/image')
+            .then(response =>{
+                return response.json();
+            })
+            .then(data => {
+                console.log(data);
+                console.log('captchaImage:'+data.captchaImage);
+                console.log('captchaId:'+data.captchaId);
+                document.getElementById('captchaImage').src = data.captchaImage;
+                localStorage.setItem('captchaId',data.captchaId);
+            })
+            .catch(error => {
+                console.error('Error loading captcha:', error);
+            });
     }
 
 });
