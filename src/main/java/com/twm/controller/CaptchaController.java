@@ -1,21 +1,22 @@
 package com.twm.controller;
 
 import com.google.code.kaptcha.Producer;
-import jakarta.servlet.ServletOutputStream;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.stereotype.Controller;
-
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-
-import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 
 @Controller
@@ -23,27 +24,36 @@ import static com.google.code.kaptcha.Constants.KAPTCHA_SESSION_KEY;
 @RequestMapping("/captcha")
 public class CaptchaController {
 
-    private final Producer verifyCodeProducer;
+    @Autowired
+    private Producer captchaProducer;
 
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+
+    @ResponseBody
     @GetMapping("/image")
-    public void getCaptchaImage(HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> getCaptcha() throws IOException {
+        // 生成驗證碼文字
+        String captchaText = captchaProducer.createText();
+        // 生成驗證碼圖片
+        BufferedImage captchaImage = captchaProducer.createImage(captchaText);
+        // 生成唯一ID
+        String captchaId = UUID.randomUUID().toString();
 
-        response.setContentType("image/jpeg"); // response type
-        String capText = verifyCodeProducer.createText(); // produce random text
-        BufferedImage bi = verifyCodeProducer.createImage(capText) ; // produce random pic
+        // 存入資料庫
+        jdbcTemplate.update("INSERT INTO captcha (id, code) VALUES (?, ?)", captchaId, captchaText);
 
-        HttpSession session = request.getSession();
-        session.setAttribute(KAPTCHA_SESSION_KEY, capText); //save random text into session
-        ServletOutputStream out = null;
-        try {
-            out = response.getOutputStream();
-            ImageIO.write(bi, "jpg", out); // save pic into response
-            out.flush();  // ensure that all pic has been written into response, nothing left in buffer
-        } catch (Exception e) {
-            System.out.println(e);
-        } finally {
-            IOUtils.closeQuietly(out);
-        }
+        // 將圖片轉換為Base64編碼（將圖片數據傳遞給前端）
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ImageIO.write(captchaImage, "png", baos);
+        String base64Captcha = Base64.getEncoder().encodeToString(baos.toByteArray());
+
+        // 返回captchaId和圖片數據
+        Map<String, Object> result = new HashMap<>();
+        result.put("captchaId", captchaId);
+        result.put("captchaImage", "data:image/png;base64," + base64Captcha);
+
+        return result;
     }
 
 }
