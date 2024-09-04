@@ -35,5 +35,8 @@ public class UserDto {
 
     private String captcha;
 
+    @NotBlank(message = "captchaId is required")
+    private String captchaId;
+
     private String role;
 }

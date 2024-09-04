@@ -6,6 +6,7 @@ if (token) {
 }else{
     document.body.style.display = 'block';
 }
+loadCaptchaImage();
 // get the elements
 const button = document.querySelector("#sendEmailButton");
 const input_email = document.querySelector(".input input");
@@ -44,7 +45,7 @@ function submit() {
     switchButton(false)
 
     // fetch api and check the captcha
-    fetch(`/api/1.0/user/email/reset-password?email=${email}&captcha=${captcha}`, {method: "GET"})
+    fetch(`/api/1.0/user/email/reset-password?email=${email}&captcha=${captcha}&captchaId=${localStorage.getItem('captchaId')}`, {method: "GET"})
         .then(response => {
             if (response.ok) {
                 window.location.href = `/result_mail.html?result=${true}`;
@@ -122,4 +123,21 @@ function verifyJwtToken(token){
             localStorage.removeItem("userId");
             document.body.style.display = 'block';
         })
+}
+
+function loadCaptchaImage(){
+    fetch('/captcha/image')
+        .then(response =>{
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
+            console.log('captchaImage:'+data.captchaImage);
+            console.log('captchaId:'+data.captchaId);
+            document.getElementById('captchaImage').src = data.captchaImage;
+            localStorage.setItem('captchaId',data.captchaId);
+        })
+        .catch(error => {
+            console.error('Error loading captcha:', error);
+        });
 }

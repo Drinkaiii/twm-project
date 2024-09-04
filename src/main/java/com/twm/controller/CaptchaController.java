@@ -52,7 +52,6 @@ public class CaptchaController {
         Map<String, Object> result = new HashMap<>();
         result.put("captchaId", captchaId);
         result.put("captchaImage", "data:image/png;base64," + base64Captcha);
-
         return result;
     }
 

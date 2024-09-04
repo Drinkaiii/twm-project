@@ -64,11 +64,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, Object> signIn(Map<String, Object> signInRequest, HttpSession session) {
+    public Map<String, Object> signIn(Map<String, Object> signInRequest) {
         String provider = (String) signInRequest.get("provider");
         switch (provider.toLowerCase()) {
             case "native":
-                if (!validateCaptcha((String) signInRequest.get("captcha"), session)) {
+                if (!validateCaptcha(signInRequest.get("captchaId").toString(),signInRequest.get("captcha").toString())) {
                     throw new VerificationFailedException("Authentication failed");
                 }
                 String email = (String) signInRequest.get("email");

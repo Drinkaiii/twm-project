@@ -10,7 +10,7 @@ import java.util.Map;
 public interface UserService {
     Map<String, Object> signUp(UserDto userDto);
 
-    Map<String, Object> signIn(Map<String, Object> signInRequest, HttpSession session);
+    Map<String, Object> signIn(Map<String, Object> signInRequest);
 
     void sendResetPasswordEmail(String email);
 
