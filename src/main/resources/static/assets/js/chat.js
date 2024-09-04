@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
     float_content.appendChild(prompt);
     float_content.appendChild(button_container);
     let sessionId = null;
-    addMessage(firstMessage,"chatgpt");
+    addMessage(firstMessage,"default");
 
     let isUserConnected = true;
     let reconnectTimer = null;
@@ -415,7 +415,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    function addMessage(text, role) {
+    function addMessage(text, role,addTypingEffect = true) {
         const now = new Date();
         const hours = String(now.getHours()).padStart(2, '0');
         const minutes = String(now.getMinutes()).padStart(2, '0');
@@ -424,7 +424,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const dialog = document.createElement('div');
         dialog.className = "dialog";
         const content = document.createElement("div");
-        content.className = "content";
+        content.className = "content";  // Clear any previous class
         const time = document.createElement("time");
         time.textContent = timeString;
 
@@ -436,6 +436,21 @@ document.addEventListener('DOMContentLoaded', () => {
             li.appendChild(dialog);
             messageContainer.appendChild(li);
         } else if (role === "chatgpt") {
+            content.innerHTML = text;
+            if (addTypingEffect) {
+                content.classList.add("typing-effect");
+            }
+            dialog.appendChild(content);
+            dialog.appendChild(time);
+            li.className = "msg";
+            const avatar = document.createElement("i");
+            avatar.className = "avatar";
+            li.appendChild(avatar);
+            li.appendChild(dialog);
+            messageContainer.appendChild(li);
+            scrollDown();
+            return content;
+        } else if (role === "default") {
             content.innerHTML = text;
             dialog.appendChild(content);
             dialog.appendChild(time);
@@ -472,6 +487,7 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollDown();
     }
 
+
     function scrollDown() {
         $("main").scrollTop($("main").prop("scrollHeight"));
     }
@@ -493,7 +509,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 addMessage(response,"robot");
             })
             .catch(error => {
-                addMessage("系統異常，請稍後再試。","chatgpt");
+                addMessage("系統異常，請稍後再試。","chatgpt",false);
             })
     }
 
@@ -507,14 +523,14 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => { return response.json(); })
             .then(data => {
                 const response = marked.parse(data.data);
-                addMessage(response,"chatgpt");
+                addMessage(response,"chatgpt",false);
             })
             .catch(error => {
-                addMessage("系統異常，請稍後再試。","chatgpt");
+                addMessage("系統異常，請稍後再試。","chatgpt",false);
             })
     }
 
-    function sendRequest(){
+    function sendRequest() {
         const userMessage = messageInput.value;
         if (userMessage === "" || userMessage === null) {
             return;
@@ -523,11 +539,13 @@ document.addEventListener('DOMContentLoaded', () => {
             showErrorPopUp("已達提問字數上限，請重新輸入!");
             return;
         }
-        addMessage(userMessage,"user");
+        addMessage(userMessage, "user");
         messageInput.value = "";
 
+        const typingMessage = addMessage("", "chatgpt");
+
         // Send the message to the server
-        fetch('/api/1.0/chat/agents',{
+        fetch('/api/1.0/chat/agents', {
             method : 'POST',
             headers : {
                 'Content-Type': 'application/json',
@@ -542,19 +560,22 @@ document.addEventListener('DOMContentLoaded', () => {
             .then(response => {
                 if(response.ok){
                     return response.json();
-                }else{
-                 throw new error("server error");
+                } else {
+                    throw new Error("server error");
                 }
             })
             .then(data => {
                 const response = marked.parse(data.data);
                 sessionId = data.sessionId;
-                addMessage(response,"chatgpt");
+                // Replace the "typing..." message with the actual response and remove typing effect
+                typingMessage.innerHTML = response;
+                typingMessage.classList.remove("typing-effect");
             })
             .catch(error => {
                 console.error('Error:', error);
-                addMessage("系統異常，請稍後再試。","chatgpt");
-            })
+                typingMessage.innerHTML = "系統異常，請稍後再試。";
+                typingMessage.classList.remove("typing-effect");
+            });
     }
 
     function showPopUp(url) {

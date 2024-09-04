@@ -305,6 +305,45 @@ main {
     cursor: pointer;
 }
 
+.typing-effect {
+    position: relative;
+    display: inline-block;
+    width: auto;
+    overflow: hidden;
+}
+
+.typing-effect::after {
+    content: "正在輸入中...";
+    position: relative;
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 2px solid;
+    width: 0;
+    animation: typing 2s steps(12) infinite, blink 0.75s step-end infinite;
+}
+
+@keyframes typing {
+    0% {
+        width: 0;
+    }
+    100% {
+        width: 12ch;
+    }
+}
+
+@keyframes blink {
+    0% {
+        border-right-color: black;
+    }
+    50% {
+        border-right-color: transparent;
+    }
+    100% {
+        border-right-color: black;
+    }
+}
+
+
 @media screen and (min-width: 1024px) {
     .chat {
         top: 61px;
