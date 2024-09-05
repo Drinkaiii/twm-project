@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 password: passwordInput.value,
                 provider: "native",
                 captcha: captchaInput.value,
-                captchaId: localStorage.getItem('captchaId')
+                captchaId: document.getElementById('captchaId').value
             })
         })
             .then(response => {
@@ -323,11 +323,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
-                console.log('captchaImage:'+data.captchaImage);
-                console.log('captchaId:'+data.captchaId);
                 document.getElementById('captchaImage').src = data.captchaImage;
-                localStorage.setItem('captchaId',data.captchaId);
+                document.getElementById('captchaId').value = data.captchaId;
             })
             .catch(error => {
                 console.error('Error loading captcha:', error);
