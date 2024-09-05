@@ -45,7 +45,7 @@ function submit() {
     switchButton(false)
 
     // fetch api and check the captcha
-    fetch(`/api/1.0/user/email/reset-password?email=${email}&captcha=${captcha}&captchaId=${localStorage.getItem('captchaId')}`, {method: "GET"})
+    fetch(`/api/1.0/user/email/reset-password?email=${email}&captcha=${captcha}&captchaId=${document.getElementById('captchaId').value}`, {method: "GET"})
         .then(response => {
             if (response.ok) {
                 window.location.href = `/result_mail.html?result=${true}`;
@@ -132,7 +132,7 @@ function loadCaptchaImage(){
         })
         .then(data => {
             document.getElementById('captchaImage').src = data.captchaImage;
-            localStorage.setItem('captchaId',data.captchaId);
+            document.getElementById('captchaId').value = data.captchaId;
         })
         .catch(error => {
             console.error('Error loading captcha:', error);
