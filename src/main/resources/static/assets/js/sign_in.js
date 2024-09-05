@@ -323,9 +323,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 return response.json();
             })
             .then(data => {
-                console.log(data);
-                console.log('captchaImage:'+data.captchaImage);
-                console.log('captchaId:'+data.captchaId);
                 document.getElementById('captchaImage').src = data.captchaImage;
                 localStorage.setItem('captchaId',data.captchaId);
             })
