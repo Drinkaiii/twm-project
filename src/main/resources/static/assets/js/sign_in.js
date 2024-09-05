@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadCaptchaImage();
     const twmLoginButton = document.querySelector(`#twmLoginButton`);
     twmLoginButton.addEventListener('click', () => {
-        const redirectUri = "https://twm-appworks.com/account_login.html";
+        const redirectUri = "https://gfchats.com/account_login.html";
         window.location.href = `https://stage.oauth.taiwanmobile.com/MemberOAuth/authPageLogin?response_type=code&client_id=appworks&redirect_uri=${redirectUri}&state=appstate&prompt=&showLoginPage=Y`;
     })
 
