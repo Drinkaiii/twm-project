@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y \
     fontconfig libfreetype6 libfontconfig1 \
     && rm -rf /var/lib/apt/lists/*
 
-COPY --from=build /app/target/*.jar application.jar
+COPY --from=build /app/target/*.jar /app/application.jar
 
 EXPOSE 8080
 
