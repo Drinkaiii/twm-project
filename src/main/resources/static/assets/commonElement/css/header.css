@@ -1,0 +1,88 @@
+header {
+  background: var(--Black);
+  position: sticky;
+  top: 0;
+  z-index: 99;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  z-index: 15;
+  padding: 0 20px;
+}
+
+header .logo img {
+  display: block;
+  width: 124px;
+  cursor: pointer;
+}
+
+.icon-user:hover{
+  cursor: pointer;
+}
+
+.icon-user:hover{
+  content: url('../img/Icon_user_hover.svg');
+}
+
+header .user .info-window {
+  display: none;
+  position: absolute;
+  top: 50px;
+  right: 5px;
+  background-color: #333;
+  color: white;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 10px 10px;
+  width: 270px;
+  box-sizing: border-box;
+  font-family: 'Noto Sans', sans-serif;
+  font-size: 14px;
+}
+
+header .user-info{
+  margin: 5px 0;
+  padding: 5px 0 5px 7px;
+}
+.log-out-content{
+  padding: 5px 0 5px 7px;
+  cursor: pointer;
+}
+
+header .user .info-window hr {
+  border: none;
+  border-top: 1px solid #444;
+  margin: 5px 0;
+}
+
+.log-out{
+  padding: 2px 0;
+}
+
+.log-out-content{
+  display: flex;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.log-out-content:hover{
+  background-color: #4d4d4d;
+}
+
+.log-out img{
+  display: block;
+  margin-right: 10px;
+}
+
+@media screen and (min-width: 1024px) {
+  header {
+    height: 60px;
+    gap: 96px;
+    justify-content: space-between;
+  }
+
+  header .logo img {
+    width: 140px;
+  }
+}

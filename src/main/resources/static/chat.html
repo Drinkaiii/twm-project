@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-hant">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Chatbot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+KR:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Sans:wght@400;500;700&display=swap" />
+    <link rel="stylesheet" href="./assets/commonElement/css/pages_display.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/reset.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_colors.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/preset_fonts.css" />
+    <link rel="stylesheet" href="./assets/commonElement/css/header.css" />
+    <link rel="stylesheet" href="./assets/css/chat.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="./assets/js/chat.js"></script>
+    <script src="./assets/commonElement/js/header.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+
+<body>
+<div class="wrap">
+    <header>
+        <a class="logo" href="https://www.taiwanmobile.com/index.html">
+            <img src="./assets/commonElement/img/Logo_twm_White.svg" alt="台灣大哥大" />
+        </a>
+        <div class="user">
+            <img class="icon-user" src="./assets/commonElement/img/Icon_user.svg" alt="用戶資訊" />
+            <div class="info-window">
+                <p class= "user-info"></p>
+                <hr>
+                <div class = "log-out">
+                    <div class="log-out-content">
+                        <img class="icon-logout" src="./assets/commonElement/img/Icon_logout.svg" alt="登出" />
+                        <p>登出</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- 對話列表 -->
+    <main>
+        <ul class="chat"></ul>
+    </main>
+    <div class="chatBar">
+        <!-- 浮動區塊（用於初次或尚未開始對話） -->
+        <div class="float">
+        </div>
+
+        <!-- Input Box -->
+        <form class="textareaBox">
+            <div>
+                <textarea placeholder="輸入訊息(單次提問字數上限為100字)..."></textarea>
+                <button>送出</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+</body>
+
+</html>
